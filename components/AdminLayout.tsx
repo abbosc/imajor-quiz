@@ -54,16 +54,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               Dashboard
             </Link>
             <Link
-              href="/admin/sections"
-              className={`px-4 py-3 ${
-                isActive('/admin/sections')
-                  ? 'text-[#FF6B4A] border-b-2 border-[#FF6B4A] font-semibold'
-                  : 'text-[#64748B] hover:text-[#FF6B4A]'
-              } transition-colors duration-200`}
-            >
-              Sections
-            </Link>
-            <Link
               href="/admin/questions"
               className={`px-4 py-3 ${
                 isActive('/admin/questions')

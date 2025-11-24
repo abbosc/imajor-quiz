@@ -3,12 +3,12 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { QuizSection, QuizAnswer } from '@/types/quiz';
+import { QuizQuestion, QuizAnswer } from '@/types/quiz';
 import { v4 as uuidv4 } from 'uuid';
 
 export default function QuizPage() {
   const router = useRouter();
-  const [sections, setSections] = useState<QuizSection[]>([]);
+  const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Map<string, QuizAnswer>>(new Map());
   const [loading, setLoading] = useState(true);
@@ -17,14 +17,10 @@ export default function QuizPage() {
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [showExplanation, setShowExplanation] = useState(false);
 
-  // Flatten all questions from all sections
-  const allQuestions = sections.flatMap(section =>
-    section.questions.map(q => ({ ...q, sectionTitle: section.title }))
-  );
-
-  const currentQuestion = allQuestions[currentQuestionIndex];
-  const totalQuestions = allQuestions.length;
+  const currentQuestion = questions[currentQuestionIndex];
+  const totalQuestions = questions.length;
   const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
 
   useEffect(() => {
@@ -35,20 +31,6 @@ export default function QuizPage() {
     try {
       setLoading(true);
       setError(null);
-
-      // Fetch sections
-      const { data: sectionsData, error: sectionsError } = await supabase
-        .from('sections')
-        .select('*')
-        .order('order_index', { ascending: true });
-
-      if (sectionsError) throw sectionsError;
-
-      if (!sectionsData || sectionsData.length === 0) {
-        setError('No quiz sections found. Please contact the administrator.');
-        setLoading(false);
-        return;
-      }
 
       // Fetch questions with answer choices
       const { data: questionsData, error: questionsError } = await supabase
@@ -68,27 +50,14 @@ export default function QuizPage() {
         return;
       }
 
-      // Organize questions by section
-      const sectionsWithQuestions: QuizSection[] = sectionsData.map(section => ({
-        id: section.id,
-        title: section.title,
-        order_index: section.order_index,
-        questions: questionsData
-          .filter(q => q.section_id === section.id)
-          .map(q => ({
-            ...q,
-            answer_choices: (q.answer_choices as any[])
-              .sort((a, b) => a.order_index - b.order_index)
-          }))
-      })).filter(section => section.questions.length > 0);
+      // Format questions with sorted answer choices
+      const formattedQuestions: QuizQuestion[] = questionsData.map(q => ({
+        ...q,
+        answer_choices: (q.answer_choices as any[])
+          .sort((a, b) => a.order_index - b.order_index)
+      }));
 
-      if (sectionsWithQuestions.length === 0) {
-        setError('No active questions found. Please contact the administrator.');
-        setLoading(false);
-        return;
-      }
-
-      setSections(sectionsWithQuestions);
+      setQuestions(formattedQuestions);
       setLoading(false);
     } catch (error) {
       console.error('Error loading quiz data:', error);
@@ -108,6 +77,7 @@ export default function QuizPage() {
 
     // Auto-advance to next question after a short delay
     setTimeout(() => {
+      setShowExplanation(false); // Reset explanation visibility
       if (currentQuestionIndex < totalQuestions - 1) {
         setCurrentQuestionIndex(currentQuestionIndex + 1);
       } else {
@@ -128,6 +98,7 @@ export default function QuizPage() {
 
   const handlePrevious = () => {
     if (currentQuestionIndex > 0) {
+      setShowExplanation(false);
       setCurrentQuestionIndex(currentQuestionIndex - 1);
     }
   };
@@ -311,18 +282,41 @@ export default function QuizPage() {
       {/* Question */}
       <div className="container mx-auto px-6 py-12">
         <div className="max-w-3xl mx-auto">
-          {/* Section Title */}
-          <div className="mb-6">
-            <span className="inline-block px-4 py-2 bg-[#FF6B4A]/10 text-[#FF6B4A] rounded-full text-sm font-semibold">
-              {currentQuestion.sectionTitle}
-            </span>
-          </div>
-
           {/* Question */}
           <div className="card p-8 mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-[#0F172A] mb-8">
-              {currentQuestion.question_text}
-            </h2>
+            <div className="flex items-start justify-between mb-6">
+              <h2 className="text-2xl md:text-3xl font-bold text-[#0F172A] flex-1">
+                {currentQuestion.question_text}
+              </h2>
+              {currentQuestion.explanation && (
+                <button
+                  onClick={() => setShowExplanation(!showExplanation)}
+                  className="ml-4 p-2 rounded-full hover:bg-[#F8FAFC] transition-colors"
+                  title="More info"
+                >
+                  <svg
+                    className="w-6 h-6 text-[#FF6B4A]"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </button>
+              )}
+            </div>
+
+            {/* Explanation */}
+            {showExplanation && currentQuestion.explanation && (
+              <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-[#0F172A]">{currentQuestion.explanation}</p>
+              </div>
+            )}
 
             {/* Answer Choices */}
             <div className="space-y-4">

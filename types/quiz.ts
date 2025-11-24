@@ -1,14 +1,7 @@
-export interface QuizSection {
-  id: string;
-  title: string;
-  order_index: number;
-  questions: QuizQuestion[];
-}
-
 export interface QuizQuestion {
   id: string;
-  section_id: string;
   question_text: string;
+  explanation: string | null;
   order_index: number;
   is_active: boolean;
   answer_choices: AnswerChoice[];

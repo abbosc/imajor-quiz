@@ -2,12 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
+import AdminLayout from '@/components/AdminLayout';
 
 interface Stats {
   totalSubmissions: number;
-  totalSections: number;
   totalQuestions: number;
   averageScore: number;
   recentSubmissions: Array<{
@@ -22,7 +21,6 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [stats, setStats] = useState<Stats>({
     totalSubmissions: 0,
-    totalSections: 0,
     totalQuestions: 0,
     averageScore: 0,
     recentSubmissions: []
@@ -56,11 +54,6 @@ export default function AdminDashboard() {
         ? submissions.reduce((sum, s) => sum + s.total_score, 0) / submissions.length
         : 0;
 
-      // Fetch total sections
-      const { count: sectionsCount } = await supabase
-        .from('sections')
-        .select('*', { count: 'exact', head: true });
-
       // Fetch total questions
       const { count: questionsCount } = await supabase
         .from('questions')
@@ -75,7 +68,6 @@ export default function AdminDashboard() {
 
       setStats({
         totalSubmissions: submissionsCount || 0,
-        totalSections: sectionsCount || 0,
         totalQuestions: questionsCount || 0,
         averageScore: Math.round(avgScore),
         recentSubmissions: recentSubs || []
@@ -88,77 +80,22 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('admin_token');
-    router.push('/admin');
-  };
-
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
-        <div className="text-center">
+      <AdminLayout>
+        <div className="flex items-center justify-center py-12">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF6B4A]"></div>
-          <p className="mt-4 text-[#64748B]">Loading dashboard...</p>
         </div>
-      </div>
+      </AdminLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
-      {/* Header */}
-      <nav className="bg-white border-b border-[#E2E8F0]">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold gradient-text">iMajor Admin</h1>
-            <button
-              onClick={handleLogout}
-              className="text-[#64748B] hover:text-[#FF6B4A] transition-colors duration-200"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      </nav>
+    <AdminLayout>
+      <h2 className="text-3xl font-bold text-[#0F172A] mb-8">Dashboard</h2>
 
-      {/* Navigation Tabs */}
-      <div className="bg-white border-b border-[#E2E8F0]">
-        <div className="container mx-auto px-6">
-          <div className="flex gap-6">
-            <Link
-              href="/admin/dashboard"
-              className="px-4 py-3 text-[#FF6B4A] border-b-2 border-[#FF6B4A] font-semibold"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/admin/sections"
-              className="px-4 py-3 text-[#64748B] hover:text-[#FF6B4A] transition-colors duration-200"
-            >
-              Sections
-            </Link>
-            <Link
-              href="/admin/questions"
-              className="px-4 py-3 text-[#64748B] hover:text-[#FF6B4A] transition-colors duration-200"
-            >
-              Questions
-            </Link>
-            <Link
-              href="/admin/interpretations"
-              className="px-4 py-3 text-[#64748B] hover:text-[#FF6B4A] transition-colors duration-200"
-            >
-              Interpretations
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Dashboard Content */}
-      <div className="container mx-auto px-6 py-8">
-        <h2 className="text-3xl font-bold text-[#0F172A] mb-8">Dashboard</h2>
-
-        {/* Stats Grid */}
-        <div className="grid md:grid-cols-4 gap-6 mb-8">
+      {/* Stats Grid */}
+      <div className="grid md:grid-cols-3 gap-6 mb-8">
           <div className="card p-6">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 gradient-accent rounded-lg flex items-center justify-center">
@@ -169,20 +106,6 @@ export default function AdminDashboard() {
               <div>
                 <p className="text-sm text-[#64748B]">Total Submissions</p>
                 <p className="text-2xl font-bold text-[#0F172A]">{stats.totalSubmissions}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="card p-6">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 gradient-accent rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <div>
-                <p className="text-sm text-[#64748B]">Total Sections</p>
-                <p className="text-2xl font-bold text-[#0F172A]">{stats.totalSections}</p>
               </div>
             </div>
           </div>
@@ -246,7 +169,6 @@ export default function AdminDashboard() {
             <p className="text-[#64748B] text-center py-8">No submissions yet</p>
           )}
         </div>
-      </div>
-    </div>
+    </AdminLayout>
   );
 }

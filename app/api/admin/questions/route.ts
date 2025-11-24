@@ -20,7 +20,6 @@ export async function GET(request: NextRequest) {
       .from('questions')
       .select(`
         *,
-        sections (title),
         answer_choices (*)
       `)
       .order('order_index', { ascending: true });
@@ -41,14 +40,14 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { section_id, question_text, order_index, is_active, answer_choices } = body;
+    const { question_text, explanation, order_index, is_active, answer_choices } = body;
 
     // Insert question
     const { data: questionData, error: questionError } = await supabaseAdmin
       .from('questions')
       .insert({
-        section_id,
         question_text,
+        explanation: explanation || null,
         order_index,
         is_active
       })

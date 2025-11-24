@@ -4,25 +4,17 @@
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- 1. Sections Table
-CREATE TABLE sections (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  title TEXT NOT NULL,
-  order_index INTEGER NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- 2. Questions Table
+-- 1. Questions Table
 CREATE TABLE questions (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  section_id UUID NOT NULL REFERENCES sections(id) ON DELETE CASCADE,
   question_text TEXT NOT NULL,
+  explanation TEXT,
   order_index INTEGER NOT NULL,
   is_active BOOLEAN DEFAULT TRUE,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 3. Answer Choices Table
+-- 2. Answer Choices Table
 CREATE TABLE answer_choices (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   question_id UUID NOT NULL REFERENCES questions(id) ON DELETE CASCADE,
@@ -32,7 +24,7 @@ CREATE TABLE answer_choices (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 4. Interpretation Levels Table (Admin-defined score ranges)
+-- 3. Interpretation Levels Table (Admin-defined score ranges)
 CREATE TABLE interpretation_levels (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   min_score INTEGER NOT NULL,
@@ -43,7 +35,7 @@ CREATE TABLE interpretation_levels (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 5. Quiz Submissions Table
+-- 4. Quiz Submissions Table
 CREATE TABLE quiz_submissions (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   unique_id TEXT NOT NULL UNIQUE,
@@ -53,7 +45,7 @@ CREATE TABLE quiz_submissions (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 6. Submission Answers Table
+-- 5. Submission Answers Table
 CREATE TABLE submission_answers (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   submission_id UUID NOT NULL REFERENCES quiz_submissions(id) ON DELETE CASCADE,
@@ -64,7 +56,6 @@ CREATE TABLE submission_answers (
 );
 
 -- Create indexes for better query performance
-CREATE INDEX idx_questions_section_id ON questions(section_id);
 CREATE INDEX idx_answer_choices_question_id ON answer_choices(question_id);
 CREATE INDEX idx_submission_answers_submission_id ON submission_answers(submission_id);
 CREATE INDEX idx_quiz_submissions_unique_id ON quiz_submissions(unique_id);
@@ -72,18 +63,13 @@ CREATE INDEX idx_quiz_submissions_unique_id ON quiz_submissions(unique_id);
 -- Row Level Security (RLS) Policies
 
 -- Enable RLS on all tables
-ALTER TABLE sections ENABLE ROW LEVEL SECURITY;
 ALTER TABLE questions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE answer_choices ENABLE ROW LEVEL SECURITY;
 ALTER TABLE interpretation_levels ENABLE ROW LEVEL SECURITY;
 ALTER TABLE quiz_submissions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE submission_answers ENABLE ROW LEVEL SECURITY;
 
--- Public read access for quiz content (sections, questions, answers, interpretations)
-CREATE POLICY "Allow public read access to sections"
-  ON sections FOR SELECT
-  USING (true);
-
+-- Public read access for quiz content (questions, answers, interpretations)
 CREATE POLICY "Allow public read access to active questions"
   ON questions FOR SELECT
   USING (is_active = true);

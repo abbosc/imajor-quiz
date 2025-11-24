@@ -1,14 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminLayout from '@/components/AdminLayout';
-
-interface Section {
-  id: string;
-  title: string;
-  order_index: number;
-}
 
 export default function BulkImportPage() {
   const router = useRouter();
@@ -16,30 +10,9 @@ export default function BulkImportPage() {
   const [importing, setImporting] = useState(false);
   const [preview, setPreview] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
-  const [sections, setSections] = useState<Section[]>([]);
-
-  useEffect(() => {
-    loadSections();
-  }, []);
 
   const getAuthToken = () => {
     return localStorage.getItem('admin_token') || '';
-  };
-
-  const loadSections = async () => {
-    try {
-      const response = await fetch('/api/admin/sections', {
-        headers: {
-          'Authorization': `Bearer ${getAuthToken()}`
-        }
-      });
-      if (response.ok) {
-        const result = await response.json();
-        setSections(result.data || []);
-      }
-    } catch (err) {
-      console.error('Error loading sections:', err);
-    }
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -121,24 +94,6 @@ export default function BulkImportPage() {
           <p className="text-[#64748B]">Upload a JSON file to import multiple questions at once</p>
         </div>
 
-        {/* Available Sections */}
-        {sections.length > 0 && (
-          <div className="card p-6 mb-6 bg-blue-50 border border-blue-200">
-            <h3 className="text-lg font-semibold text-[#0F172A] mb-3">Available Section IDs</h3>
-            <p className="text-sm text-[#64748B] mb-3">Use these section_id values in your JSON:</p>
-            <div className="space-y-2">
-              {sections.map((section) => (
-                <div key={section.id} className="flex items-center gap-3 bg-white p-3 rounded-lg">
-                  <code className="flex-1 font-mono text-sm text-[#FF6B4A] bg-[#F8FAFC] px-3 py-1 rounded">
-                    {section.id}
-                  </code>
-                  <span className="text-sm font-medium text-[#0F172A]">{section.title}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
         <div className="card p-8 space-y-6">
           {/* File Upload */}
           <div>
@@ -160,8 +115,8 @@ export default function BulkImportPage() {
             <pre className="text-sm text-[#64748B] overflow-x-auto bg-white p-4 rounded-lg">
 {`[
   {
-    "section_id": "uuid-of-section",
     "question_text": "Your question here?",
+    "explanation": "Brief explanation or context (optional)",
     "order_index": 1,
     "is_active": true,
     "answer_choices": [
@@ -227,7 +182,7 @@ export default function BulkImportPage() {
           {/* Tip */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
             <p className="text-sm text-blue-700">
-              <strong>Tip:</strong> To get section IDs, go to the Sections page and inspect your browser's network tab when loading sections, or query your Supabase database directly.
+              <strong>Tip:</strong> The explanation field is optional and will be shown to users when they click the info button during the quiz. Each question must have at least 2 answer choices.
             </p>
           </div>
         </div>

@@ -1,14 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
 import AdminLayout from '@/components/AdminLayout';
-
-interface Section {
-  id: string;
-  title: string;
-}
 
 interface AnswerChoice {
   choice_text: string;
@@ -18,10 +12,9 @@ interface AnswerChoice {
 
 export default function NewQuestionPage() {
   const router = useRouter();
-  const [sections, setSections] = useState<Section[]>([]);
   const [formData, setFormData] = useState({
-    section_id: '',
     question_text: '',
+    explanation: '',
     order_index: 1,
     is_active: true
   });
@@ -29,27 +22,6 @@ export default function NewQuestionPage() {
     { choice_text: '', points: 0, order_index: 1 }
   ]);
   const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    loadSections();
-  }, []);
-
-  const loadSections = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('sections')
-        .select('id, title')
-        .order('order_index', { ascending: true });
-
-      if (error) throw error;
-      setSections(data || []);
-      if (data && data.length > 0) {
-        setFormData(prev => ({ ...prev, section_id: data[0].id }));
-      }
-    } catch (error) {
-      console.error('Error loading sections:', error);
-    }
-  };
 
   const addAnswerChoice = () => {
     setAnswerChoices([
@@ -94,8 +66,8 @@ export default function NewQuestionPage() {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          section_id: formData.section_id,
           question_text: formData.question_text,
+          explanation: formData.explanation || null,
           order_index: formData.order_index,
           is_active: formData.is_active,
           answer_choices: answerChoices
@@ -121,25 +93,6 @@ export default function NewQuestionPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="card p-8 space-y-6">
-          {/* Section */}
-          <div>
-            <label className="block text-sm font-medium text-[#0F172A] mb-2">
-              Section
-            </label>
-            <select
-              value={formData.section_id}
-              onChange={(e) => setFormData({ ...formData, section_id: e.target.value })}
-              required
-              className="w-full px-4 py-3 rounded-lg border border-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#FF6B4A] focus:border-transparent text-[#0F172A]"
-            >
-              {sections.map((section) => (
-                <option key={section.id} value={section.id}>
-                  {section.title}
-                </option>
-              ))}
-            </select>
-          </div>
-
           {/* Question Text */}
           <div>
             <label className="block text-sm font-medium text-[#0F172A] mb-2">
@@ -152,6 +105,20 @@ export default function NewQuestionPage() {
               rows={3}
               className="w-full px-4 py-3 rounded-lg border border-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#FF6B4A] focus:border-transparent text-[#0F172A]"
               placeholder="Enter your question here..."
+            />
+          </div>
+
+          {/* Explanation */}
+          <div>
+            <label className="block text-sm font-medium text-[#0F172A] mb-2">
+              Explanation (optional)
+            </label>
+            <textarea
+              value={formData.explanation}
+              onChange={(e) => setFormData({ ...formData, explanation: e.target.value })}
+              rows={2}
+              className="w-full px-4 py-3 rounded-lg border border-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#FF6B4A] focus:border-transparent text-[#0F172A]"
+              placeholder="Brief explanation or context for this question..."
             />
           </div>
 

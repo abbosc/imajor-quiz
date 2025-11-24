@@ -8,11 +8,10 @@ import AdminLayout from '@/components/AdminLayout';
 
 interface Question {
   id: string;
-  section_id: string;
   question_text: string;
+  explanation: string | null;
   order_index: number;
   is_active: boolean;
-  sections?: { title: string };
   answer_choices?: AnswerChoice[];
 }
 
@@ -136,9 +135,6 @@ export default function QuestionsPage() {
               <div className="flex justify-between items-start mb-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <span className="inline-block px-3 py-1 bg-[#FF6B4A]/10 text-[#FF6B4A] rounded-full text-sm font-semibold">
-                      {question.sections?.title}
-                    </span>
                     <span className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${
                       question.is_active
                         ? 'bg-green-100 text-green-700'
@@ -146,10 +142,16 @@ export default function QuestionsPage() {
                     }`}>
                       {question.is_active ? 'Active' : 'Inactive'}
                     </span>
+                    <span className="text-sm text-[#64748B]">
+                      Order: {question.order_index}
+                    </span>
                   </div>
-                  <h3 className="text-lg font-semibold text-[#0F172A] mb-3">
+                  <h3 className="text-lg font-semibold text-[#0F172A] mb-1">
                     {question.question_text}
                   </h3>
+                  {question.explanation && (
+                    <p className="text-sm text-[#64748B] mb-3 italic">{question.explanation}</p>
+                  )}
                   {question.answer_choices && question.answer_choices.length > 0 && (
                     <div className="space-y-2">
                       {question.answer_choices

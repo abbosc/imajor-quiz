@@ -9,47 +9,27 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
-      sections: {
-        Row: {
-          id: string
-          title: string
-          order_index: number
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          title: string
-          order_index: number
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          title?: string
-          order_index?: number
-          created_at?: string
-        }
-      }
       questions: {
         Row: {
           id: string
-          section_id: string
           question_text: string
+          explanation: string | null
           order_index: number
           is_active: boolean
           created_at: string
         }
         Insert: {
           id?: string
-          section_id: string
           question_text: string
+          explanation?: string | null
           order_index: number
           is_active?: boolean
           created_at?: string
         }
         Update: {
           id?: string
-          section_id?: string
           question_text?: string
+          explanation?: string | null
           order_index?: number
           is_active?: boolean
           created_at?: string

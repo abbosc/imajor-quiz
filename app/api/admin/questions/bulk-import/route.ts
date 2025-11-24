@@ -33,8 +33,8 @@ export async function POST(request: NextRequest) {
 
       try {
         // Validate required fields
-        if (!q.section_id || !q.question_text) {
-          throw new Error('Missing section_id or question_text');
+        if (!q.question_text) {
+          throw new Error('Missing question_text');
         }
 
         if (!q.answer_choices || !Array.isArray(q.answer_choices) || q.answer_choices.length < 2) {
@@ -52,8 +52,8 @@ export async function POST(request: NextRequest) {
         const { data: questionData, error: questionError } = await supabaseAdmin
           .from('questions')
           .insert({
-            section_id: q.section_id,
             question_text: q.question_text,
+            explanation: q.explanation || null,
             order_index: q.order_index || i + 1,
             is_active: q.is_active !== undefined ? q.is_active : true
           })
