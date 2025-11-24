@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --coral-primary: #FF6B4A;
+  --coral-dark: #E85537;
+  --coral-light: #FF8A6D;
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F8FAFC;
+  --bg-card: #FFFFFF;
+  --text-primary: #0F172A;
+  --text-secondary: #64748B;
+  --border-color: #E2E8F0;
+}
+
+body {
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Professional card styles */
+.card {
+  background: var(--bg-card);
+  border-radius: 1rem;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.card:hover {
+  border-color: var(--coral-light);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(255, 107, 74, 0.15);
+}
+
+/* Gradient accents */
+.gradient-accent {
+  background: linear-gradient(135deg, var(--coral-primary) 0%, var(--coral-dark) 100%);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--coral-primary) 0%, var(--coral-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}

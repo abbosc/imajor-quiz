@@ -1,0 +1,205 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
+import AdminLayout from '@/components/AdminLayout';
+
+interface Question {
+  id: string;
+  section_id: string;
+  question_text: string;
+  order_index: number;
+  is_active: boolean;
+  sections?: { title: string };
+  answer_choices?: AnswerChoice[];
+}
+
+interface AnswerChoice {
+  id: string;
+  choice_text: string;
+  points: number;
+  order_index: number;
+}
+
+export default function QuestionsPage() {
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadQuestions();
+  }, []);
+
+  const getAuthToken = () => {
+    return localStorage.getItem('admin_token') || '';
+  };
+
+  const loadQuestions = async () => {
+    try {
+      const response = await fetch('/api/admin/questions', {
+        headers: {
+          'Authorization': `Bearer ${getAuthToken()}`
+        }
+      });
+
+      if (!response.ok) throw new Error('Failed to load questions');
+
+      const result = await response.json();
+      setQuestions(result.data || []);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error loading questions:', error);
+      setLoading(false);
+    }
+  };
+
+  const toggleActive = async (id: string, currentStatus: boolean) => {
+    try {
+      const response = await fetch('/api/admin/questions', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getAuthToken()}`
+        },
+        body: JSON.stringify({
+          id,
+          is_active: !currentStatus
+        })
+      });
+
+      if (!response.ok) throw new Error('Failed to update question');
+
+      loadQuestions();
+    } catch (error) {
+      console.error('Error toggling question:', error);
+      alert('Failed to update question');
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this question? All answer choices will also be deleted.')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/admin/questions?id=${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${getAuthToken()}`
+        }
+      });
+
+      if (!response.ok) throw new Error('Failed to delete question');
+
+      loadQuestions();
+    } catch (error) {
+      console.error('Error deleting question:', error);
+      alert('Failed to delete question');
+    }
+  };
+
+  if (loading) {
+    return (
+      <AdminLayout>
+        <div className="flex items-center justify-center py-12">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF6B4A]"></div>
+        </div>
+      </AdminLayout>
+    );
+  }
+
+  return (
+    <AdminLayout>
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-3xl font-bold text-[#0F172A]">Questions</h2>
+        <div className="flex gap-3">
+          <Link
+            href="/admin/questions/bulk-import"
+            className="border-2 border-[#FF6B4A] text-[#FF6B4A] px-6 py-3 rounded-lg font-semibold hover:bg-[#FF6B4A] hover:text-white transition-all duration-300"
+          >
+            Bulk Import
+          </Link>
+          <Link
+            href="/admin/questions/new"
+            className="gradient-accent text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300"
+          >
+            Add Question
+          </Link>
+        </div>
+      </div>
+
+      {questions.length > 0 ? (
+        <div className="space-y-4">
+          {questions.map((question) => (
+            <div key={question.id} className="card p-6">
+              <div className="flex justify-between items-start mb-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="inline-block px-3 py-1 bg-[#FF6B4A]/10 text-[#FF6B4A] rounded-full text-sm font-semibold">
+                      {question.sections?.title}
+                    </span>
+                    <span className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${
+                      question.is_active
+                        ? 'bg-green-100 text-green-700'
+                        : 'bg-gray-100 text-gray-600'
+                    }`}>
+                      {question.is_active ? 'Active' : 'Inactive'}
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-semibold text-[#0F172A] mb-3">
+                    {question.question_text}
+                  </h3>
+                  {question.answer_choices && question.answer_choices.length > 0 && (
+                    <div className="space-y-2">
+                      {question.answer_choices
+                        .sort((a, b) => a.order_index - b.order_index)
+                        .map((choice) => (
+                          <div key={choice.id} className="flex items-center gap-2 text-sm">
+                            <span className="w-16 px-2 py-1 bg-[#F8FAFC] rounded text-[#FF6B4A] font-semibold">
+                              {choice.points} pts
+                            </span>
+                            <span className="text-[#64748B]">{choice.choice_text}</span>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+                </div>
+                <div className="flex gap-2 ml-4">
+                  <button
+                    onClick={() => toggleActive(question.id, question.is_active)}
+                    className="px-4 py-2 rounded-lg border border-[#E2E8F0] text-[#0F172A] font-medium hover:border-[#FF6B4A] transition-all duration-200"
+                  >
+                    {question.is_active ? 'Deactivate' : 'Activate'}
+                  </button>
+                  <Link
+                    href={`/admin/questions/${question.id}/edit`}
+                    className="px-4 py-2 rounded-lg bg-[#FF6B4A] text-white font-medium hover:bg-[#E85537] transition-all duration-200"
+                  >
+                    Edit
+                  </Link>
+                  <button
+                    onClick={() => handleDelete(question.id)}
+                    className="px-4 py-2 rounded-lg bg-red-500 text-white font-medium hover:bg-red-600 transition-all duration-200"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="card p-12 text-center">
+          <p className="text-[#64748B] mb-4">No questions yet</p>
+          <Link
+            href="/admin/questions/new"
+            className="inline-block gradient-accent text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300"
+          >
+            Add Your First Question
+          </Link>
+        </div>
+      )}
+    </AdminLayout>
+  );
+}
