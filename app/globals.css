@@ -12,6 +12,15 @@
   --text-primary: #0F172A;
   --text-secondary: #64748B;
   --border-color: #E2E8F0;
+
+  /* Cosmic theme colors */
+  --cosmic-bg-dark: #0a0a1a;
+  --cosmic-bg-mid: #0f0f2a;
+  --cosmic-bg-light: #1a1a3a;
+  --star-color: #ffffff;
+  --nebula-coral: rgba(255, 107, 74, 0.05);
+  --cosmic-gold: #FFD700;
+  --cosmic-blue: #87CEEB;
 }
 
 body {
@@ -53,4 +62,31 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* Cosmic glow utilities */
+.glow-coral {
+  box-shadow: 0 0 15px rgba(255, 107, 74, 0.4);
+}
+
+.glow-coral-lg {
+  box-shadow: 0 0 30px rgba(255, 107, 74, 0.5);
+}
+
+.text-glow {
+  text-shadow: 0 0 10px rgba(255, 107, 74, 0.5);
+}
+
+.text-glow-white {
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+}
+
+/* Cosmic background gradient */
+.cosmic-bg {
+  background: linear-gradient(to bottom, var(--cosmic-bg-dark), var(--cosmic-bg-mid), var(--cosmic-bg-light));
+}
+
+/* Answer card glow on selection */
+.answer-glow {
+  box-shadow: 0 0 20px rgba(255, 107, 74, 0.4), inset 0 0 20px rgba(255, 107, 74, 0.1);
 }

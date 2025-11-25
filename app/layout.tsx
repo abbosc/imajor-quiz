@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Caveat } from "next/font/google";
 import "./globals.css";
+import { SoundProvider } from "@/components/audio/SoundManager";
 
 const inter = Inter({ subsets: ["latin"] });
+const caveat = Caveat({
+  subsets: ["latin"],
+  variable: '--font-caveat',
+});
 
 export const metadata: Metadata = {
   title: "iMajor - Major Exploration Depth Quiz",
@@ -16,8 +21,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} antialiased`}>
-        {children}
+      <body className={`${inter.className} ${caveat.variable} antialiased`}>
+        <SoundProvider>
+          {children}
+        </SoundProvider>
       </body>
     </html>
   );

@@ -1,13 +1,23 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { QuizQuestion, QuizAnswer } from '@/types/quiz';
-import { v4 as uuidv4 } from 'uuid';
+import { motion, AnimatePresence } from 'framer-motion';
+
+// Cosmic components
+import StarField from '@/components/cosmic/StarField';
+import CosmicProgress from '@/components/cosmic/CosmicProgress';
+import QuestionTransition from '@/components/cosmic/QuestionTransition';
+import AnswerCard from '@/components/cosmic/AnswerCard';
+import MilestoneModal from '@/components/cosmic/MilestoneModal';
+import { useSoundEffect } from '@/components/audio/SoundManager';
+import SoundToggle from '@/components/audio/SoundToggle';
 
 export default function QuizPage() {
   const router = useRouter();
+  const { playSound } = useSoundEffect();
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Map<string, QuizAnswer>>(new Map());
@@ -18,10 +28,29 @@ export default function QuizPage() {
   const [userEmail, setUserEmail] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [showExplanation, setShowExplanation] = useState(false);
+  const [direction, setDirection] = useState(1);
+
+  // Milestone tracking
+  const [showMilestone, setShowMilestone] = useState(false);
+  const [currentMilestone, setCurrentMilestone] = useState<number | null>(null);
+  const passedMilestones = useRef<Set<number>>(new Set());
 
   const currentQuestion = questions[currentQuestionIndex];
   const totalQuestions = questions.length;
-  const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+  const progress = totalQuestions > 0 ? ((currentQuestionIndex + 1) / totalQuestions) * 100 : 0;
+
+  // Check for milestones
+  useEffect(() => {
+    const milestones = [25, 50, 75];
+    for (const milestone of milestones) {
+      if (progress >= milestone && !passedMilestones.current.has(milestone)) {
+        passedMilestones.current.add(milestone);
+        setCurrentMilestone(milestone);
+        setShowMilestone(true);
+        break;
+      }
+    }
+  }, [progress]);
 
   useEffect(() => {
     loadQuizData();
@@ -32,7 +61,6 @@ export default function QuizPage() {
       setLoading(true);
       setError(null);
 
-      // Fetch questions with answer choices
       const { data: questionsData, error: questionsError } = await supabase
         .from('questions')
         .select(`
@@ -50,7 +78,6 @@ export default function QuizPage() {
         return;
       }
 
-      // Format questions with sorted answer choices
       const formattedQuestions: QuizQuestion[] = questionsData.map(q => ({
         ...q,
         answer_choices: (q.answer_choices as any[])
@@ -75,30 +102,23 @@ export default function QuizPage() {
     });
     setAnswers(newAnswers);
 
-    // Auto-advance to next question after a short delay
     setTimeout(() => {
-      setShowExplanation(false); // Reset explanation visibility
+      setShowExplanation(false);
+      playSound('whoosh');
       if (currentQuestionIndex < totalQuestions - 1) {
+        setDirection(1);
         setCurrentQuestionIndex(currentQuestionIndex + 1);
       } else {
-        // Quiz completed, show user info form
         setShowUserForm(true);
       }
-    }, 400);
-  };
-
-  const handleNext = () => {
-    if (currentQuestionIndex < totalQuestions - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-    } else {
-      // Quiz completed, show user info form
-      setShowUserForm(true);
-    }
+    }, 500);
   };
 
   const handlePrevious = () => {
     if (currentQuestionIndex > 0) {
+      playSound('whoosh');
       setShowExplanation(false);
+      setDirection(-1);
       setCurrentQuestionIndex(currentQuestionIndex - 1);
     }
   };
@@ -108,14 +128,11 @@ export default function QuizPage() {
 
     try {
       setSubmitting(true);
+      playSound('click');
 
-      // Calculate total score
       const totalScore = Array.from(answers.values()).reduce((sum, answer) => sum + answer.points, 0);
-
-      // Generate unique ID
       const uniqueId = `IMJ-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 
-      // Save submission to database
       const { data: submissionData, error: submissionError } = await supabase
         .from('quiz_submissions')
         .insert({
@@ -129,7 +146,6 @@ export default function QuizPage() {
 
       if (submissionError) throw submissionError;
 
-      // Save individual answers
       const answersArray = Array.from(answers.values()).map(answer => ({
         submission_id: submissionData.id,
         question_id: answer.question_id,
@@ -143,7 +159,6 @@ export default function QuizPage() {
 
       if (answersError) throw answersError;
 
-      // Redirect to results page
       router.push(`/results/${uniqueId}`);
     } catch (error) {
       console.error('Error submitting quiz:', error);
@@ -154,10 +169,21 @@ export default function QuizPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF6B4A]"></div>
-          <p className="mt-4 text-[#64748B]">Loading quiz...</p>
+      <div className="min-h-screen relative overflow-hidden">
+        <StarField />
+        <div className="relative z-10 min-h-screen flex items-center justify-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center"
+          >
+            <motion.div
+              className="w-16 h-16 mx-auto mb-4 rounded-full border-4 border-[#FF6B4A] border-t-transparent"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+            />
+            <p className="text-white/80 text-lg">Preparing your cosmic journey...</p>
+          </motion.div>
         </div>
       </div>
     );
@@ -165,21 +191,28 @@ export default function QuizPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-6">
-        <div className="card max-w-md w-full p-8 text-center">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-          </div>
-          <h2 className="text-2xl font-bold text-[#0F172A] mb-2">Error Loading Quiz</h2>
-          <p className="text-[#64748B] mb-6">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="gradient-accent text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300"
+      <div className="min-h-screen relative overflow-hidden">
+        <StarField />
+        <div className="relative z-10 min-h-screen flex items-center justify-center p-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl max-w-md w-full p-8 text-center"
           >
-            Retry
-          </button>
+            <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-bold text-white mb-2">Houston, We Have a Problem</h2>
+            <p className="text-white/70 mb-6">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="gradient-accent text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg hover:shadow-[#FF6B4A]/30 transition-all duration-300"
+            >
+              Retry Launch
+            </button>
+          </motion.div>
         </div>
       </div>
     );
@@ -187,52 +220,89 @@ export default function QuizPage() {
 
   if (showUserForm) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-6">
-        <div className="card max-w-md w-full p-8">
-          <h2 className="text-3xl font-bold text-[#0F172A] mb-2">Almost Done!</h2>
-          <p className="text-[#64748B] mb-6">Enter your details to receive your results and unique ID.</p>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-[#0F172A] mb-2">
-                Your Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
-                required
-                disabled={submitting}
-                className="w-full px-4 py-3 rounded-lg border border-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#FF6B4A] focus:border-transparent text-[#0F172A] disabled:bg-gray-100"
-                placeholder="John Doe"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-[#0F172A] mb-2">
-                Your Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                value={userEmail}
-                onChange={(e) => setUserEmail(e.target.value)}
-                required
-                disabled={submitting}
-                className="w-full px-4 py-3 rounded-lg border border-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#FF6B4A] focus:border-transparent text-[#0F172A] disabled:bg-gray-100"
-                placeholder="john@example.com"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full gradient-accent text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+      <div className="min-h-screen relative overflow-hidden">
+        <StarField />
+        <div className="relative z-10 min-h-screen flex items-center justify-center p-6">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl max-w-md w-full p-8"
+          >
+            <motion.div
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.2 }}
             >
-              {submitting ? 'Submitting...' : 'View My Results'}
-            </button>
-          </form>
+              <h2 className="text-3xl font-bold text-white mb-2">Mission Complete! 🚀</h2>
+              <p className="text-white/70 mb-6">Enter your details to receive your cosmic results.</p>
+            </motion.div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <motion.div
+                initial={{ x: -20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 0.3 }}
+              >
+                <label htmlFor="name" className="block text-sm font-medium text-white/80 mb-2">
+                  Your Name
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                  required
+                  disabled={submitting}
+                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#FF6B4A] focus:border-transparent disabled:opacity-50"
+                  placeholder="Space Explorer"
+                />
+              </motion.div>
+
+              <motion.div
+                initial={{ x: -20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 0.4 }}
+              >
+                <label htmlFor="email" className="block text-sm font-medium text-white/80 mb-2">
+                  Your Email
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  value={userEmail}
+                  onChange={(e) => setUserEmail(e.target.value)}
+                  required
+                  disabled={submitting}
+                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#FF6B4A] focus:border-transparent disabled:opacity-50"
+                  placeholder="explorer@galaxy.com"
+                />
+              </motion.div>
+
+              <motion.button
+                type="submit"
+                disabled={submitting}
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full gradient-accent text-white px-6 py-4 rounded-xl font-semibold hover:shadow-lg hover:shadow-[#FF6B4A]/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {submitting ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <motion.span
+                      className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                    />
+                    Launching Results...
+                  </span>
+                ) : (
+                  'Reveal My Cosmic Score ✨'
+                )}
+              </motion.button>
+            </form>
+          </motion.div>
         </div>
       </div>
     );
@@ -240,9 +310,10 @@ export default function QuizPage() {
 
   if (!currentQuestion) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-[#64748B]">No questions available</p>
+      <div className="min-h-screen relative overflow-hidden">
+        <StarField />
+        <div className="relative z-10 min-h-screen flex items-center justify-center">
+          <p className="text-white/70">No questions available in this galaxy</p>
         </div>
       </div>
     );
@@ -251,121 +322,116 @@ export default function QuizPage() {
   const selectedAnswer = answers.get(currentQuestion?.id);
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
-      {/* Header */}
-      <nav className="bg-white border-b border-[#E2E8F0]">
-        <div className="container mx-auto px-6 py-4">
-          <h1 className="text-2xl font-bold gradient-text">iMajor</h1>
-        </div>
-      </nav>
+    <div className="min-h-screen relative overflow-hidden">
+      <StarField />
 
-      {/* Progress Bar */}
-      <div className="bg-white border-b border-[#E2E8F0]">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-[#64748B]">
-              Question {currentQuestionIndex + 1} of {totalQuestions}
-            </span>
-            <span className="text-sm font-medium text-[#64748B]">
-              {Math.round(progress)}% Complete
-            </span>
+      {/* Milestone Modal */}
+      <MilestoneModal
+        milestone={currentMilestone}
+        isVisible={showMilestone}
+        onClose={() => setShowMilestone(false)}
+      />
+
+      <div className="relative z-10 min-h-screen">
+        {/* Header */}
+        <nav className="bg-black/20 backdrop-blur-md border-b border-white/10">
+          <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+            <h1 className="text-2xl font-bold text-white" style={{ textShadow: '0 0 20px rgba(255, 107, 74, 0.5)' }}>
+              iMajor
+            </h1>
+            <SoundToggle />
           </div>
-          <div className="w-full bg-[#E2E8F0] rounded-full h-2">
-            <div
-              className="gradient-accent h-2 rounded-full transition-all duration-300"
-              style={{ width: `${progress}%` }}
-            ></div>
+        </nav>
+
+        {/* Progress */}
+        <div className="bg-black/10 backdrop-blur-sm border-b border-white/10">
+          <div className="container mx-auto px-6 py-6">
+            <CosmicProgress current={currentQuestionIndex + 1} total={totalQuestions} />
           </div>
         </div>
-      </div>
 
-      {/* Question */}
-      <div className="container mx-auto px-6 py-12">
-        <div className="max-w-3xl mx-auto">
-          {/* Question */}
-          <div className="card p-8 mb-8">
-            <div className="flex items-start justify-between mb-6">
-              <h2 className="text-2xl md:text-3xl font-bold text-[#0F172A] flex-1">
-                {currentQuestion.question_text}
-              </h2>
-              {currentQuestion.explanation && (
-                <button
-                  onClick={() => setShowExplanation(!showExplanation)}
-                  className="ml-4 p-2 rounded-full hover:bg-[#F8FAFC] transition-colors"
-                  title="More info"
-                >
-                  <svg
-                    className="w-6 h-6 text-[#FF6B4A]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </button>
-              )}
-            </div>
+        {/* Question */}
+        <div className="container mx-auto px-6 py-12">
+          <div className="max-w-3xl mx-auto">
+            <QuestionTransition questionKey={currentQuestionIndex} direction={direction}>
+              <motion.div
+                className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-8 mb-8"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
+                <div className="flex items-start justify-between mb-6">
+                  <h2 className="text-2xl md:text-3xl font-bold text-white flex-1">
+                    {currentQuestion.question_text}
+                  </h2>
+                  {currentQuestion.explanation && (
+                    <button
+                      onClick={() => setShowExplanation(!showExplanation)}
+                      className="ml-4 p-2 rounded-full hover:bg-white/10 transition-colors"
+                      title="More info"
+                    >
+                      <svg className="w-6 h-6 text-[#FF6B4A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
 
-            {/* Explanation */}
-            {showExplanation && currentQuestion.explanation && (
-              <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-sm text-[#0F172A]">{currentQuestion.explanation}</p>
+                {/* Explanation */}
+                <AnimatePresence>
+                  {showExplanation && currentQuestion.explanation && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="mb-6 p-4 bg-[#87CEEB]/20 border border-[#87CEEB]/30 rounded-xl overflow-hidden"
+                    >
+                      <p className="text-sm text-white/90">{currentQuestion.explanation}</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Answer Choices */}
+                <div className="space-y-4">
+                  {currentQuestion.answer_choices.map((choice, index) => {
+                    const isSelected = selectedAnswer?.answer_choice_id === choice.id;
+                    return (
+                      <motion.div
+                        key={choice.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                      >
+                        <AnswerCard
+                          choiceText={choice.choice_text}
+                          isSelected={isSelected}
+                          onClick={() => handleAnswerSelect(choice.id, choice.points)}
+                        />
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            </QuestionTransition>
+
+            {/* Navigation */}
+            <div className="flex justify-between items-center">
+              <motion.button
+                onClick={handlePrevious}
+                disabled={currentQuestionIndex === 0}
+                whileHover={currentQuestionIndex > 0 ? { scale: 1.05 } : {}}
+                whileTap={currentQuestionIndex > 0 ? { scale: 0.95 } : {}}
+                className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${
+                  currentQuestionIndex === 0
+                    ? 'bg-white/5 text-white/30 cursor-not-allowed'
+                    : 'bg-white/10 border border-white/20 text-white hover:bg-white/20'
+                }`}
+              >
+                ← Previous
+              </motion.button>
+
+              <div className="text-sm text-white/50 italic">
+                Select an answer to continue
               </div>
-            )}
-
-            {/* Answer Choices */}
-            <div className="space-y-4">
-              {currentQuestion.answer_choices.map((choice) => {
-                const isSelected = selectedAnswer?.answer_choice_id === choice.id;
-                return (
-                  <button
-                    key={choice.id}
-                    onClick={() => handleAnswerSelect(choice.id, choice.points)}
-                    className={`w-full p-4 rounded-lg border-2 transition-all duration-200 text-left ${
-                      isSelected
-                        ? 'border-[#FF6B4A] bg-[#FF6B4A]/5'
-                        : 'border-[#E2E8F0] hover:border-[#FF6B4A]/50'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-lg text-[#0F172A] font-medium">
-                        {choice.choice_text}
-                      </span>
-                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                        isSelected ? 'border-[#FF6B4A]' : 'border-[#E2E8F0]'
-                      }`}>
-                        {isSelected && (
-                          <div className="w-3 h-3 rounded-full bg-[#FF6B4A]"></div>
-                        )}
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Navigation */}
-          <div className="flex justify-between items-center">
-            <button
-              onClick={handlePrevious}
-              disabled={currentQuestionIndex === 0}
-              className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
-                currentQuestionIndex === 0
-                  ? 'bg-[#E2E8F0] text-[#94A3B8] cursor-not-allowed'
-                  : 'bg-white border-2 border-[#E2E8F0] text-[#0F172A] hover:border-[#FF6B4A]'
-              }`}
-            >
-              Previous
-            </button>
-
-            <div className="text-sm text-[#64748B] italic">
-              Select an answer to continue
             </div>
           </div>
         </div>

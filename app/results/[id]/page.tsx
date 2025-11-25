@@ -4,7 +4,16 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import jsPDF from 'jspdf';
+import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
+import { useSoundEffect } from '@/components/audio/SoundManager';
+
+// Cosmic components
+import StarField from '@/components/cosmic/StarField';
+import CountdownReveal from '@/components/results/CountdownReveal';
+import ScoreCounter from '@/components/results/ScoreCounter';
+import CosmicConfetti from '@/components/results/CosmicConfetti';
+import SoundToggle from '@/components/audio/SoundToggle';
 
 interface ZeroPointQuestion {
   section: string;
@@ -14,6 +23,7 @@ interface ZeroPointQuestion {
 export default function ResultsPage() {
   const params = useParams();
   const uniqueId = params.id as string;
+  const { playSound } = useSoundEffect();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -24,6 +34,12 @@ export default function ResultsPage() {
   const [interpretationDescription, setInterpretationDescription] = useState('');
   const [zeroPointQuestions, setZeroPointQuestions] = useState<ZeroPointQuestion[]>([]);
   const [copied, setCopied] = useState(false);
+
+  // Reveal state
+  const [showCountdown, setShowCountdown] = useState(true);
+  const [showResults, setShowResults] = useState(false);
+  const [triggerConfetti, setTriggerConfetti] = useState(false);
+  const [scoreAnimationComplete, setScoreAnimationComplete] = useState(false);
 
   useEffect(() => {
     loadResults();
@@ -111,9 +127,9 @@ export default function ResultsPage() {
 
       if (!answersError && submissionAnswers) {
         const zeroPoints: ZeroPointQuestion[] = submissionAnswers.map((answer: any) => ({
-          section: answer.questions.sections.title,
-          question: answer.questions.question_text
-        }));
+          section: answer.questions?.sections?.title || 'General',
+          question: answer.questions?.question_text || ''
+        })).filter((item: ZeroPointQuestion) => item.question);
         setZeroPointQuestions(zeroPoints);
       }
 
@@ -125,14 +141,26 @@ export default function ResultsPage() {
     }
   };
 
+  const handleCountdownComplete = () => {
+    setShowCountdown(false);
+    setShowResults(true);
+  };
+
+  const handleScoreAnimationComplete = () => {
+    setScoreAnimationComplete(true);
+    setTriggerConfetti(true);
+  };
+
   const copyToClipboard = () => {
     const url = window.location.href;
     navigator.clipboard.writeText(url);
     setCopied(true);
+    playSound('click');
     setTimeout(() => setCopied(false), 2000);
   };
 
   const downloadPDF = () => {
+    playSound('click');
     const doc = new jsPDF();
 
     // Header
@@ -196,10 +224,21 @@ export default function ResultsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF6B4A]"></div>
-          <p className="mt-4 text-[#64748B]">Loading results...</p>
+      <div className="min-h-screen relative overflow-hidden">
+        <StarField />
+        <div className="relative z-10 min-h-screen flex items-center justify-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center"
+          >
+            <motion.div
+              className="w-16 h-16 mx-auto mb-4 rounded-full border-4 border-[#FF6B4A] border-t-transparent"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+            />
+            <p className="text-white/80 text-lg">Loading your cosmic results...</p>
+          </motion.div>
         </div>
       </div>
     );
@@ -207,175 +246,281 @@ export default function ResultsPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-6">
-        <div className="card max-w-md w-full p-8 text-center">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-          </div>
-          <h2 className="text-2xl font-bold text-[#0F172A] mb-2">Error Loading Results</h2>
-          <p className="text-[#64748B] mb-6">{error}</p>
-          <Link
-            href="/"
-            className="inline-block gradient-accent text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300"
+      <div className="min-h-screen relative overflow-hidden">
+        <StarField />
+        <div className="relative z-10 min-h-screen flex items-center justify-center p-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl max-w-md w-full p-8 text-center"
           >
-            Back to Home
-          </Link>
+            <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-bold text-white mb-2">Lost in Space</h2>
+            <p className="text-white/70 mb-6">{error}</p>
+            <Link
+              href="/"
+              className="inline-block gradient-accent text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg hover:shadow-[#FF6B4A]/30 transition-all duration-300"
+            >
+              Return to Home Base
+            </Link>
+          </motion.div>
         </div>
       </div>
     );
   }
 
-  const maxScore = 285; // This should be calculated based on all possible points
+  const maxScore = 285;
   const percentage = Math.round((score / maxScore) * 100);
 
+  // Show countdown first
+  if (showCountdown) {
+    return (
+      <AnimatePresence>
+        <CountdownReveal onComplete={handleCountdownComplete} />
+      </AnimatePresence>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
-      {/* Header */}
-      <nav className="bg-white border-b border-[#E2E8F0]">
-        <div className="container mx-auto px-6 py-4">
-          <Link href="/" className="text-2xl font-bold gradient-text">
-            iMajor
-          </Link>
-        </div>
-      </nav>
+    <div className="min-h-screen relative overflow-hidden">
+      <StarField />
+      <CosmicConfetti trigger={triggerConfetti} />
 
-      {/* Results */}
-      <div className="container mx-auto px-6 py-12">
-        <div className="max-w-4xl mx-auto">
-          {/* Congratulations Card */}
-          <div className="card p-8 md:p-12 mb-8 text-center">
-            <div className="inline-block px-4 py-2 bg-[#FF6B4A]/10 text-[#FF6B4A] rounded-full text-sm font-semibold mb-4">
-              Quiz Completed
-            </div>
-
-            <h1 className="text-4xl md:text-5xl font-bold text-[#0F172A] mb-4">
-              Congratulations, {name}!
-            </h1>
-
-            <p className="text-xl text-[#64748B] mb-8">
-              You've completed the Major Exploration Depth Assessment
-            </p>
-
-            {/* Score Display */}
-            <div className="inline-flex items-center justify-center w-48 h-48 rounded-full bg-gradient-to-br from-[#FF6B4A] to-[#E85537] mb-6">
-              <div className="w-44 h-44 rounded-full bg-white flex flex-col items-center justify-center">
-                <div className="text-5xl font-bold gradient-text">{score}</div>
-                <div className="text-sm text-[#64748B] mt-1">points</div>
-              </div>
-            </div>
-
-            {/* Interpretation */}
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-[#0F172A] mb-2">
-                {interpretation}
-              </h2>
-              <p className="text-[#64748B]">
-                {interpretationDescription || `You scored ${percentage}% on your exploration journey!`}
-              </p>
-            </div>
-
-            {/* Unique ID */}
-            <div className="bg-[#F8FAFC] rounded-lg p-6 mb-6">
-              <p className="text-sm text-[#64748B] mb-2">Your Unique Results ID</p>
-              <div className="flex items-center justify-center gap-3">
-                <code className="text-lg font-mono font-bold text-[#FF6B4A]">
-                  {uniqueId}
-                </code>
-                <button
-                  onClick={copyToClipboard}
-                  className="px-4 py-2 bg-white border border-[#E2E8F0] rounded-lg text-sm font-medium text-[#0F172A] hover:border-[#FF6B4A] transition-all duration-200"
-                >
-                  {copied ? 'Copied!' : 'Copy Link'}
-                </button>
-              </div>
-              <p className="text-xs text-[#64748B] mt-2">
-                Save this ID to access your results anytime
-              </p>
-            </div>
-          </div>
-
-          {/* Action Cards */}
-          <div className="grid md:grid-cols-2 gap-6 mb-8">
-            {/* Download To-Do List */}
-            <div className="card p-6">
-              <div className="w-12 h-12 gradient-accent rounded-lg mb-4 flex items-center justify-center">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-[#0F172A] mb-2">
-                Download Your To-Do List
-              </h3>
-              <p className="text-[#64748B] mb-4">
-                Get a PDF with personalized action items based on areas you haven't explored yet
-              </p>
-              <button
-                onClick={downloadPDF}
-                className="w-full gradient-accent text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300"
-              >
-                Download PDF
-              </button>
-            </div>
-
-            {/* Join Telegram */}
-            <div className="card p-6">
-              <div className="w-12 h-12 gradient-accent rounded-lg mb-4 flex items-center justify-center">
-                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/>
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-[#0F172A] mb-2">
-                Join Our Community
-              </h3>
-              <p className="text-[#64748B] mb-4">
-                Connect with other students, get expert advice, and stay updated on major exploration resources
-              </p>
-              <a
-                href="https://t.me/your_channel"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block w-full bg-white border-2 border-[#E2E8F0] text-[#0F172A] px-6 py-3 rounded-lg font-semibold hover:border-[#FF6B4A] text-center transition-all duration-300"
-              >
-                Join Telegram
-              </a>
-            </div>
-          </div>
-
-          {/* Next Steps */}
-          {zeroPointQuestions.length > 0 && (
-            <div className="card p-8">
-              <h3 className="text-2xl font-bold text-[#0F172A] mb-4">
-                Your Next Steps
-              </h3>
-              <p className="text-[#64748B] mb-6">
-                Based on your responses, here are areas you should explore:
-              </p>
-              <div className="space-y-4">
-                {zeroPointQuestions.map((item, index) => (
-                  <div key={index} className="flex gap-4">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#FF6B4A]/10 flex items-center justify-center">
-                      <span className="text-[#FF6B4A] font-semibold">{index + 1}</span>
-                    </div>
-                    <div>
-                      <p className="text-sm text-[#FF6B4A] font-semibold">{item.section}</p>
-                      <p className="text-[#0F172A]">{item.question}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Back to Home */}
-          <div className="text-center mt-8">
-            <Link
-              href="/"
-              className="inline-block text-[#64748B] hover:text-[#FF6B4A] transition-colors duration-200"
-            >
-              ← Back to Home
+      <div className="relative z-10 min-h-screen">
+        {/* Header */}
+        <nav className="bg-black/20 backdrop-blur-md border-b border-white/10">
+          <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+            <Link href="/" className="text-2xl font-bold text-white" style={{ textShadow: '0 0 20px rgba(255, 107, 74, 0.5)' }}>
+              iMajor
             </Link>
+            <SoundToggle />
+          </div>
+        </nav>
+
+        {/* Results */}
+        <div className="container mx-auto px-6 py-12">
+          <div className="max-w-4xl mx-auto">
+            {/* Congratulations Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: showResults ? 1 : 0, y: showResults ? 0 : 30 }}
+              transition={{ duration: 0.6 }}
+              className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-8 md:p-12 mb-8 text-center"
+            >
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: 'spring', damping: 15 }}
+                className="inline-block px-4 py-2 bg-[#FF6B4A]/20 text-[#FF6B4A] rounded-full text-sm font-semibold mb-4"
+              >
+                Mission Complete
+              </motion.div>
+
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="text-4xl md:text-5xl font-bold text-white mb-4"
+                style={{ textShadow: '0 0 30px rgba(255, 255, 255, 0.2)' }}
+              >
+                Congratulations, {name}!
+              </motion.h1>
+
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="text-xl text-white/70 mb-8"
+              >
+                You've completed your cosmic journey through the Major Exploration Quiz
+              </motion.p>
+
+              {/* Animated Score Display */}
+              <div className="flex justify-center mb-8">
+                <ScoreCounter
+                  targetScore={score}
+                  maxScore={maxScore}
+                  duration={2000}
+                  onComplete={handleScoreAnimationComplete}
+                />
+              </div>
+
+              {/* Interpretation */}
+              <AnimatePresence>
+                {scoreAnimationComplete && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="mb-8"
+                  >
+                    <h2 className="text-2xl font-bold text-white mb-2">
+                      {interpretation}
+                    </h2>
+                    <p className="text-white/70">
+                      {interpretationDescription || `You scored ${percentage}% on your exploration journey!`}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Unique ID */}
+              <AnimatePresence>
+                {scoreAnimationComplete && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3, duration: 0.5 }}
+                    className="bg-black/30 rounded-xl p-6 mb-6"
+                  >
+                    <p className="text-sm text-white/60 mb-2">Your Cosmic ID</p>
+                    <div className="flex items-center justify-center gap-3 flex-wrap">
+                      <code className="text-lg font-mono font-bold text-[#FF6B4A]">
+                        {uniqueId}
+                      </code>
+                      <motion.button
+                        onClick={copyToClipboard}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-sm font-medium text-white hover:bg-white/20 transition-all duration-200"
+                      >
+                        {copied ? 'Copied!' : 'Copy Link'}
+                      </motion.button>
+                    </div>
+                    <p className="text-xs text-white/50 mt-2">
+                      Save this ID to access your results anytime
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+
+            {/* Action Cards */}
+            <AnimatePresence>
+              {scoreAnimationComplete && (
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4, duration: 0.5 }}
+                  className="grid md:grid-cols-2 gap-6 mb-8"
+                >
+                  {/* Download To-Do List */}
+                  <motion.div
+                    whileHover={{ scale: 1.02, y: -5 }}
+                    className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6"
+                  >
+                    <div className="w-12 h-12 gradient-accent rounded-xl mb-4 flex items-center justify-center">
+                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-xl font-bold text-white mb-2">
+                      Download Your To-Do List
+                    </h3>
+                    <p className="text-white/60 mb-4">
+                      Get a PDF with personalized action items based on areas you haven't explored yet
+                    </p>
+                    <motion.button
+                      onClick={downloadPDF}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="w-full gradient-accent text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg hover:shadow-[#FF6B4A]/30 transition-all duration-300"
+                    >
+                      Download PDF
+                    </motion.button>
+                  </motion.div>
+
+                  {/* Join Telegram */}
+                  <motion.div
+                    whileHover={{ scale: 1.02, y: -5 }}
+                    className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6"
+                  >
+                    <div className="w-12 h-12 gradient-accent rounded-xl mb-4 flex items-center justify-center">
+                      <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/>
+                      </svg>
+                    </div>
+                    <h3 className="text-xl font-bold text-white mb-2">
+                      Join Our Community
+                    </h3>
+                    <p className="text-white/60 mb-4">
+                      Connect with other explorers, get expert advice, and access more resources
+                    </p>
+                    <motion.a
+                      href="https://t.me/your_channel"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="block w-full bg-white/10 border border-white/20 text-white px-6 py-3 rounded-xl font-semibold hover:bg-white/20 text-center transition-all duration-300"
+                    >
+                      Join Telegram
+                    </motion.a>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Next Steps */}
+            <AnimatePresence>
+              {scoreAnimationComplete && zeroPointQuestions.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6, duration: 0.5 }}
+                  className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-8"
+                >
+                  <h3 className="text-2xl font-bold text-white mb-4">
+                    Your Next Mission Objectives
+                  </h3>
+                  <p className="text-white/60 mb-6">
+                    Based on your journey, here are areas to explore:
+                  </p>
+                  <div className="space-y-4">
+                    {zeroPointQuestions.map((item, index) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.1 * index }}
+                        className="flex gap-4 p-4 bg-black/20 rounded-xl hover:bg-black/30 transition-colors"
+                      >
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#FF6B4A]/20 flex items-center justify-center">
+                          <span className="text-[#FF6B4A] font-semibold">{index + 1}</span>
+                        </div>
+                        <div>
+                          <p className="text-sm text-[#FF6B4A] font-semibold">{item.section}</p>
+                          <p className="text-white/90">{item.question}</p>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Back to Home */}
+            <AnimatePresence>
+              {scoreAnimationComplete && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.8 }}
+                  className="text-center mt-8"
+                >
+                  <Link
+                    href="/"
+                    className="inline-block text-white/60 hover:text-[#FF6B4A] transition-colors duration-200"
+                  >
+                    ← Return to Home Base
+                  </Link>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </div>
