@@ -30,6 +30,7 @@ export default function ResultsPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [score, setScore] = useState(0);
+  const [maxScore, setMaxScore] = useState(100); // Will be calculated from DB
   const [interpretation, setInterpretation] = useState('');
   const [interpretationDescription, setInterpretationDescription] = useState('');
   const [zeroPointQuestions, setZeroPointQuestions] = useState<ZeroPointQuestion[]>([]);
@@ -76,6 +77,28 @@ export default function ResultsPage() {
       setName(submission.user_name);
       setEmail(submission.user_email);
       setScore(submission.total_score);
+
+      // Calculate max possible score from all active questions
+      const { data: questionsData, error: questionsError } = await supabase
+        .from('questions')
+        .select(`
+          id,
+          answer_choices (points)
+        `)
+        .eq('is_active', true);
+
+      if (!questionsError && questionsData) {
+        // For each question, find the maximum points among its answer choices
+        const calculatedMaxScore = questionsData.reduce((total, question) => {
+          const choices = question.answer_choices as { points: number }[];
+          if (choices && choices.length > 0) {
+            const maxPoints = Math.max(...choices.map(c => c.points));
+            return total + maxPoints;
+          }
+          return total;
+        }, 0);
+        setMaxScore(calculatedMaxScore > 0 ? calculatedMaxScore : 100);
+      }
 
       // Fetch interpretation level
       const { data: interpretationLevels, error: interpretationError } = await supabase
@@ -273,8 +296,7 @@ export default function ResultsPage() {
     );
   }
 
-  const maxScore = 285;
-  const percentage = Math.round((score / maxScore) * 100);
+  const percentage = maxScore > 0 ? Math.round((score / maxScore) * 100) : 0;
 
   // Show countdown first
   if (showCountdown) {
