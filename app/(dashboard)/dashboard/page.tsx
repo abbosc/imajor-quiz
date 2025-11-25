@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 
 interface DashboardStats {
@@ -13,12 +15,74 @@ interface DashboardStats {
 
 export default function DashboardPage() {
   const { profile, user } = useAuth();
+  const router = useRouter();
   const [stats, setStats] = useState<DashboardStats>({
     tasks: { total: 0, completed: 0 },
     universities: { total: 0, accepted: 0 },
     activities: { total: 0 },
     essays: { total: 0, final: 0 },
   });
+
+  // Check for pending quiz data after email confirmation
+  useEffect(() => {
+    const submitPendingQuiz = async () => {
+      const pendingQuizData = localStorage.getItem('pendingQuiz');
+      if (!pendingQuizData || !user) return;
+
+      try {
+        const quizData = JSON.parse(pendingQuizData);
+        const answers = new Map(quizData.answers);
+
+        const totalScore = Array.from(answers.values()).reduce((sum: number, answer: any) => sum + answer.points, 0);
+        const uniqueId = `IMJ-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+
+        // Calculate max_score from current active questions
+        const { data: questions } = await supabase
+          .from('questions')
+          .select('id, answer_choices(points)')
+          .eq('is_active', true);
+
+        const maxScore = questions?.reduce((sum: number, q: any) => {
+          const points = q.answer_choices?.map((c: any) => c.points) || [0];
+          return sum + Math.max(...points);
+        }, 0) || 0;
+
+        const { data: submissionData, error: submissionError } = await supabase
+          .from('quiz_submissions')
+          .insert({
+            unique_id: uniqueId,
+            user_name: profile?.full_name || user.email?.split('@')[0] || 'User',
+            user_email: user.email,
+            total_score: totalScore,
+            max_score: maxScore,
+            user_id: user.id
+          })
+          .select()
+          .single();
+
+        if (submissionError) throw submissionError;
+
+        const answersArray = Array.from(answers.values()).map((answer: any) => ({
+          submission_id: submissionData.id,
+          question_id: answer.question_id,
+          answer_choice_id: answer.answer_choice_id,
+          points_earned: answer.points
+        }));
+
+        await supabase.from('submission_answers').insert(answersArray);
+
+        localStorage.removeItem('pendingQuiz');
+        router.push(`/results/${uniqueId}`);
+      } catch (error) {
+        console.error('Error submitting pending quiz:', error);
+        localStorage.removeItem('pendingQuiz');
+      }
+    };
+
+    if (user) {
+      submitPendingQuiz();
+    }
+  }, [user, profile, router]);
 
   useEffect(() => {
     if (user) {
