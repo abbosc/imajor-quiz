@@ -358,7 +358,7 @@ export default function ResultsPage() {
                 transition={{ delay: 0.4 }}
                 className="text-xl text-white/70 mb-8"
               >
-                You've completed your cosmic journey through the Major Exploration Quiz
+                You&apos;ve completed your cosmic journey through the Major Exploration Quiz
               </motion.p>
 
               {/* Animated Score Display */}
@@ -444,7 +444,7 @@ export default function ResultsPage() {
                       Download Your To-Do List
                     </h3>
                     <p className="text-white/60 mb-4">
-                      Get a PDF with personalized action items based on areas you haven't explored yet
+                      Get a PDF with personalized action items based on areas you have not explored yet
                     </p>
                     <motion.button
                       onClick={downloadPDF}
