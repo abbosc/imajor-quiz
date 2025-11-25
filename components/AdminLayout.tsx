@@ -73,6 +73,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             >
               Interpretations
             </Link>
+            <Link
+              href="/admin/tasks"
+              className={`px-4 py-3 ${
+                isActive('/admin/tasks')
+                  ? 'text-[#FF6B4A] border-b-2 border-[#FF6B4A] font-semibold'
+                  : 'text-[#64748B] hover:text-[#FF6B4A]'
+              } transition-colors duration-200`}
+            >
+              Tasks
+            </Link>
           </div>
         </div>
       </div>

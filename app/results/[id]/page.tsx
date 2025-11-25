@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import jsPDF from 'jspdf';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/contexts/AuthContext';
 import { useSoundEffect } from '@/components/audio/SoundManager';
 
 // Cosmic components
@@ -22,11 +23,27 @@ interface ZeroPointQuestion {
 
 export default function ResultsPage() {
   const params = useParams();
+  const router = useRouter();
   const uniqueId = params.id as string;
+  const { user, loading: authLoading } = useAuth();
   const { playSound } = useSoundEffect();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
+
+  // Check authentication - redirect if not logged in
+  useEffect(() => {
+    if (!authLoading) {
+      if (!user) {
+        // Store the results ID in localStorage so we can return after login
+        localStorage.setItem('pendingResultsId', uniqueId);
+        router.push('/signup?redirect=quiz-results');
+      } else {
+        setAuthChecked(true);
+      }
+    }
+  }, [user, authLoading, uniqueId, router]);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [score, setScore] = useState(0);
@@ -43,8 +60,10 @@ export default function ResultsPage() {
   const [scoreAnimationComplete, setScoreAnimationComplete] = useState(false);
 
   useEffect(() => {
-    loadResults();
-  }, [uniqueId]);
+    if (authChecked) {
+      loadResults();
+    }
+  }, [uniqueId, authChecked]);
 
   const loadResults = async () => {
     try {
@@ -245,7 +264,7 @@ export default function ResultsPage() {
     doc.save(`imajor-todo-${uniqueId}.pdf`);
   };
 
-  if (loading) {
+  if (authLoading || !authChecked || loading) {
     return (
       <div className="min-h-screen relative overflow-hidden">
         <StarField />
@@ -260,7 +279,9 @@ export default function ResultsPage() {
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
             />
-            <p className="text-white/80 text-lg">Loading your cosmic results...</p>
+            <p className="text-white/80 text-lg">
+              {authLoading ? 'Verifying your identity...' : 'Loading your cosmic results...'}
+            </p>
           </motion.div>
         </div>
       </div>

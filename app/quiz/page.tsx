@@ -2,7 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/contexts/AuthContext';
 import { QuizQuestion, QuizAnswer } from '@/types/quiz';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -17,6 +19,7 @@ import SoundToggle from '@/components/audio/SoundToggle';
 
 export default function QuizPage() {
   const router = useRouter();
+  const { user, profile, loading: authLoading } = useAuth();
   const { playSound } = useSoundEffect();
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -24,6 +27,7 @@ export default function QuizPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showUserForm, setShowUserForm] = useState(false);
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -105,14 +109,26 @@ export default function QuizPage() {
     });
     setAnswers(newAnswers);
 
-    setTimeout(() => {
+    setTimeout(async () => {
       setShowExplanation(false);
       playSound('whoosh');
       if (currentQuestionIndex < totalQuestions - 1) {
         setDirection(1);
         setCurrentQuestionIndex(currentQuestionIndex + 1);
       } else {
-        setShowUserForm(true);
+        // Quiz complete - check if user is authenticated
+        if (user) {
+          // Authenticated user - auto-submit immediately (no form needed)
+          await submitQuizForAuthenticatedUser(newAnswers);
+        } else {
+          // Unauthenticated user - store quiz data and show auth prompt
+          const quizData = {
+            answers: Array.from(newAnswers.entries()),
+            timestamp: Date.now()
+          };
+          localStorage.setItem('pendingQuiz', JSON.stringify(quizData));
+          setShowAuthPrompt(true);
+        }
       }
     }, 500);
   };
@@ -126,6 +142,57 @@ export default function QuizPage() {
     }
   };
 
+  // Auto-submit quiz for authenticated users (skips the form)
+  const submitQuizForAuthenticatedUser = async (answersMap: Map<string, QuizAnswer>) => {
+    try {
+      setSubmitting(true);
+      playSound('click');
+
+      const totalScore = Array.from(answersMap.values()).reduce((sum, answer) => sum + answer.points, 0);
+      const uniqueId = `IMJ-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+
+      // Calculate max_score from current questions (stored at submission time for data integrity)
+      const maxScore = questions.reduce((sum, q) => {
+        const maxPoints = Math.max(...q.answer_choices.map(c => c.points));
+        return sum + maxPoints;
+      }, 0);
+
+      const { data: submissionData, error: submissionError } = await supabase
+        .from('quiz_submissions')
+        .insert({
+          unique_id: uniqueId,
+          user_name: profile?.full_name || user?.email?.split('@')[0] || 'User',
+          user_email: user?.email,
+          total_score: totalScore,
+          max_score: maxScore,
+          user_id: user?.id || null
+        })
+        .select()
+        .single();
+
+      if (submissionError) throw submissionError;
+
+      const answersArray = Array.from(answersMap.values()).map(answer => ({
+        submission_id: submissionData.id,
+        question_id: answer.question_id,
+        answer_choice_id: answer.answer_choice_id,
+        points_earned: answer.points
+      }));
+
+      const { error: answersError } = await supabase
+        .from('submission_answers')
+        .insert(answersArray);
+
+      if (answersError) throw answersError;
+
+      router.push(`/results/${uniqueId}`);
+    } catch (error) {
+      console.error('Error auto-submitting quiz:', error);
+      alert('Failed to submit quiz. Please try again.');
+      setSubmitting(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -136,13 +203,21 @@ export default function QuizPage() {
       const totalScore = Array.from(answers.values()).reduce((sum, answer) => sum + answer.points, 0);
       const uniqueId = `IMJ-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 
+      // Calculate max_score from current questions (stored at submission time for data integrity)
+      const maxScore = questions.reduce((sum, q) => {
+        const maxPoints = Math.max(...q.answer_choices.map(c => c.points));
+        return sum + maxPoints;
+      }, 0);
+
       const { data: submissionData, error: submissionError } = await supabase
         .from('quiz_submissions')
         .insert({
           unique_id: uniqueId,
           user_name: userName,
           user_email: userEmail,
-          total_score: totalScore
+          total_score: totalScore,
+          max_score: maxScore,
+          user_id: user?.id || null
         })
         .select()
         .single();
@@ -221,6 +296,70 @@ export default function QuizPage() {
     );
   }
 
+  // Auth prompt for unauthenticated users
+  if (showAuthPrompt) {
+    return (
+      <div className="min-h-screen relative overflow-hidden">
+        <StarField />
+        <div className="relative z-10 min-h-screen flex items-center justify-center p-6">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl max-w-md w-full p-8"
+          >
+            <motion.div
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="text-center"
+            >
+              <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-[#FF6B4A] to-[#FF8A6D] rounded-full flex items-center justify-center">
+                <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <h2 className="text-3xl font-bold text-white mb-3">Mission Complete!</h2>
+              <p className="text-white/80 text-lg mb-2">Create your account to see your results</p>
+              <p className="text-[#FF6B4A] font-semibold mb-6">
+                You may win a 30-min consultation from top mentors!
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="space-y-4"
+            >
+              <Link
+                href="/signup?redirect=quiz-results"
+                className="block w-full gradient-accent text-white px-6 py-4 rounded-xl font-semibold text-center hover:shadow-lg hover:shadow-[#FF6B4A]/30 transition-all duration-300"
+              >
+                Create Account
+              </Link>
+
+              <Link
+                href="/login?redirect=quiz-results"
+                className="block w-full bg-white/10 border border-white/20 text-white px-6 py-4 rounded-xl font-semibold text-center hover:bg-white/20 transition-all duration-300"
+              >
+                Already have an account? Login
+              </Link>
+            </motion.div>
+
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              className="text-center text-white/50 text-sm mt-6"
+            >
+              Your quiz progress has been saved
+            </motion.p>
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
+
   if (showUserForm) {
     return (
       <div className="min-h-screen relative overflow-hidden">
@@ -236,8 +375,8 @@ export default function QuizPage() {
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2 }}
             >
-              <h2 className="text-3xl font-bold text-white mb-2">Mission Complete! 🚀</h2>
-              <p className="text-white/70 mb-6">Enter your details to receive your cosmic results.</p>
+              <h2 className="text-3xl font-bold text-white mb-2">Mission Complete!</h2>
+              <p className="text-white/70 mb-6">Confirm your details to receive your cosmic results.</p>
             </motion.div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -301,7 +440,7 @@ export default function QuizPage() {
                     Launching Results...
                   </span>
                 ) : (
-                  'Reveal My Cosmic Score ✨'
+                  'Reveal My Cosmic Score'
                 )}
               </motion.button>
             </form>

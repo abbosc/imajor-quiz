@@ -1,7 +1,13 @@
+'use client';
+
 import HeroSection from "@/components/landing/HeroSection";
 import PrizeSection from "@/components/landing/PrizeSection";
+import { useAuth } from "@/contexts/AuthContext";
+import Link from "next/link";
 
 export default function Home() {
+  const { user, loading } = useAuth();
+
   return (
     <main className="min-h-screen bg-[#F8FAFC] relative overflow-hidden">
       {/* Background decorative elements */}
@@ -16,6 +22,33 @@ export default function Home() {
         <nav className="container mx-auto px-6 py-6">
           <div className="flex justify-between items-center">
             <h1 className="text-3xl font-bold gradient-text">iMajor</h1>
+            <div className="flex items-center gap-4">
+              {!loading && (
+                user ? (
+                  <Link
+                    href="/dashboard"
+                    className="px-5 py-2.5 rounded-xl font-medium text-white gradient-accent hover:shadow-lg hover:shadow-[#FF6B4A]/25 transition-all"
+                  >
+                    Dashboard
+                  </Link>
+                ) : (
+                  <>
+                    <Link
+                      href="/login"
+                      className="px-5 py-2.5 rounded-xl font-medium text-[#0F172A] hover:bg-[#F1F5F9] transition-colors"
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      href="/signup"
+                      className="px-5 py-2.5 rounded-xl font-medium text-white gradient-accent hover:shadow-lg hover:shadow-[#FF6B4A]/25 transition-all"
+                    >
+                      Start Free
+                    </Link>
+                  </>
+                )
+              )}
+            </div>
           </div>
         </nav>
 
