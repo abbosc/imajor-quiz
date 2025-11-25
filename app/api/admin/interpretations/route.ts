@@ -39,8 +39,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { min_score, max_score, level_label, description, order_index } = body;
 
-    const { data, error } = await supabaseAdmin
-      .from('interpretation_levels')
+    const { data, error } = await (supabaseAdmin
+      .from('interpretation_levels') as any)
       .insert({
         min_score,
         max_score,
@@ -69,8 +69,8 @@ export async function PUT(request: NextRequest) {
     const body = await request.json();
     const { id, min_score, max_score, level_label, description, order_index } = body;
 
-    const { data, error } = await supabaseAdmin
-      .from('interpretation_levels')
+    const { data, error } = await (supabaseAdmin
+      .from('interpretation_levels') as any)
       .update({
         min_score,
         max_score,

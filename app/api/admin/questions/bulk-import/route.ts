@@ -49,8 +49,8 @@ export async function POST(request: NextRequest) {
         }
 
         // Insert question
-        const { data: questionData, error: questionError } = await supabaseAdmin
-          .from('questions')
+        const { data: questionData, error: questionError } = await (supabaseAdmin
+          .from('questions') as any)
           .insert({
             question_text: q.question_text,
             explanation: q.explanation || null,
@@ -70,8 +70,8 @@ export async function POST(request: NextRequest) {
           order_index: choice.order_index || idx + 1
         }));
 
-        const { error: choicesError } = await supabaseAdmin
-          .from('answer_choices')
+        const { error: choicesError } = await (supabaseAdmin
+          .from('answer_choices') as any)
           .insert(choicesData);
 
         if (choicesError) throw new Error(`DB Error inserting choices: ${choicesError.message}`);

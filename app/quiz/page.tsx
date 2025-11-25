@@ -78,11 +78,14 @@ export default function QuizPage() {
         return;
       }
 
-      const formattedQuestions: QuizQuestion[] = questionsData.map(q => ({
-        ...q,
-        answer_choices: (q.answer_choices as any[])
-          .sort((a, b) => a.order_index - b.order_index)
-      }));
+      const formattedQuestions: QuizQuestion[] = questionsData.map(q => {
+        const question = q as any;
+        return {
+          ...question,
+          answer_choices: (question.answer_choices as any[])
+            .sort((a: any, b: any) => a.order_index - b.order_index)
+        };
+      });
 
       setQuestions(formattedQuestions);
       setLoading(false);

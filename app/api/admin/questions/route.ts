@@ -43,8 +43,8 @@ export async function POST(request: NextRequest) {
     const { question_text, explanation, order_index, is_active, answer_choices } = body;
 
     // Insert question
-    const { data: questionData, error: questionError } = await supabaseAdmin
-      .from('questions')
+    const { data: questionData, error: questionError } = await (supabaseAdmin
+      .from('questions') as any)
       .insert({
         question_text,
         explanation: explanation || null,
@@ -65,8 +65,8 @@ export async function POST(request: NextRequest) {
         order_index: choice.order_index
       }));
 
-      const { error: choicesError } = await supabaseAdmin
-        .from('answer_choices')
+      const { error: choicesError } = await (supabaseAdmin
+        .from('answer_choices') as any)
         .insert(choicesData);
 
       if (choicesError) throw choicesError;
@@ -88,8 +88,8 @@ export async function PUT(request: NextRequest) {
     const body = await request.json();
     const { id, is_active } = body;
 
-    const { data, error } = await supabaseAdmin
-      .from('questions')
+    const { data, error } = await (supabaseAdmin
+      .from('questions') as any)
       .update({ is_active })
       .eq('id', id)
       .select()

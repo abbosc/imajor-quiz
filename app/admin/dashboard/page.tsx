@@ -50,8 +50,9 @@ export default function AdminDashboard() {
         .from('quiz_submissions')
         .select('total_score');
 
-      const avgScore = submissions && submissions.length > 0
-        ? submissions.reduce((sum, s) => sum + s.total_score, 0) / submissions.length
+      const submissionsList = submissions as { total_score: number }[] | null;
+      const avgScore = submissionsList && submissionsList.length > 0
+        ? submissionsList.reduce((sum, s) => sum + s.total_score, 0) / submissionsList.length
         : 0;
 
       // Fetch total questions
