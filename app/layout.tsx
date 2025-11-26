@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Caveat } from "next/font/google";
 import "./globals.css";
 import { SoundProvider } from "@/components/audio/SoundManager";
@@ -15,6 +15,12 @@ const caveat = Caveat({
 export const metadata: Metadata = {
   title: "iMajor - Major Exploration Depth Quiz",
   description: "Discover how deeply you've explored your major options and win consultation slots with experts",
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({

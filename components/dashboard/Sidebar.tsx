@@ -173,7 +173,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         </nav>
 
         {/* User section */}
-        <div className="p-4 pb-[max(1rem,env(safe-area-inset-bottom))] border-t border-[#E2E8F0]">
+        <div className="p-4 pb-20 lg:pb-4 border-t border-[#E2E8F0]">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 rounded-full bg-[#FF6B4A]/10 flex items-center justify-center">
               <span className="text-[#FF6B4A] font-semibold">
