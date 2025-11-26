@@ -32,6 +32,7 @@ export default function DashboardPage() {
       try {
         const quizData = JSON.parse(pendingQuizData);
         const answers = new Map(quizData.answers);
+        const sessionToken = quizData.sessionToken;
 
         const totalScore = Array.from(answers.values()).reduce((sum: number, answer: any) => sum + answer.points, 0);
         const uniqueId = `IMJ-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
@@ -55,10 +56,30 @@ export default function DashboardPage() {
             user_email: user.email,
             total_score: totalScore,
             max_score: maxScore,
-            user_id: user.id
+            user_id: user.id,
+            session_token: sessionToken
           })
           .select()
           .single();
+
+        // Handle duplicate submission (unique constraint violation)
+        if (submissionError?.code === '23505') {
+          // Fetch existing submission with this session token
+          const { data: existing } = await supabase
+            .from('quiz_submissions')
+            .select('unique_id')
+            .eq('session_token', sessionToken)
+            .single();
+
+          localStorage.removeItem('pendingQuiz');
+          localStorage.removeItem('quizSessionToken');
+
+          if (existing) {
+            router.push(`/results/${existing.unique_id}`);
+            return;
+          }
+          return;
+        }
 
         if (submissionError) throw submissionError;
 
@@ -72,17 +93,19 @@ export default function DashboardPage() {
         await supabase.from('submission_answers').insert(answersArray);
 
         localStorage.removeItem('pendingQuiz');
+        localStorage.removeItem('quizSessionToken');
         router.push(`/results/${uniqueId}`);
       } catch (error) {
         console.error('Error submitting pending quiz:', error);
         localStorage.removeItem('pendingQuiz');
+        localStorage.removeItem('quizSessionToken');
       }
     };
 
     if (user) {
       submitPendingQuiz();
     }
-  }, [user, profile, router]);
+  }, [user, router]);
 
   useEffect(() => {
     if (user) {

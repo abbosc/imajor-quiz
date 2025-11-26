@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface NavItem {
@@ -114,6 +114,7 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const { profile, signOut } = useAuth();
 
   const NavLink = ({ item }: { item: NavItem }) => {
@@ -187,7 +188,10 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             </div>
           </div>
           <button
-            onClick={signOut}
+            onClick={async () => {
+              await signOut();
+              router.push('/');
+            }}
             className="w-full flex items-center gap-2 px-4 py-2 text-[#64748B] hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

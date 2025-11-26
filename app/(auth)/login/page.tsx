@@ -1,82 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signIn, user, profile } = useAuth();
+  const { signIn, signInWithGoogle } = useAuth();
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const redirect = searchParams.get('redirect');
-
-  // Handle pending quiz submission after user is authenticated
-  useEffect(() => {
-    if (user && redirect === 'quiz-results') {
-      submitPendingQuiz();
-    }
-  }, [user, redirect]);
-
-  const submitPendingQuiz = async () => {
-    const pendingQuizData = localStorage.getItem('pendingQuiz');
-    if (!pendingQuizData || !user) return;
-
-    try {
-      const quizData = JSON.parse(pendingQuizData);
-      const answers = new Map(quizData.answers);
-
-      const totalScore = Array.from(answers.values()).reduce((sum: number, answer: any) => sum + answer.points, 0);
-      const uniqueId = `IMJ-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
-
-      // Calculate max_score from current active questions
-      const { data: questions } = await supabase
-        .from('questions')
-        .select('id, answer_choices(points)')
-        .eq('is_active', true);
-
-      const maxScore = questions?.reduce((sum: number, q: any) => {
-        const points = q.answer_choices?.map((c: any) => c.points) || [0];
-        return sum + Math.max(...points);
-      }, 0) || 0;
-
-      const { data: submissionData, error: submissionError } = await supabase
-        .from('quiz_submissions')
-        .insert({
-          unique_id: uniqueId,
-          user_name: profile?.full_name || user.email?.split('@')[0] || 'User',
-          user_email: user.email,
-          total_score: totalScore,
-          max_score: maxScore,
-          user_id: user.id
-        })
-        .select()
-        .single();
-
-      if (submissionError) throw submissionError;
-
-      const answersArray = Array.from(answers.values()).map((answer: any) => ({
-        submission_id: submissionData.id,
-        question_id: answer.question_id,
-        answer_choice_id: answer.answer_choice_id,
-        points_earned: answer.points
-      }));
-
-      await supabase.from('submission_answers').insert(answersArray);
-
-      localStorage.removeItem('pendingQuiz');
-      router.push(`/results/${uniqueId}`);
-    } catch (error) {
-      console.error('Error submitting pending quiz:', error);
-      localStorage.removeItem('pendingQuiz');
-      router.push('/dashboard');
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,10 +26,8 @@ export default function LoginPage() {
       }
 
       toast.success('Welcome back!');
-      // If there's a pending quiz redirect, the useEffect will handle it
-      if (redirect !== 'quiz-results') {
-        router.push('/dashboard');
-      }
+      // Dashboard will handle any pending quiz submission
+      router.push('/dashboard?checkPendingQuiz=true');
     } catch (error) {
       toast.error('An unexpected error occurred');
     } finally {
@@ -105,8 +38,7 @@ export default function LoginPage() {
   return (
     <div className="card p-8">
       <div className="text-center mb-8">
-        <h1 className="text-2xl font-bold text-[#0F172A] mb-2">Welcome Back</h1>
-        <p className="text-[#64748B]">Sign in to your account to continue</p>
+        <h1 className="text-2xl font-bold text-[#0F172A]">Welcome Back</h1>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -177,11 +109,13 @@ export default function LoginPage() {
       </div>
 
       <div className="mt-8 pt-6 border-t border-[#E2E8F0]">
-        <p className="text-center text-sm text-[#64748B] mb-4">Or continue with</p>
         <button
           type="button"
           className="w-full py-3 px-6 rounded-xl font-medium border border-[#E2E8F0] hover:bg-[#F8FAFC] transition-all flex items-center justify-center gap-3"
-          onClick={() => toast.info('Google sign-in coming soon!')}
+          onClick={async () => {
+            const { error } = await signInWithGoogle();
+            if (error) toast.error('Failed to sign in with Google');
+          }}
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>

@@ -83,6 +83,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             >
               Tasks
             </Link>
+            <Link
+              href="/admin/submissions"
+              className={`px-4 py-3 ${
+                isActive('/admin/submissions')
+                  ? 'text-[#FF6B4A] border-b-2 border-[#FF6B4A] font-semibold'
+                  : 'text-[#64748B] hover:text-[#FF6B4A]'
+              } transition-colors duration-200`}
+            >
+              Submissions
+            </Link>
           </div>
         </div>
       </div>

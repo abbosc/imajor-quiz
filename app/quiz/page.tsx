@@ -65,6 +65,10 @@ export default function QuizPage() {
       setLoading(true);
       setError(null);
 
+      // Generate unique session token when quiz starts (prevents duplicate submissions)
+      const sessionToken = `QS-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      localStorage.setItem('quizSessionToken', sessionToken);
+
       const { data: questionsData, error: questionsError } = await supabase
         .from('questions')
         .select(`
@@ -124,6 +128,7 @@ export default function QuizPage() {
           // Unauthenticated user - store quiz data and show auth prompt
           const quizData = {
             answers: Array.from(newAnswers.entries()),
+            sessionToken: localStorage.getItem('quizSessionToken'),
             timestamp: Date.now()
           };
           localStorage.setItem('pendingQuiz', JSON.stringify(quizData));
@@ -148,6 +153,7 @@ export default function QuizPage() {
       setSubmitting(true);
       playSound('click');
 
+      const sessionToken = localStorage.getItem('quizSessionToken');
       const totalScore = Array.from(answersMap.values()).reduce((sum, answer) => sum + answer.points, 0);
       const uniqueId = `IMJ-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 
@@ -165,10 +171,27 @@ export default function QuizPage() {
           user_email: user?.email,
           total_score: totalScore,
           max_score: maxScore,
-          user_id: user?.id || null
+          user_id: user?.id || null,
+          session_token: sessionToken
         })
         .select()
         .single();
+
+      // Handle duplicate submission (unique constraint violation)
+      if (submissionError?.code === '23505') {
+        // Fetch existing submission with this session token
+        const { data: existing } = await supabase
+          .from('quiz_submissions')
+          .select('unique_id')
+          .eq('session_token', sessionToken)
+          .single();
+
+        if (existing) {
+          localStorage.removeItem('quizSessionToken');
+          router.push(`/results/${existing.unique_id}`);
+          return;
+        }
+      }
 
       if (submissionError) throw submissionError;
 
@@ -185,6 +208,7 @@ export default function QuizPage() {
 
       if (answersError) throw answersError;
 
+      localStorage.removeItem('quizSessionToken');
       router.push(`/results/${uniqueId}`);
     } catch (error) {
       console.error('Error auto-submitting quiz:', error);
@@ -200,6 +224,7 @@ export default function QuizPage() {
       setSubmitting(true);
       playSound('click');
 
+      const sessionToken = localStorage.getItem('quizSessionToken');
       const totalScore = Array.from(answers.values()).reduce((sum, answer) => sum + answer.points, 0);
       const uniqueId = `IMJ-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 
@@ -217,10 +242,26 @@ export default function QuizPage() {
           user_email: userEmail,
           total_score: totalScore,
           max_score: maxScore,
-          user_id: user?.id || null
+          user_id: user?.id || null,
+          session_token: sessionToken
         })
         .select()
         .single();
+
+      // Handle duplicate submission (unique constraint violation)
+      if (submissionError?.code === '23505') {
+        const { data: existing } = await supabase
+          .from('quiz_submissions')
+          .select('unique_id')
+          .eq('session_token', sessionToken)
+          .single();
+
+        if (existing) {
+          localStorage.removeItem('quizSessionToken');
+          router.push(`/results/${existing.unique_id}`);
+          return;
+        }
+      }
 
       if (submissionError) throw submissionError;
 
@@ -237,6 +278,7 @@ export default function QuizPage() {
 
       if (answersError) throw answersError;
 
+      localStorage.removeItem('quizSessionToken');
       router.push(`/results/${uniqueId}`);
     } catch (error) {
       console.error('Error submitting quiz:', error);
