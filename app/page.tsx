@@ -2,6 +2,10 @@
 
 import HeroSection from "@/components/landing/HeroSection";
 import PrizeSection from "@/components/landing/PrizeSection";
+import FeaturesSection from "@/components/landing/FeaturesSection";
+import WhySection from "@/components/landing/WhySection";
+import ContactSection from "@/components/landing/ContactSection";
+import Footer from "@/components/landing/Footer";
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
 
@@ -21,7 +25,10 @@ export default function Home() {
         {/* Navigation */}
         <nav className="container mx-auto px-6 py-6">
           <div className="flex justify-between items-center">
-            <h1 className="text-3xl font-bold gradient-text">iMajor</h1>
+            <div>
+              <h1 className="text-3xl font-bold gradient-text">iMajor</h1>
+              <p className="text-xs text-[#64748B] -mt-0.5">Discover yourself</p>
+            </div>
             <div className="flex items-center gap-4">
               {!loading && (
                 user ? (
@@ -58,12 +65,17 @@ export default function Home() {
         {/* Consultation Prize Section */}
         <PrizeSection />
 
+        {/* Features Section */}
+        <FeaturesSection />
+
+        {/* Why iMajor Section */}
+        <WhySection />
+
+        {/* Contact Section */}
+        <ContactSection />
+
         {/* Footer */}
-        <footer className="container mx-auto px-6 py-10 text-center border-t border-[#E2E8F0]">
-          <p className="text-[#94A3B8] text-sm">
-            Trusted by students making informed major decisions
-          </p>
-        </footer>
+        <Footer />
       </div>
     </main>
   );

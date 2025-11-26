@@ -21,15 +21,6 @@ export interface QuizAnswer {
   points: number;
 }
 
-export interface InterpretationLevel {
-  id: string;
-  min_score: number;
-  max_score: number;
-  level_label: string;
-  description: string | null;
-  order_index: number;
-}
-
 export interface QuizSubmission {
   id: string;
   unique_id: string;
@@ -41,6 +32,5 @@ export interface QuizSubmission {
 
 export interface QuizResults {
   submission: QuizSubmission;
-  interpretation: InterpretationLevel;
   zero_point_questions: QuizQuestion[];
 }

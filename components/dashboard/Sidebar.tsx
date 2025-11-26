@@ -160,7 +160,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto p-4 space-y-1">
+        <nav className="flex-1 overflow-y-auto scrollbar-hide p-4 space-y-1">
           {mainNavItems.map((item) => (
             <NavLink key={item.href} item={item} />
           ))}

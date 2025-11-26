@@ -9,7 +9,7 @@ function verifyAdmin(request: NextRequest) {
   return true;
 }
 
-// GET all interpretation levels
+// GET all majors
 export async function GET(request: NextRequest) {
   if (!verifyAdmin(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const { data, error } = await supabaseAdmin
-      .from('interpretation_levels')
+      .from('majors')
       .select('*')
       .order('order_index', { ascending: true });
 
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST new interpretation level
+// POST new major
 export async function POST(request: NextRequest) {
   if (!verifyAdmin(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -37,16 +37,18 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { min_score, max_score, level_label, description, order_index } = body;
+    const { name, order_index, is_active } = body;
+
+    if (!name) {
+      return NextResponse.json({ error: 'Name is required' }, { status: 400 });
+    }
 
     const { data, error } = await (supabaseAdmin
-      .from('interpretation_levels') as any)
+      .from('majors') as any)
       .insert({
-        min_score,
-        max_score,
-        level_label,
-        description: description || null,
-        order_index
+        name,
+        order_index: order_index || 0,
+        is_active: is_active !== undefined ? is_active : true
       })
       .select()
       .single();
@@ -59,7 +61,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// PUT update interpretation level
+// PUT update major
 export async function PUT(request: NextRequest) {
   if (!verifyAdmin(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -67,16 +69,18 @@ export async function PUT(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { id, min_score, max_score, level_label, description, order_index } = body;
+    const { id, name, order_index, is_active } = body;
+
+    if (!id) {
+      return NextResponse.json({ error: 'ID is required' }, { status: 400 });
+    }
 
     const { data, error } = await (supabaseAdmin
-      .from('interpretation_levels') as any)
+      .from('majors') as any)
       .update({
-        min_score,
-        max_score,
-        level_label,
-        description: description || null,
-        order_index
+        name,
+        order_index,
+        is_active
       })
       .eq('id', id)
       .select()
@@ -90,7 +94,7 @@ export async function PUT(request: NextRequest) {
   }
 }
 
-// DELETE interpretation level
+// DELETE major
 export async function DELETE(request: NextRequest) {
   if (!verifyAdmin(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -105,7 +109,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     const { error } = await supabaseAdmin
-      .from('interpretation_levels')
+      .from('majors')
       .delete()
       .eq('id', id);
 

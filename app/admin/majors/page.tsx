@@ -4,11 +4,9 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminLayout from '@/components/AdminLayout';
 
-interface Task {
+interface Major {
   id: string;
-  title: string;
-  description: string | null;
-  category: string | null;
+  name: string;
   order_index: number;
   is_active: boolean;
   created_at: string;
@@ -21,17 +19,16 @@ function getAuthToken() {
   return null;
 }
 
-export default function AdminTasksPage() {
+export default function AdminMajorsPage() {
   const router = useRouter();
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [majors, setMajors] = useState<Major[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [editingMajor, setEditingMajor] = useState<Major | null>(null);
   const [importing, setImporting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
+    name: '',
     order_index: 0,
     is_active: true
   });
@@ -42,22 +39,22 @@ export default function AdminTasksPage() {
       router.push('/admin');
       return;
     }
-    loadTasks();
+    loadMajors();
   }, []);
 
-  const loadTasks = async () => {
+  const loadMajors = async () => {
     try {
-      const response = await fetch('/api/admin/tasks', {
+      const response = await fetch('/api/admin/majors', {
         headers: {
           'Authorization': `Bearer ${getAuthToken()}`
         }
       });
       const result = await response.json();
       if (result.data) {
-        setTasks(result.data);
+        setMajors(result.data);
       }
     } catch (error) {
-      console.error('Error loading tasks:', error);
+      console.error('Error loading majors:', error);
     } finally {
       setLoading(false);
     }
@@ -67,11 +64,11 @@ export default function AdminTasksPage() {
     e.preventDefault();
 
     try {
-      const url = '/api/admin/tasks';
-      const method = editingTask ? 'PUT' : 'POST';
-      const body = editingTask
-        ? { ...formData, id: editingTask.id }
-        : { ...formData, order_index: tasks.length + 1 };
+      const url = '/api/admin/majors';
+      const method = editingMajor ? 'PUT' : 'POST';
+      const body = editingMajor
+        ? { ...formData, id: editingMajor.id }
+        : { ...formData, order_index: majors.length + 1 };
 
       const response = await fetch(url, {
         method,
@@ -83,21 +80,20 @@ export default function AdminTasksPage() {
       });
 
       if (response.ok) {
-        loadTasks();
+        loadMajors();
         resetForm();
       }
     } catch (error) {
-      console.error('Error saving task:', error);
+      console.error('Error saving major:', error);
     }
   };
 
-  const handleEdit = (task: Task) => {
-    setEditingTask(task);
+  const handleEdit = (major: Major) => {
+    setEditingMajor(major);
     setFormData({
-      title: task.title,
-      description: task.description || '',
-      order_index: task.order_index,
-      is_active: task.is_active
+      name: major.name,
+      order_index: major.order_index,
+      is_active: major.is_active
     });
     setShowForm(true);
   };
@@ -109,42 +105,42 @@ export default function AdminTasksPage() {
     try {
       setImporting(true);
       const text = await file.text();
-      const jsonTasks = JSON.parse(text);
+      const jsonMajors = JSON.parse(text);
 
-      if (!Array.isArray(jsonTasks)) {
-        alert('JSON must be an array of tasks');
+      if (!Array.isArray(jsonMajors)) {
+        alert('JSON must be an array of majors');
         return;
       }
 
       let successCount = 0;
-      const startIndex = tasks.length;
+      const startIndex = majors.length;
 
-      for (let i = 0; i < jsonTasks.length; i++) {
-        const task = jsonTasks[i];
-        if (!task.title) continue;
+      for (let i = 0; i < jsonMajors.length; i++) {
+        const major = jsonMajors[i];
+        const name = typeof major === 'string' ? major : major.name;
+        if (!name) continue;
 
-        const response = await fetch('/api/admin/tasks', {
+        const response = await fetch('/api/admin/majors', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${getAuthToken()}`
           },
           body: JSON.stringify({
-            title: task.title,
-            description: task.description || '',
+            name,
             order_index: startIndex + i + 1,
-            is_active: task.is_active !== false
+            is_active: major.is_active !== false
           })
         });
 
         if (response.ok) successCount++;
       }
 
-      alert(`Imported ${successCount} of ${jsonTasks.length} tasks`);
-      loadTasks();
+      alert(`Imported ${successCount} of ${jsonMajors.length} majors`);
+      loadMajors();
     } catch (error) {
-      console.error('Error importing tasks:', error);
-      alert('Failed to import tasks. Make sure the file is valid JSON.');
+      console.error('Error importing majors:', error);
+      alert('Failed to import majors. Make sure the file is valid JSON.');
     } finally {
       setImporting(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -152,10 +148,10 @@ export default function AdminTasksPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this task?')) return;
+    if (!confirm('Are you sure you want to delete this major?')) return;
 
     try {
-      const response = await fetch(`/api/admin/tasks?id=${id}`, {
+      const response = await fetch(`/api/admin/majors?id=${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${getAuthToken()}`
@@ -163,41 +159,39 @@ export default function AdminTasksPage() {
       });
 
       if (response.ok) {
-        loadTasks();
+        loadMajors();
       }
     } catch (error) {
-      console.error('Error deleting task:', error);
+      console.error('Error deleting major:', error);
     }
   };
 
-  const toggleActive = async (task: Task) => {
+  const toggleActive = async (major: Major) => {
     try {
-      await fetch('/api/admin/tasks', {
+      await fetch('/api/admin/majors', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${getAuthToken()}`
         },
         body: JSON.stringify({
-          id: task.id,
-          title: task.title,
-          description: task.description,
-          order_index: task.order_index,
-          is_active: !task.is_active
+          id: major.id,
+          name: major.name,
+          order_index: major.order_index,
+          is_active: !major.is_active
         })
       });
-      loadTasks();
+      loadMajors();
     } catch (error) {
-      console.error('Error toggling task:', error);
+      console.error('Error toggling major:', error);
     }
   };
 
   const resetForm = () => {
     setShowForm(false);
-    setEditingTask(null);
+    setEditingMajor(null);
     setFormData({
-      title: '',
-      description: '',
+      name: '',
       order_index: 0,
       is_active: true
     });
@@ -216,7 +210,7 @@ export default function AdminTasksPage() {
   return (
     <AdminLayout>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
-        <h2 className="text-2xl sm:text-3xl font-bold text-[#0F172A]">Exploration Tasks</h2>
+        <h2 className="text-2xl sm:text-3xl font-bold text-[#0F172A]">Majors</h2>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
           <input
             ref={fileInputRef}
@@ -236,9 +230,16 @@ export default function AdminTasksPage() {
             onClick={() => setShowForm(true)}
             className="px-4 py-2 rounded-xl font-medium text-white gradient-accent hover:shadow-lg transition-all text-sm sm:text-base"
           >
-            + Add Task
+            + Add Major
           </button>
         </div>
+      </div>
+
+      {/* Import Format Hint */}
+      <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0]">
+        <p className="text-xs sm:text-sm text-[#64748B]">
+          <strong>JSON Format:</strong> Array of strings or objects. Examples: <code className="bg-white px-1 py-0.5 rounded text-xs">[&quot;Computer Science&quot;, &quot;Engineering&quot;]</code> or <code className="bg-white px-1 py-0.5 rounded text-xs">[{`{"name": "Computer Science", "is_active": true}`}]</code>
+        </p>
       </div>
 
       {/* Form Modal */}
@@ -246,33 +247,20 @@ export default function AdminTasksPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-lg">
             <h3 className="text-xl font-bold text-[#0F172A] mb-4">
-              {editingTask ? 'Edit Task' : 'Add New Task'}
+              {editingMajor ? 'Edit Major' : 'Add New Major'}
             </h3>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-[#0F172A] mb-2">
-                  Title *
+                  Major Name *
                 </label>
                 <input
                   type="text"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
                   className="w-full px-4 py-3 rounded-xl border border-[#E2E8F0] focus:border-[#FF6B4A] focus:ring-2 focus:ring-[#FF6B4A]/20 outline-none"
-                  placeholder="e.g., Research 3 universities in your field"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-[#0F172A] mb-2">
-                  Description
-                </label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  rows={3}
-                  className="w-full px-4 py-3 rounded-xl border border-[#E2E8F0] focus:border-[#FF6B4A] focus:ring-2 focus:ring-[#FF6B4A]/20 outline-none resize-none"
-                  placeholder="Optional description or instructions"
+                  placeholder="e.g., Computer Science"
                 />
               </div>
 
@@ -301,7 +289,7 @@ export default function AdminTasksPage() {
                   type="submit"
                   className="flex-1 px-4 py-3 rounded-xl font-medium text-white gradient-accent hover:shadow-lg transition-all"
                 >
-                  {editingTask ? 'Save Changes' : 'Add Task'}
+                  {editingMajor ? 'Save Changes' : 'Add Major'}
                 </button>
               </div>
             </form>
@@ -309,54 +297,51 @@ export default function AdminTasksPage() {
         </div>
       )}
 
-      {/* Tasks List */}
-      {tasks.length === 0 ? (
+      {/* Majors List */}
+      {majors.length === 0 ? (
         <div className="card p-12 text-center">
           <svg className="w-16 h-16 mx-auto text-[#E2E8F0] mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 14l9-5-9-5-9 5 9 5z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" />
           </svg>
-          <h3 className="text-lg font-semibold text-[#0F172A] mb-2">No tasks yet</h3>
-          <p className="text-[#64748B] mb-4">Create exploration tasks for users to track their progress.</p>
+          <h3 className="text-lg font-semibold text-[#0F172A] mb-2">No majors yet</h3>
+          <p className="text-[#64748B] mb-4">Add majors for users to select their interests.</p>
           <button
             onClick={() => setShowForm(true)}
             className="px-6 py-2 rounded-xl font-medium text-white gradient-accent hover:shadow-lg transition-all"
           >
-            Create First Task
+            Add First Major
           </button>
         </div>
       ) : (
-        <div className="space-y-3">
-          {tasks.map((task, index) => (
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {majors.map((major, index) => (
             <div
-              key={task.id}
-              className={`card p-4 ${!task.is_active ? 'opacity-60' : ''}`}
+              key={major.id}
+              className={`card p-4 ${!major.is_active ? 'opacity-60' : ''}`}
             >
-              <div className="flex items-start gap-4">
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#F8FAFC] text-[#64748B] font-medium text-sm">
-                  {index + 1}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-semibold text-[#0F172A]">{task.title}</h3>
-                    {!task.is_active && (
-                      <span className="px-2 py-0.5 rounded-full text-xs bg-amber-100 text-amber-700">
-                        Inactive
-                      </span>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#FF6B4A]/10 text-[#FF6B4A] font-medium text-sm">
+                    {index + 1}
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-[#0F172A]">{major.name}</h3>
+                    {!major.is_active && (
+                      <span className="text-xs text-amber-600">Inactive</span>
                     )}
                   </div>
-                  {task.description && (
-                    <p className="text-sm text-[#64748B]">{task.description}</p>
-                  )}
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
                   <button
-                    onClick={() => toggleActive(task)}
+                    onClick={() => toggleActive(major)}
                     className={`p-2 rounded-lg transition-colors ${
-                      task.is_active
+                      major.is_active
                         ? 'text-green-600 hover:bg-green-50'
                         : 'text-[#64748B] hover:bg-[#F8FAFC]'
                     }`}
-                    title={task.is_active ? 'Deactivate' : 'Activate'}
+                    title={major.is_active ? 'Deactivate' : 'Activate'}
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -364,7 +349,7 @@ export default function AdminTasksPage() {
                     </svg>
                   </button>
                   <button
-                    onClick={() => handleEdit(task)}
+                    onClick={() => handleEdit(major)}
                     className="p-2 rounded-lg text-[#64748B] hover:bg-[#F8FAFC] transition-colors"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -372,7 +357,7 @@ export default function AdminTasksPage() {
                     </svg>
                   </button>
                   <button
-                    onClick={() => handleDelete(task.id)}
+                    onClick={() => handleDelete(major.id)}
                     className="p-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

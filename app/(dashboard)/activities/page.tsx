@@ -66,7 +66,7 @@ export default function ActivitiesPage() {
     years_participated: [] as string[],
   });
 
-  const years = ['9', '10', '11', '12', 'Post-Graduate'];
+  const years = ['9', '10', '11', 'Post-Graduate'];
 
   useEffect(() => {
     if (user) loadActivities();
@@ -190,15 +190,15 @@ export default function ActivitiesPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-[#0F172A] mb-2">Activities</h1>
-          <p className="text-[#64748B]">Document your extracurricular activities (max 10).</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#0F172A] mb-1 sm:mb-2">Activities</h1>
+          <p className="text-sm sm:text-base text-[#64748B]">Document your extracurricular activities (max 10).</p>
         </div>
         {activities.length < 10 && (
           <button
             onClick={() => setShowForm(true)}
-            className="px-4 py-2 rounded-xl font-medium text-white gradient-accent hover:shadow-lg transition-all"
+            className="px-4 py-2 rounded-xl font-medium text-white gradient-accent hover:shadow-lg transition-all text-sm sm:text-base w-full sm:w-auto"
           >
             + Add Activity
           </button>

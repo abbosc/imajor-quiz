@@ -9,8 +9,29 @@ interface QuizResult {
   score: number;
   max_score: number;
   percentage: number;
-  interpretation: any;
   created_at: string;
+}
+
+function getInterpretation(percentage: number) {
+  if (percentage <= 33) {
+    return {
+      level: 'Explorer',
+      emoji: '🌱',
+      message: "Your adventure is just beginning! You have so much exciting discovery ahead. Start with our exploration tasks to build your foundation.",
+    };
+  } else if (percentage <= 66) {
+    return {
+      level: 'Pathfinder',
+      emoji: '🧭',
+      message: "You're finding your way! Keep exploring to solidify your path. Our tools can help you go even deeper.",
+    };
+  } else {
+    return {
+      level: 'Trailblazer',
+      emoji: '🚀',
+      message: "You're well-prepared! You've done your homework. Now let's turn that knowledge into action.",
+    };
+  }
 }
 
 export default function QuizResultsPage() {
@@ -58,14 +79,14 @@ export default function QuizResultsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-[#0F172A] mb-2">Quiz Results</h1>
-          <p className="text-[#64748B]">View your major exploration quiz history.</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#0F172A] mb-1 sm:mb-2">Quiz Results</h1>
+          <p className="text-sm sm:text-base text-[#64748B]">View your major exploration quiz history.</p>
         </div>
         <Link
           href="/quiz"
-          className="px-4 py-2 rounded-xl font-medium text-white gradient-accent hover:shadow-lg transition-all"
+          className="px-4 py-2 rounded-xl font-medium text-white gradient-accent hover:shadow-lg transition-all text-sm sm:text-base w-full sm:w-auto text-center"
         >
           Take Quiz
         </Link>
@@ -89,10 +110,10 @@ export default function QuizResultsPage() {
         <div className="space-y-4">
           {/* Latest Result Highlight */}
           {results.length > 0 && (
-            <div className="card p-6 bg-gradient-to-r from-[#FF6B4A]/5 to-[#FF8A6D]/5 border-[#FF6B4A]/20">
-              <div className="flex items-center gap-2 mb-4">
+            <div className="card p-4 sm:p-6 bg-gradient-to-r from-[#FF6B4A]/5 to-[#FF8A6D]/5 border-[#FF6B4A]/20">
+              <div className="flex flex-wrap items-center gap-2 mb-3 sm:mb-4">
                 <span className="px-2 py-0.5 rounded-full text-xs bg-[#FF6B4A] text-white">Latest</span>
-                <span className="text-sm text-[#64748B]">
+                <span className="text-xs sm:text-sm text-[#64748B]">
                   {new Date(results[0].created_at).toLocaleDateString(undefined, {
                     weekday: 'long',
                     year: 'numeric',
@@ -103,24 +124,26 @@ export default function QuizResultsPage() {
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <div className={`text-4xl font-bold ${getScoreColor(results[0].percentage)}`}>
+                  <div className={`text-3xl sm:text-4xl font-bold ${getScoreColor(results[0].percentage)}`}>
                     {results[0].percentage}%
                   </div>
-                  <div className="text-sm text-[#64748B]">
+                  <div className="text-xs sm:text-sm text-[#64748B]">
                     {results[0].score} / {results[0].max_score} points
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className={`text-lg font-semibold ${getScoreColor(results[0].percentage)}`}>
+                  <div className={`text-base sm:text-lg font-semibold ${getScoreColor(results[0].percentage)}`}>
                     {getScoreLabel(results[0].percentage)}
                   </div>
-                  <div className="text-sm text-[#64748B]">Exploration Level</div>
+                  <div className="text-xs sm:text-sm text-[#64748B]">Exploration Level</div>
                 </div>
               </div>
-              {results[0].interpretation && (
+              {results[0].percentage !== null && (
                 <div className="mt-4 pt-4 border-t border-[#E2E8F0]">
-                  <h4 className="font-medium text-[#0F172A] mb-2">{results[0].interpretation.level_label}</h4>
-                  <p className="text-sm text-[#64748B]">{results[0].interpretation.description}</p>
+                  <h4 className="font-medium text-[#0F172A] mb-2">
+                    {getInterpretation(results[0].percentage).emoji} {getInterpretation(results[0].percentage).level}
+                  </h4>
+                  <p className="text-sm text-[#64748B]">{getInterpretation(results[0].percentage).message}</p>
                 </div>
               )}
             </div>

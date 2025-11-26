@@ -140,32 +140,32 @@ export default function EssaysPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-[#0F172A] mb-2">Essays</h1>
-          <p className="text-[#64748B]">Write and organize your application essays.</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#0F172A] mb-1 sm:mb-2">Essays</h1>
+          <p className="text-sm sm:text-base text-[#64748B]">Write and organize your application essays.</p>
         </div>
         <button
           onClick={() => setShowForm(true)}
-          className="px-4 py-2 rounded-xl font-medium text-white gradient-accent hover:shadow-lg transition-all"
+          className="px-4 py-2 rounded-xl font-medium text-white gradient-accent hover:shadow-lg transition-all text-sm sm:text-base w-full sm:w-auto"
         >
           + New Essay
         </button>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="card p-4 text-center">
-          <p className="text-2xl font-bold text-gray-600">{essays.filter(e => e.status === 'draft').length}</p>
-          <p className="text-sm text-[#64748B]">Drafts</p>
+      <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-6">
+        <div className="card p-3 sm:p-4 text-center">
+          <p className="text-xl sm:text-2xl font-bold text-gray-600">{essays.filter(e => e.status === 'draft').length}</p>
+          <p className="text-xs sm:text-sm text-[#64748B]">Drafts</p>
         </div>
-        <div className="card p-4 text-center">
-          <p className="text-2xl font-bold text-amber-600">{essays.filter(e => e.status === 'in_review').length}</p>
-          <p className="text-sm text-[#64748B]">In Review</p>
+        <div className="card p-3 sm:p-4 text-center">
+          <p className="text-xl sm:text-2xl font-bold text-amber-600">{essays.filter(e => e.status === 'in_review').length}</p>
+          <p className="text-xs sm:text-sm text-[#64748B]">In Review</p>
         </div>
-        <div className="card p-4 text-center">
-          <p className="text-2xl font-bold text-green-600">{essays.filter(e => e.status === 'final').length}</p>
-          <p className="text-sm text-[#64748B]">Final</p>
+        <div className="card p-3 sm:p-4 text-center">
+          <p className="text-xl sm:text-2xl font-bold text-green-600">{essays.filter(e => e.status === 'final').length}</p>
+          <p className="text-xs sm:text-sm text-[#64748B]">Final</p>
         </div>
       </div>
 

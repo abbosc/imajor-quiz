@@ -157,16 +157,16 @@ export default function TasksPage() {
   return (
     <div>
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-[#0F172A] mb-2">Exploration Tasks</h1>
-        <p className="text-[#64748B]">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-[#0F172A] mb-1 sm:mb-2">Exploration Tasks</h1>
+        <p className="text-sm sm:text-base text-[#64748B]">
           Track your progress as you explore different majors and career paths.
         </p>
       </div>
 
       {/* Progress Overview */}
-      <div className="card p-6 mb-8">
-        <div className="flex flex-col md:flex-row md:items-center gap-6">
+      <div className="card p-4 sm:p-6 mb-6 sm:mb-8">
+        <div className="flex flex-col md:flex-row md:items-center gap-4 sm:gap-6">
           <div className="flex-1">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium text-[#64748B]">Overall Progress</span>
@@ -179,17 +179,17 @@ export default function TasksPage() {
               />
             </div>
           </div>
-          <div className="flex gap-4">
+          <div className="grid grid-cols-3 gap-3 sm:gap-4 sm:flex">
             <div className="text-center">
-              <p className="text-2xl font-bold text-green-600">{stats.completed}</p>
+              <p className="text-xl sm:text-2xl font-bold text-green-600">{stats.completed}</p>
               <p className="text-xs text-[#64748B]">Completed</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-blue-600">{stats.inProgress}</p>
+              <p className="text-xl sm:text-2xl font-bold text-blue-600">{stats.inProgress}</p>
               <p className="text-xs text-[#64748B]">In Progress</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-gray-400">{stats.notStarted}</p>
+              <p className="text-xl sm:text-2xl font-bold text-gray-400">{stats.notStarted}</p>
               <p className="text-xs text-[#64748B]">Not Started</p>
             </div>
           </div>
@@ -197,7 +197,7 @@ export default function TasksPage() {
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+      <div className="flex gap-2 mb-4 sm:mb-6 overflow-x-auto pb-2">
         {(['all', 'not_started', 'in_progress', 'completed'] as const).map((status) => (
           <button
             key={status}

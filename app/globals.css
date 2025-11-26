@@ -90,3 +90,58 @@ body {
 .answer-glow {
   box-shadow: 0 0 20px rgba(255, 107, 74, 0.4), inset 0 0 20px rgba(255, 107, 74, 0.1);
 }
+
+/* Hide scrollbar utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
+/* Parallax performance optimizations */
+.parallax-layer {
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+}
+
+.parallax-section {
+  overflow-y: hidden;
+  contain: layout style paint;
+}
+
+/* GPU acceleration for animated elements */
+.gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform, opacity;
+}
+
+/* Reduce paint operations */
+.reduce-paint {
+  isolation: isolate;
+  contain: strict;
+}
+
+/* Smooth scroll for html */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}

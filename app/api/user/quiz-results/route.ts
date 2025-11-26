@@ -10,12 +10,6 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Fetch interpretation levels for score mapping
-    const { data: interpretationLevels } = await supabase
-      .from('interpretation_levels')
-      .select('*')
-      .order('min_score', { ascending: true });
-
     // Try to fetch by user_id first (new submissions), then by email (old submissions)
     let data = null;
     let error = null;
@@ -71,17 +65,12 @@ export async function GET() {
     // Sort by created_at descending
     data?.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
-    // Transform data to include percentage and interpretation
+    // Transform data to include percentage
     const transformedData = (data || []).map((submission: any) => {
       // Calculate percentage from stored max_score
       const percentage = submission.max_score
         ? Math.round((submission.total_score / submission.max_score) * 100)
         : null;
-
-      // Find matching interpretation level based on total_score
-      const interpretation = interpretationLevels?.find(
-        (level: any) => submission.total_score >= level.min_score && submission.total_score <= level.max_score
-      );
 
       return {
         id: submission.id,
@@ -89,10 +78,6 @@ export async function GET() {
         score: submission.total_score,
         max_score: submission.max_score,
         percentage,
-        interpretation: interpretation ? {
-          level_label: interpretation.level_label,
-          description: interpretation.description
-        } : null,
         created_at: submission.created_at
       };
     });

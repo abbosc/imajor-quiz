@@ -35,13 +35,13 @@ export default function ForgotPasswordPage() {
 
   if (sent) {
     return (
-      <div className="card p-8 text-center">
-        <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-green-100 flex items-center justify-center">
+      <div className="card p-5 sm:p-8 text-center">
+        <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-4 sm:mb-6 rounded-full bg-green-100 flex items-center justify-center">
           <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
           </svg>
         </div>
-        <h1 className="text-2xl font-bold text-[#0F172A] mb-2">Check Your Email</h1>
+        <h1 className="text-xl sm:text-2xl font-bold text-[#0F172A] mb-2">Check Your Email</h1>
         <p className="text-[#64748B] mb-6">
           We sent a password reset link to <span className="font-medium text-[#0F172A]">{email}</span>
         </p>
@@ -65,9 +65,9 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="card p-8">
-      <div className="text-center mb-8">
-        <h1 className="text-2xl font-bold text-[#0F172A] mb-2">Forgot Password?</h1>
+    <div className="card p-5 sm:p-8">
+      <div className="text-center mb-6 sm:mb-8">
+        <h1 className="text-xl sm:text-2xl font-bold text-[#0F172A] mb-2">Forgot Password?</h1>
         <p className="text-[#64748B]">No worries, we will send you reset instructions</p>
       </div>
 

@@ -84,7 +84,7 @@ export default function ScoreCounter({
           <motion.span>{display}</motion.span>
         </motion.span>
 
-        <span className="text-white/60 text-lg mt-1">points</span>
+        <span className="text-white/60 text-lg mt-1">/ {maxScore} points</span>
 
         {/* Percentage */}
         <motion.div

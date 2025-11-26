@@ -137,14 +137,14 @@ export default function HonorsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-[#0F172A] mb-2">Honors & Awards</h1>
-          <p className="text-[#64748B]">List your academic and extracurricular achievements.</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#0F172A] mb-1 sm:mb-2">Honors & Awards</h1>
+          <p className="text-sm sm:text-base text-[#64748B]">List your academic and extracurricular achievements.</p>
         </div>
         <button
           onClick={() => setShowForm(true)}
-          className="px-4 py-2 rounded-xl font-medium text-white gradient-accent hover:shadow-lg transition-all"
+          className="px-4 py-2 rounded-xl font-medium text-white gradient-accent hover:shadow-lg transition-all text-sm sm:text-base w-full sm:w-auto"
         >
           + Add Honor
         </button>

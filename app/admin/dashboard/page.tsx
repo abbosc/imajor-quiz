@@ -93,11 +93,11 @@ export default function AdminDashboard() {
 
   return (
     <AdminLayout>
-      <h2 className="text-3xl font-bold text-[#0F172A] mb-8">Dashboard</h2>
+      <h2 className="text-2xl sm:text-3xl font-bold text-[#0F172A] mb-6 sm:mb-8">Dashboard</h2>
 
       {/* Stats Grid */}
-      <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <div className="card p-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+          <div className="card p-4 sm:p-6">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 gradient-accent rounded-lg flex items-center justify-center">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -105,13 +105,13 @@ export default function AdminDashboard() {
                 </svg>
               </div>
               <div>
-                <p className="text-sm text-[#64748B]">Total Submissions</p>
-                <p className="text-2xl font-bold text-[#0F172A]">{stats.totalSubmissions}</p>
+                <p className="text-xs sm:text-sm text-[#64748B]">Total Submissions</p>
+                <p className="text-xl sm:text-2xl font-bold text-[#0F172A]">{stats.totalSubmissions}</p>
               </div>
             </div>
           </div>
 
-          <div className="card p-6">
+          <div className="card p-4 sm:p-6">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 gradient-accent rounded-lg flex items-center justify-center">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -119,13 +119,13 @@ export default function AdminDashboard() {
                 </svg>
               </div>
               <div>
-                <p className="text-sm text-[#64748B]">Total Questions</p>
-                <p className="text-2xl font-bold text-[#0F172A]">{stats.totalQuestions}</p>
+                <p className="text-xs sm:text-sm text-[#64748B]">Total Questions</p>
+                <p className="text-xl sm:text-2xl font-bold text-[#0F172A]">{stats.totalQuestions}</p>
               </div>
             </div>
           </div>
 
-          <div className="card p-6">
+          <div className="card p-4 sm:p-6">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 gradient-accent rounded-lg flex items-center justify-center">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -133,16 +133,16 @@ export default function AdminDashboard() {
                 </svg>
               </div>
               <div>
-                <p className="text-sm text-[#64748B]">Average Score</p>
-                <p className="text-2xl font-bold text-[#0F172A]">{stats.averageScore}</p>
+                <p className="text-xs sm:text-sm text-[#64748B]">Average Score</p>
+                <p className="text-xl sm:text-2xl font-bold text-[#0F172A]">{stats.averageScore}</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Recent Submissions */}
-        <div className="card p-6">
-          <h3 className="text-xl font-bold text-[#0F172A] mb-4">Recent Submissions</h3>
+        <div className="card p-4 sm:p-6">
+          <h3 className="text-lg sm:text-xl font-bold text-[#0F172A] mb-3 sm:mb-4">Recent Submissions</h3>
           {stats.recentSubmissions.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full">

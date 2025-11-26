@@ -36,9 +36,9 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="card p-8">
-      <div className="text-center mb-8">
-        <h1 className="text-2xl font-bold text-[#0F172A]">Welcome Back</h1>
+    <div className="card p-5 sm:p-8">
+      <div className="text-center mb-6 sm:mb-8">
+        <h1 className="text-xl sm:text-2xl font-bold text-[#0F172A]">Welcome Back</h1>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">

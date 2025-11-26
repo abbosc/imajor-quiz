@@ -87,12 +87,12 @@ export default function NewQuestionPage() {
   return (
     <AdminLayout>
       <div className="max-w-4xl mx-auto">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-[#0F172A] mb-2">Add New Question</h2>
-          <p className="text-[#64748B]">Create a new quiz question with answer choices</p>
+        <div className="mb-6 sm:mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold text-[#0F172A] mb-1 sm:mb-2">Add New Question</h2>
+          <p className="text-sm sm:text-base text-[#64748B]">Create a new quiz question with answer choices</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="card p-8 space-y-6">
+        <form onSubmit={handleSubmit} className="card p-4 sm:p-8 space-y-4 sm:space-y-6">
           {/* Question Text */}
           <div>
             <label className="block text-sm font-medium text-[#0F172A] mb-2">
@@ -168,7 +168,7 @@ export default function NewQuestionPage() {
 
             <div className="space-y-3">
               {answerChoices.map((choice, index) => (
-                <div key={index} className="flex gap-3 items-start">
+                <div key={index} className="flex flex-col sm:flex-row gap-2 sm:gap-3 items-stretch sm:items-start">
                   <div className="flex-1">
                     <input
                       type="text"
@@ -179,26 +179,28 @@ export default function NewQuestionPage() {
                       className="w-full px-4 py-3 rounded-lg border border-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#FF6B4A] focus:border-transparent text-[#0F172A]"
                     />
                   </div>
-                  <div className="w-32">
-                    <input
-                      type="number"
-                      value={choice.points}
-                      onChange={(e) => updateAnswerChoice(index, 'points', parseInt(e.target.value))}
-                      placeholder="Points"
-                      required
-                      min="0"
-                      className="w-full px-4 py-3 rounded-lg border border-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#FF6B4A] focus:border-transparent text-[#0F172A]"
-                    />
+                  <div className="flex gap-2 sm:gap-3">
+                    <div className="flex-1 sm:w-32 sm:flex-none">
+                      <input
+                        type="number"
+                        value={choice.points}
+                        onChange={(e) => updateAnswerChoice(index, 'points', parseInt(e.target.value))}
+                        placeholder="Points"
+                        required
+                        min="0"
+                        className="w-full px-4 py-3 rounded-lg border border-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#FF6B4A] focus:border-transparent text-[#0F172A]"
+                      />
+                    </div>
+                    {answerChoices.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeAnswerChoice(index)}
+                        className="px-4 py-3 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+                      >
+                        ✕
+                      </button>
+                    )}
                   </div>
-                  {answerChoices.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeAnswerChoice(index)}
-                      className="px-4 py-3 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
-                    >
-                      ✕
-                    </button>
-                  )}
                 </div>
               ))}
             </div>

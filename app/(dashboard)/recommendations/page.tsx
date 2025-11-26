@@ -148,35 +148,35 @@ export default function RecommendationsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-[#0F172A] mb-2">Recommendations</h1>
-          <p className="text-[#64748B]">Track your recommendation letter requests.</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#0F172A] mb-1 sm:mb-2">Recommendations</h1>
+          <p className="text-sm sm:text-base text-[#64748B]">Track your recommendation letter requests.</p>
         </div>
         <button
           onClick={() => setShowForm(true)}
-          className="px-4 py-2 rounded-xl font-medium text-white gradient-accent hover:shadow-lg transition-all"
+          className="px-4 py-2 rounded-xl font-medium text-white gradient-accent hover:shadow-lg transition-all text-sm sm:text-base w-full sm:w-auto"
         >
           + Add Recommender
         </button>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
-        <div className="card p-4 text-center">
-          <p className="text-2xl font-bold text-gray-600">{recommendations.filter(r => r.status === 'not_requested').length}</p>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-6">
+        <div className="card p-3 sm:p-4 text-center">
+          <p className="text-xl sm:text-2xl font-bold text-gray-600">{recommendations.filter(r => r.status === 'not_requested').length}</p>
           <p className="text-xs text-[#64748B]">Not Requested</p>
         </div>
-        <div className="card p-4 text-center">
-          <p className="text-2xl font-bold text-blue-600">{recommendations.filter(r => r.status === 'requested').length}</p>
+        <div className="card p-3 sm:p-4 text-center">
+          <p className="text-xl sm:text-2xl font-bold text-blue-600">{recommendations.filter(r => r.status === 'requested').length}</p>
           <p className="text-xs text-[#64748B]">Requested</p>
         </div>
-        <div className="card p-4 text-center">
-          <p className="text-2xl font-bold text-amber-600">{recommendations.filter(r => r.status === 'in_progress').length}</p>
+        <div className="card p-3 sm:p-4 text-center">
+          <p className="text-xl sm:text-2xl font-bold text-amber-600">{recommendations.filter(r => r.status === 'in_progress').length}</p>
           <p className="text-xs text-[#64748B]">In Progress</p>
         </div>
-        <div className="card p-4 text-center">
-          <p className="text-2xl font-bold text-green-600">{recommendations.filter(r => r.status === 'submitted').length}</p>
+        <div className="card p-3 sm:p-4 text-center">
+          <p className="text-xl sm:text-2xl font-bold text-green-600">{recommendations.filter(r => r.status === 'submitted').length}</p>
           <p className="text-xs text-[#64748B]">Submitted</p>
         </div>
       </div>

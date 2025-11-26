@@ -89,12 +89,12 @@ export default function BulkImportPage() {
   return (
     <AdminLayout>
       <div className="max-w-4xl mx-auto">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-[#0F172A] mb-2">Bulk Import Questions</h2>
-          <p className="text-[#64748B]">Upload a JSON file to import multiple questions at once</p>
+        <div className="mb-6 sm:mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold text-[#0F172A] mb-1 sm:mb-2">Bulk Import Questions</h2>
+          <p className="text-sm sm:text-base text-[#64748B]">Upload a JSON file to import multiple questions at once</p>
         </div>
 
-        <div className="card p-8 space-y-6">
+        <div className="card p-4 sm:p-8 space-y-4 sm:space-y-6">
           {/* File Upload */}
           <div>
             <label className="block text-sm font-medium text-[#0F172A] mb-2">
@@ -110,9 +110,9 @@ export default function BulkImportPage() {
           </div>
 
           {/* Format Example */}
-          <div className="bg-[#F8FAFC] rounded-lg p-6">
-            <h3 className="text-lg font-semibold text-[#0F172A] mb-3">Expected JSON Format</h3>
-            <pre className="text-sm text-[#64748B] overflow-x-auto bg-white p-4 rounded-lg">
+          <div className="bg-[#F8FAFC] rounded-lg p-4 sm:p-6">
+            <h3 className="text-base sm:text-lg font-semibold text-[#0F172A] mb-3">Expected JSON Format</h3>
+            <pre className="text-xs sm:text-sm text-[#64748B] overflow-x-auto bg-white p-3 sm:p-4 rounded-lg">
 {`[
   {
     "question_text": "Your question here?",
@@ -138,8 +138,8 @@ export default function BulkImportPage() {
 
           {/* Preview */}
           {preview && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-green-800 mb-3">
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 sm:p-6">
+              <h3 className="text-base sm:text-lg font-semibold text-green-800 mb-3">
                 File Preview: {preview.totalQuestions} questions found
               </h3>
               <div className="text-sm text-green-700">
@@ -160,12 +160,12 @@ export default function BulkImportPage() {
           )}
 
           {/* Actions */}
-          <div className="flex gap-3 pt-4">
+          <div className="flex flex-col sm:flex-row gap-3 pt-4">
             <button
               type="button"
               onClick={() => router.push('/admin/questions')}
               disabled={importing}
-              className="flex-1 px-6 py-3 rounded-lg border-2 border-[#E2E8F0] text-[#0F172A] font-semibold hover:border-[#FF6B4A] transition-all duration-200 disabled:opacity-50"
+              className="flex-1 px-6 py-3 rounded-lg border-2 border-[#E2E8F0] text-[#0F172A] font-semibold hover:border-[#FF6B4A] transition-all duration-200 disabled:opacity-50 text-sm sm:text-base"
             >
               Cancel
             </button>
@@ -173,15 +173,15 @@ export default function BulkImportPage() {
               type="button"
               onClick={handleImport}
               disabled={!file || importing}
-              className="flex-1 gradient-accent text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 gradient-accent text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
             >
               {importing ? 'Importing...' : 'Import Questions'}
             </button>
           </div>
 
           {/* Tip */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
-            <p className="text-sm text-blue-700">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 mt-4">
+            <p className="text-xs sm:text-sm text-blue-700">
               <strong>Tip:</strong> The explanation field is optional and will be shown to users when they click the info button during the quiz. Each question must have at least 2 answer choices.
             </p>
           </div>

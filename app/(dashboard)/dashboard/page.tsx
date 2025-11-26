@@ -13,6 +13,16 @@ interface DashboardStats {
   essays: { total: number; final: number };
 }
 
+interface UserMajor {
+  id: string;
+  major_id: string;
+  majors: {
+    id: string;
+    name: string;
+    is_active: boolean;
+  };
+}
+
 export default function DashboardPage() {
   const { profile, user } = useAuth();
   const router = useRouter();
@@ -22,6 +32,8 @@ export default function DashboardPage() {
     activities: { total: 0 },
     essays: { total: 0, final: 0 },
   });
+  const [userMajors, setUserMajors] = useState<UserMajor[]>([]);
+  const [majorsLoading, setMajorsLoading] = useState(true);
 
   // Check for pending quiz data after email confirmation
   useEffect(() => {
@@ -110,8 +122,23 @@ export default function DashboardPage() {
   useEffect(() => {
     if (user) {
       loadStats();
+      loadUserMajors();
     }
   }, [user]);
+
+  const loadUserMajors = async () => {
+    try {
+      const res = await fetch('/api/user/majors');
+      const data = await res.json();
+      if (data.data) {
+        setUserMajors(data.data);
+      }
+    } catch (error) {
+      console.error('Error loading user majors:', error);
+    } finally {
+      setMajorsLoading(false);
+    }
+  };
 
   const loadStats = async () => {
     try {
@@ -201,60 +228,116 @@ export default function DashboardPage() {
   return (
     <div>
       {/* Welcome Section */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-[#0F172A] mb-2">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-[#0F172A] mb-2">
           Welcome back, {profile?.full_name?.split(' ')[0] || 'there'}!
         </h1>
-        <p className="text-[#64748B]">
+        <p className="text-sm sm:text-base text-[#64748B]">
           Track your college application progress and stay organized.
         </p>
+        {/* Selected Majors Tags */}
+        {!majorsLoading && userMajors.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-3">
+            {userMajors.map((um) => (
+              <span
+                key={um.id}
+                className="inline-flex items-center gap-1 px-3 py-1 bg-[#FF6B4A]/10 text-[#FF6B4A] rounded-full text-sm font-medium"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                </svg>
+                {um.majors?.name}
+              </span>
+            ))}
+            <Link
+              href="/settings#majors"
+              className="inline-flex items-center gap-1 px-3 py-1 border border-dashed border-[#E2E8F0] text-[#64748B] rounded-full text-sm hover:border-[#FF6B4A] hover:text-[#FF6B4A] transition-colors"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Edit
+            </Link>
+          </div>
+        )}
       </div>
 
+      {/* Select Majors Prompt Card (if none selected) */}
+      {!majorsLoading && userMajors.length === 0 && (
+        <div className="card p-5 sm:p-8 bg-gradient-to-r from-[#FF6B4A]/10 to-[#FF8A6D]/10 border-2 border-dashed border-[#FF6B4A]/40 mb-6 sm:mb-8">
+          <div className="text-center">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 bg-[#FF6B4A]/20 rounded-full flex items-center justify-center">
+              <svg className="w-6 h-6 sm:w-8 sm:h-8 text-[#FF6B4A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 14l9-5-9-5-9 5 9 5z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" />
+              </svg>
+            </div>
+            <h3 className="text-lg sm:text-xl font-bold text-[#0F172A] mb-2">
+              What majors interest you?
+            </h3>
+            <p className="text-sm sm:text-base text-[#64748B] mb-4 sm:mb-6 max-w-md mx-auto">
+              Select your areas of interest to personalize your experience and get better recommendations for your college journey.
+            </p>
+            <Link
+              href="/settings#majors"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white gradient-accent hover:shadow-lg hover:shadow-[#FF6B4A]/25 transition-all"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Select Your Majors
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* Quick Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div className="card p-4">
-          <p className="text-sm text-[#64748B] mb-1">Tasks</p>
-          <p className="text-2xl font-bold text-[#0F172A]">{stats.tasks.total}</p>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
+        <div className="card p-3 sm:p-4">
+          <p className="text-xs sm:text-sm text-[#64748B] mb-1">Tasks</p>
+          <p className="text-xl sm:text-2xl font-bold text-[#0F172A]">{stats.tasks.total}</p>
           <p className="text-xs text-green-600">{stats.tasks.completed} completed</p>
         </div>
-        <div className="card p-4">
-          <p className="text-sm text-[#64748B] mb-1">Universities</p>
-          <p className="text-2xl font-bold text-[#0F172A]">{stats.universities.total}</p>
+        <div className="card p-3 sm:p-4">
+          <p className="text-xs sm:text-sm text-[#64748B] mb-1">Universities</p>
+          <p className="text-xl sm:text-2xl font-bold text-[#0F172A]">{stats.universities.total}</p>
           <p className="text-xs text-[#64748B]">{stats.universities.accepted} accepted</p>
         </div>
-        <div className="card p-4">
-          <p className="text-sm text-[#64748B] mb-1">Activities</p>
-          <p className="text-2xl font-bold text-[#0F172A]">{stats.activities.total}</p>
+        <div className="card p-3 sm:p-4">
+          <p className="text-xs sm:text-sm text-[#64748B] mb-1">Activities</p>
+          <p className="text-xl sm:text-2xl font-bold text-[#0F172A]">{stats.activities.total}</p>
           <p className="text-xs text-[#64748B]">of 10 max</p>
         </div>
-        <div className="card p-4">
-          <p className="text-sm text-[#64748B] mb-1">Essays</p>
-          <p className="text-2xl font-bold text-[#0F172A]">{stats.essays.total}</p>
+        <div className="card p-3 sm:p-4">
+          <p className="text-xs sm:text-sm text-[#64748B] mb-1">Essays</p>
+          <p className="text-xl sm:text-2xl font-bold text-[#0F172A]">{stats.essays.total}</p>
           <p className="text-xs text-[#64748B]">{stats.essays.final} final</p>
         </div>
       </div>
 
       {/* Quick Links */}
-      <h2 className="text-xl font-bold text-[#0F172A] mb-4">Quick Access</h2>
-      <div className="grid md:grid-cols-2 gap-4 mb-8">
+      <h2 className="text-lg sm:text-xl font-bold text-[#0F172A] mb-3 sm:mb-4">Quick Access</h2>
+      <div className="grid sm:grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8">
         {quickLinks.map((link) => (
           <Link
             key={link.href}
             href={link.href}
-            className="card p-5 hover:shadow-lg transition-all group"
+            className="card p-4 sm:p-5 hover:shadow-lg transition-all group"
           >
-            <div className="flex items-start gap-4">
-              <div className={`${link.color} p-3 rounded-xl text-white`}>
+            <div className="flex items-start gap-3 sm:gap-4">
+              <div className={`${link.color} p-2.5 sm:p-3 rounded-xl text-white`}>
                 {link.icon}
               </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-[#0F172A] group-hover:text-[#FF6B4A] transition-colors">
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-sm sm:text-base text-[#0F172A] group-hover:text-[#FF6B4A] transition-colors">
                   {link.title}
                 </h3>
-                <p className="text-sm text-[#64748B]">{link.description}</p>
+                <p className="text-xs sm:text-sm text-[#64748B] truncate">{link.description}</p>
               </div>
               <svg
-                className="w-5 h-5 text-[#64748B] group-hover:text-[#FF6B4A] group-hover:translate-x-1 transition-all"
+                className="w-5 h-5 text-[#64748B] group-hover:text-[#FF6B4A] group-hover:translate-x-1 transition-all flex-shrink-0"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -267,19 +350,19 @@ export default function DashboardPage() {
       </div>
 
       {/* Take Quiz CTA */}
-      <div className="card p-6 bg-gradient-to-r from-[#FF6B4A]/10 to-[#FF8A6D]/10 border-[#FF6B4A]/20">
-        <div className="flex flex-col md:flex-row items-center gap-4">
+      <div className="card p-4 sm:p-6 bg-gradient-to-r from-[#FF6B4A]/10 to-[#FF8A6D]/10 border-[#FF6B4A]/20">
+        <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 text-center sm:text-left">
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-[#0F172A] mb-1">
+            <h3 className="text-base sm:text-lg font-semibold text-[#0F172A] mb-1">
               Take the Major Exploration Quiz
             </h3>
-            <p className="text-[#64748B]">
+            <p className="text-sm sm:text-base text-[#64748B]">
               Discover how deeply you have explored your major options and get personalized insights.
             </p>
           </div>
           <Link
             href="/quiz"
-            className="px-6 py-3 rounded-xl font-semibold text-white gradient-accent hover:shadow-lg hover:shadow-[#FF6B4A]/25 transition-all whitespace-nowrap"
+            className="w-full sm:w-auto px-6 py-3 rounded-xl font-semibold text-white gradient-accent hover:shadow-lg hover:shadow-[#FF6B4A]/25 transition-all whitespace-nowrap text-center"
           >
             Start Quiz
           </Link>

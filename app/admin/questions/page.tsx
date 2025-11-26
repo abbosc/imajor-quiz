@@ -110,18 +110,18 @@ export default function QuestionsPage() {
 
   return (
     <AdminLayout>
-      <div className="flex justify-between items-center mb-8">
-        <h2 className="text-3xl font-bold text-[#0F172A]">Questions</h2>
-        <div className="flex gap-3">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
+        <h2 className="text-2xl sm:text-3xl font-bold text-[#0F172A]">Questions</h2>
+        <div className="flex gap-2 sm:gap-3 w-full sm:w-auto">
           <Link
             href="/admin/questions/bulk-import"
-            className="border-2 border-[#FF6B4A] text-[#FF6B4A] px-6 py-3 rounded-lg font-semibold hover:bg-[#FF6B4A] hover:text-white transition-all duration-300"
+            className="flex-1 sm:flex-none text-center border-2 border-[#FF6B4A] text-[#FF6B4A] px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold hover:bg-[#FF6B4A] hover:text-white transition-all duration-300 text-sm sm:text-base"
           >
             Bulk Import
           </Link>
           <Link
             href="/admin/questions/new"
-            className="gradient-accent text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300"
+            className="flex-1 sm:flex-none text-center gradient-accent text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 text-sm sm:text-base"
           >
             Add Question
           </Link>
@@ -131,34 +131,34 @@ export default function QuestionsPage() {
       {questions.length > 0 ? (
         <div className="space-y-4">
           {questions.map((question) => (
-            <div key={question.id} className="card p-6">
-              <div className="flex justify-between items-start mb-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${
+            <div key={question.id} className="card p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-4">
+                <div className="flex-1 w-full">
+                  <div className="flex items-center gap-2 sm:gap-3 mb-2 flex-wrap">
+                    <span className={`inline-block px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-semibold ${
                       question.is_active
                         ? 'bg-green-100 text-green-700'
                         : 'bg-gray-100 text-gray-600'
                     }`}>
                       {question.is_active ? 'Active' : 'Inactive'}
                     </span>
-                    <span className="text-sm text-[#64748B]">
+                    <span className="text-xs sm:text-sm text-[#64748B]">
                       Order: {question.order_index}
                     </span>
                   </div>
-                  <h3 className="text-lg font-semibold text-[#0F172A] mb-1">
+                  <h3 className="text-base sm:text-lg font-semibold text-[#0F172A] mb-1">
                     {question.question_text}
                   </h3>
                   {question.explanation && (
-                    <p className="text-sm text-[#64748B] mb-3 italic">{question.explanation}</p>
+                    <p className="text-xs sm:text-sm text-[#64748B] mb-3 italic">{question.explanation}</p>
                   )}
                   {question.answer_choices && question.answer_choices.length > 0 && (
                     <div className="space-y-2">
                       {question.answer_choices
                         .sort((a, b) => a.order_index - b.order_index)
                         .map((choice) => (
-                          <div key={choice.id} className="flex items-center gap-2 text-sm">
-                            <span className="w-16 px-2 py-1 bg-[#F8FAFC] rounded text-[#FF6B4A] font-semibold">
+                          <div key={choice.id} className="flex items-center gap-2 text-xs sm:text-sm">
+                            <span className="w-14 sm:w-16 px-2 py-1 bg-[#F8FAFC] rounded text-[#FF6B4A] font-semibold text-center">
                               {choice.points} pts
                             </span>
                             <span className="text-[#64748B]">{choice.choice_text}</span>
@@ -167,22 +167,22 @@ export default function QuestionsPage() {
                     </div>
                   )}
                 </div>
-                <div className="flex gap-2 ml-4">
+                <div className="flex gap-2 w-full sm:w-auto sm:ml-4">
                   <button
                     onClick={() => toggleActive(question.id, question.is_active)}
-                    className="px-4 py-2 rounded-lg border border-[#E2E8F0] text-[#0F172A] font-medium hover:border-[#FF6B4A] transition-all duration-200"
+                    className="flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg border border-[#E2E8F0] text-[#0F172A] font-medium hover:border-[#FF6B4A] transition-all duration-200 text-xs sm:text-sm"
                   >
                     {question.is_active ? 'Deactivate' : 'Activate'}
                   </button>
                   <Link
                     href={`/admin/questions/${question.id}/edit`}
-                    className="px-4 py-2 rounded-lg bg-[#FF6B4A] text-white font-medium hover:bg-[#E85537] transition-all duration-200"
+                    className="flex-1 sm:flex-none text-center px-3 sm:px-4 py-2 rounded-lg bg-[#FF6B4A] text-white font-medium hover:bg-[#E85537] transition-all duration-200 text-xs sm:text-sm"
                   >
                     Edit
                   </Link>
                   <button
                     onClick={() => handleDelete(question.id)}
-                    className="px-4 py-2 rounded-lg bg-red-500 text-white font-medium hover:bg-red-600 transition-all duration-200"
+                    className="flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg bg-red-500 text-white font-medium hover:bg-red-600 transition-all duration-200 text-xs sm:text-sm"
                   >
                     Delete
                   </button>

@@ -4,6 +4,7 @@ import "./globals.css";
 import { SoundProvider } from "@/components/audio/SoundManager";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { Toaster } from "sonner";
+import LenisProvider from "@/components/providers/LenisProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 const caveat = Caveat({
@@ -24,22 +25,24 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} ${caveat.variable} antialiased`}>
-        <AuthProvider>
-          <SoundProvider>
-            {children}
-          </SoundProvider>
-          <Toaster
-            position="top-right"
-            richColors
-            closeButton
-            toastOptions={{
-              style: {
-                background: 'white',
-                border: '1px solid #E2E8F0',
-              },
-            }}
-          />
-        </AuthProvider>
+        <LenisProvider>
+          <AuthProvider>
+            <SoundProvider>
+              {children}
+            </SoundProvider>
+            <Toaster
+              position="top-right"
+              richColors
+              closeButton
+              toastOptions={{
+                style: {
+                  background: 'white',
+                  border: '1px solid #E2E8F0',
+                },
+              }}
+            />
+          </AuthProvider>
+        </LenisProvider>
       </body>
     </html>
   );

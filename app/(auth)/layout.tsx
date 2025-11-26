@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 
@@ -12,12 +12,14 @@ export default function AuthLayout({
 }) {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
-    if (!loading && user) {
+    // Don't redirect if on reset-password page (user has recovery session)
+    if (!loading && user && pathname !== '/reset-password') {
       router.push('/dashboard');
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, pathname]);
 
   if (loading) {
     return (
@@ -27,7 +29,8 @@ export default function AuthLayout({
     );
   }
 
-  if (user) {
+  // Allow reset-password page to render even with user session (recovery session)
+  if (user && pathname !== '/reset-password') {
     return null;
   }
 
@@ -35,15 +38,15 @@ export default function AuthLayout({
     <div className="min-h-screen bg-[#F8FAFC]">
       {/* Header */}
       <header className="bg-white border-b border-[#E2E8F0]">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <Link href="/" className="text-2xl font-bold gradient-text">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+          <Link href="/" className="text-xl sm:text-2xl font-bold gradient-text">
             iMajor
           </Link>
         </div>
       </header>
 
       {/* Content */}
-      <main className="flex items-center justify-center px-6 py-12">
+      <main className="flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
         <div className="w-full max-w-md">
           {children}
         </div>

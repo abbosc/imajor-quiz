@@ -38,11 +38,11 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-6">
-      <div className="card max-w-md w-full p-8">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold gradient-text mb-2">iMajor Admin</h1>
-          <p className="text-[#64748B]">Enter your admin password to continue</p>
+    <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-4 sm:p-6">
+      <div className="card max-w-md w-full p-5 sm:p-8">
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold gradient-text mb-2">iMajor Admin</h1>
+          <p className="text-sm sm:text-base text-[#64748B]">Enter your admin password to continue</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">

@@ -61,35 +61,6 @@ export interface Database {
           created_at?: string
         }
       }
-      interpretation_levels: {
-        Row: {
-          id: string
-          min_score: number
-          max_score: number
-          level_label: string
-          description: string | null
-          order_index: number
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          min_score: number
-          max_score: number
-          level_label: string
-          description?: string | null
-          order_index: number
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          min_score?: number
-          max_score?: number
-          level_label?: string
-          description?: string | null
-          order_index?: number
-          created_at?: string
-        }
-      }
       quiz_submissions: {
         Row: {
           id: string
@@ -154,6 +125,8 @@ export interface Database {
           full_name: string | null
           email: string
           avatar_url: string | null
+          grade_level: string | null
+          school_name: string | null
           created_at: string
           updated_at: string
         }
@@ -162,6 +135,8 @@ export interface Database {
           full_name?: string | null
           email: string
           avatar_url?: string | null
+          grade_level?: string | null
+          school_name?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -170,6 +145,8 @@ export interface Database {
           full_name?: string | null
           email?: string
           avatar_url?: string | null
+          grade_level?: string | null
+          school_name?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -484,6 +461,49 @@ export interface Database {
           updated_at?: string
         }
       }
+      majors: {
+        Row: {
+          id: string
+          name: string
+          is_active: boolean
+          order_index: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          is_active?: boolean
+          order_index?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          is_active?: boolean
+          order_index?: number
+          created_at?: string
+        }
+      }
+      user_majors: {
+        Row: {
+          id: string
+          user_id: string
+          major_id: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          major_id: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          major_id?: string
+          created_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never
@@ -507,3 +527,5 @@ export type UserActivity = Database['public']['Tables']['user_activities']['Row'
 export type UserHonor = Database['public']['Tables']['user_honors']['Row']
 export type UserEssay = Database['public']['Tables']['user_essays']['Row']
 export type UserRecommendation = Database['public']['Tables']['user_recommendations']['Row']
+export type Major = Database['public']['Tables']['majors']['Row']
+export type UserMajor = Database['public']['Tables']['user_majors']['Row']

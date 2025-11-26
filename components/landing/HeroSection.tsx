@@ -5,10 +5,10 @@ import TypewriterText from './TypewriterText';
 
 export default function HeroSection() {
   return (
-    <section className="min-h-[calc(100vh-80px)] flex items-center justify-center px-6 relative overflow-visible">
+    <section className="min-h-[calc(100vh-80px)] flex items-center justify-center px-4 sm:px-6 relative overflow-visible">
       <div className="max-w-5xl mx-auto text-center relative">
         {/* Main provocative headline */}
-        <h2 className="text-4xl md:text-5xl lg:text-7xl font-bold text-[#0F172A] mb-12 leading-tight">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-[#0F172A] mb-8 sm:mb-12 leading-tight">
           <span className="block mb-1">You say you love</span>
           <TypewriterText />
           <span className="block mt-1 text-[#0F172A]">...but do you?</span>
@@ -17,19 +17,19 @@ export default function HeroSection() {
         {/* CTA Button */}
         <Link
           href="/quiz"
-          className="inline-block gradient-accent text-white font-bold text-lg md:text-xl px-12 py-5 rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-[#FF6B4A]/30 hover:scale-105 transition-all duration-300"
+          className="inline-block gradient-accent text-white font-bold text-base sm:text-lg md:text-xl px-8 sm:px-12 py-4 sm:py-5 rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-[#FF6B4A]/30 hover:scale-105 transition-all duration-300"
         >
           Take the Challenge
         </Link>
 
         {/* Supporting text */}
-        <p className="mt-8 text-sm text-[#94A3B8]">
-          No sign-up required &bull; Takes 5 minutes &bull; Get instant results
+        <p className="mt-6 sm:mt-8 text-xs sm:text-sm text-[#94A3B8]">
+          100% Free &bull; Takes 5 minutes &bull; Get instant results
         </p>
 
         {/* Scroll indicator */}
-        <div className="mt-16 animate-bounce">
-          <svg className="w-6 h-6 mx-auto text-[#94A3B8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="mt-12 sm:mt-16 animate-bounce">
+          <svg className="w-5 h-5 sm:w-6 sm:h-6 mx-auto text-[#94A3B8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
           </svg>
         </div>

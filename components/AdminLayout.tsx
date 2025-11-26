@@ -26,12 +26,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="min-h-screen bg-[#F8FAFC]">
       {/* Header */}
       <nav className="bg-white border-b border-[#E2E8F0]">
-        <div className="container mx-auto px-6 py-4">
+        <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold gradient-text">iMajor Admin</h1>
+            <h1 className="text-xl sm:text-2xl font-bold gradient-text">iMajor Admin</h1>
             <button
               onClick={handleLogout}
-              className="text-[#64748B] hover:text-[#FF6B4A] transition-colors duration-200"
+              className="text-sm sm:text-base text-[#64748B] hover:text-[#FF6B4A] transition-colors duration-200"
             >
               Logout
             </button>
@@ -41,11 +41,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* Navigation Tabs */}
       <div className="bg-white border-b border-[#E2E8F0]">
-        <div className="container mx-auto px-6">
-          <div className="flex gap-6">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="flex gap-4 sm:gap-6 overflow-x-auto scrollbar-hide">
             <Link
               href="/admin/dashboard"
-              className={`px-4 py-3 ${
+              className={`px-3 sm:px-4 py-3 text-sm sm:text-base whitespace-nowrap ${
                 isActive('/admin/dashboard')
                   ? 'text-[#FF6B4A] border-b-2 border-[#FF6B4A] font-semibold'
                   : 'text-[#64748B] hover:text-[#FF6B4A]'
@@ -55,7 +55,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </Link>
             <Link
               href="/admin/questions"
-              className={`px-4 py-3 ${
+              className={`px-3 sm:px-4 py-3 text-sm sm:text-base whitespace-nowrap ${
                 isActive('/admin/questions')
                   ? 'text-[#FF6B4A] border-b-2 border-[#FF6B4A] font-semibold'
                   : 'text-[#64748B] hover:text-[#FF6B4A]'
@@ -64,18 +64,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               Questions
             </Link>
             <Link
-              href="/admin/interpretations"
-              className={`px-4 py-3 ${
-                isActive('/admin/interpretations')
-                  ? 'text-[#FF6B4A] border-b-2 border-[#FF6B4A] font-semibold'
-                  : 'text-[#64748B] hover:text-[#FF6B4A]'
-              } transition-colors duration-200`}
-            >
-              Interpretations
-            </Link>
-            <Link
               href="/admin/tasks"
-              className={`px-4 py-3 ${
+              className={`px-3 sm:px-4 py-3 text-sm sm:text-base whitespace-nowrap ${
                 isActive('/admin/tasks')
                   ? 'text-[#FF6B4A] border-b-2 border-[#FF6B4A] font-semibold'
                   : 'text-[#64748B] hover:text-[#FF6B4A]'
@@ -84,8 +74,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               Tasks
             </Link>
             <Link
+              href="/admin/majors"
+              className={`px-3 sm:px-4 py-3 text-sm sm:text-base whitespace-nowrap ${
+                isActive('/admin/majors')
+                  ? 'text-[#FF6B4A] border-b-2 border-[#FF6B4A] font-semibold'
+                  : 'text-[#64748B] hover:text-[#FF6B4A]'
+              } transition-colors duration-200`}
+            >
+              Majors
+            </Link>
+            <Link
               href="/admin/submissions"
-              className={`px-4 py-3 ${
+              className={`px-3 sm:px-4 py-3 text-sm sm:text-base whitespace-nowrap ${
                 isActive('/admin/submissions')
                   ? 'text-[#FF6B4A] border-b-2 border-[#FF6B4A] font-semibold'
                   : 'text-[#64748B] hover:text-[#FF6B4A]'
@@ -98,7 +98,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </div>
 
       {/* Content */}
-      <div className="container mx-auto px-6 py-8">
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {children}
       </div>
     </div>

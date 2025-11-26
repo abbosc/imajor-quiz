@@ -13,12 +13,9 @@ export default function PrizeSection() {
               </svg>
               Win Expert Consultations
             </div>
-            <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#0F172A] mb-4">
-              Get Advice from Top University Students
+            <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#0F172A]">
+              Win free 30-min consultations from these mentors
             </h3>
-            <p className="text-lg md:text-xl text-[#64748B] max-w-2xl mx-auto leading-relaxed">
-              <span className="font-semibold text-[#FF6B4A]">7 random quiz-takers</span> will win a 30-minute 1:1 consultation session with our expert mentors from world-class universities.
-            </p>
           </div>
 
           {/* Consultant cards grid */}
