@@ -1,16 +1,21 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Caveat } from "next/font/google";
 import "./globals.css";
-import { SoundProvider } from "@/components/audio/SoundManager";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { Toaster } from "sonner";
 import LenisProvider from "@/components/providers/LenisProvider";
 import { StructuredData } from "@/components/SEO/StructuredData";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: ["latin"],
+  display: 'swap', // Prevent font blocking
+  preload: true,
+});
 const caveat = Caveat({
   subsets: ["latin"],
   variable: '--font-caveat',
+  display: 'swap',
+  preload: true,
 });
 
 export const metadata: Metadata = {
@@ -90,14 +95,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* Preconnect to external services for faster loading */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://supabase.co" />
+        <link rel="dns-prefetch" href="https://t.me" />
         <StructuredData />
       </head>
       <body className={`${inter.className} ${caveat.variable} antialiased`}>
         <LenisProvider>
           <AuthProvider>
-            <SoundProvider>
-              {children}
-            </SoundProvider>
+            {children}
             <Toaster
               position="top-right"
               richColors

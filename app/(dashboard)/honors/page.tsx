@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useState } from 'react';
 import { toast } from 'sonner';
+import { ListSkeleton } from '@/components/skeletons';
+import { useHonors } from '@/hooks/useDashboardData';
+import { DeleteModal } from '@/components/ui/Modal';
 
 interface Honor {
   id: string;
@@ -30,34 +32,17 @@ const levelLabels: Record<string, string> = {
 };
 
 export default function HonorsPage() {
-  const { user } = useAuth();
-  const [honors, setHonors] = useState<Honor[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { honors, isLoading: loading, mutate } = useHonors();
   const [showForm, setShowForm] = useState(false);
   const [editingHonor, setEditingHonor] = useState<Honor | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Honor | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const [formData, setFormData] = useState({
     honor_name: '',
     level: 'school' as Honor['level'],
     year_received: '',
     description: '',
   });
-
-  useEffect(() => {
-    if (user) loadHonors();
-  }, [user]);
-
-  const loadHonors = async () => {
-    try {
-      const response = await fetch('/api/user/honors');
-      const result = await response.json();
-      if (result.data) setHonors(result.data);
-    } catch (error) {
-      console.error('Error loading honors:', error);
-      toast.error('Failed to load honors');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,7 +63,7 @@ export default function HonorsPage() {
       });
 
       if (response.ok) {
-        loadHonors();
+        mutate();
         resetForm();
         toast.success(editingHonor ? 'Honor updated' : 'Honor added');
       } else {
@@ -102,17 +87,21 @@ export default function HonorsPage() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this honor?')) return;
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
     try {
-      const response = await fetch(`/api/user/honors?id=${id}`, { method: 'DELETE' });
+      const response = await fetch(`/api/user/honors?id=${deleteTarget.id}`, { method: 'DELETE' });
       if (response.ok) {
-        loadHonors();
+        mutate();
         toast.success('Honor deleted');
+        setDeleteTarget(null);
       }
     } catch (error) {
       console.error('Error deleting honor:', error);
       toast.error('Failed to delete honor');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -127,16 +116,19 @@ export default function HonorsPage() {
     });
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF6B4A]"></div>
-      </div>
-    );
-  }
-
   return (
     <div>
+      {/* Delete Confirmation Modal */}
+      <DeleteModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        title="Delete Honor"
+        itemName={deleteTarget?.honor_name}
+        loading={deleting}
+      />
+
+      {/* Static header - renders immediately */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-[#0F172A] mb-1 sm:mb-2">Honors & Awards</h1>
@@ -229,8 +221,10 @@ export default function HonorsPage() {
         </div>
       )}
 
-      {/* Honors List */}
-      {honors.length === 0 ? (
+      {/* Honors List - shows skeleton while loading */}
+      {loading ? (
+        <ListSkeleton count={3} />
+      ) : honors.length === 0 ? (
         <div className="card p-12 text-center">
           <svg className="w-16 h-16 mx-auto text-[#E2E8F0] mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
@@ -272,7 +266,7 @@ export default function HonorsPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
                   </button>
-                  <button onClick={() => handleDelete(honor.id)} className="p-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors">
+                  <button onClick={() => setDeleteTarget(honor)} className="p-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>

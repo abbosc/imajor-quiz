@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useState, useRef } from 'react';
 import { toast } from 'sonner';
+import { ListSkeleton } from '@/components/skeletons';
+import { useTests } from '@/hooks/useDashboardData';
+import { DeleteModal } from '@/components/ui/Modal';
 
 interface Test {
   id: string;
@@ -25,11 +27,11 @@ const statusColors: Record<string, string> = {
 const commonTests = ['SAT', 'ACT', 'TOEFL', 'IELTS', 'AP Exam', 'SAT Subject Test', 'GRE', 'GMAT'];
 
 export default function TestsPage() {
-  const { user } = useAuth();
-  const [tests, setTests] = useState<Test[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { tests, isLoading: loading, mutate } = useTests();
   const [showForm, setShowForm] = useState(false);
   const [editingTest, setEditingTest] = useState<Test | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Test | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
@@ -41,23 +43,6 @@ export default function TestsPage() {
     certificate_url: '',
     notes: '',
   });
-
-  useEffect(() => {
-    if (user) loadTests();
-  }, [user]);
-
-  const loadTests = async () => {
-    try {
-      const response = await fetch('/api/user/tests');
-      const result = await response.json();
-      if (result.data) setTests(result.data);
-    } catch (error) {
-      console.error('Error loading tests:', error);
-      toast.error('Failed to load tests');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleCertificateUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -113,7 +98,7 @@ export default function TestsPage() {
       });
 
       if (response.ok) {
-        loadTests();
+        mutate();
         resetForm();
         toast.success(editingTest ? 'Test updated' : 'Test added');
       } else {
@@ -140,17 +125,21 @@ export default function TestsPage() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this test?')) return;
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
     try {
-      const response = await fetch(`/api/user/tests?id=${id}`, { method: 'DELETE' });
+      const response = await fetch(`/api/user/tests?id=${deleteTarget.id}`, { method: 'DELETE' });
       if (response.ok) {
-        loadTests();
+        mutate();
         toast.success('Test deleted');
+        setDeleteTarget(null);
       }
     } catch (error) {
       console.error('Error deleting test:', error);
       toast.error('Failed to delete test');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -168,16 +157,19 @@ export default function TestsPage() {
     });
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF6B4A]"></div>
-      </div>
-    );
-  }
-
   return (
     <div>
+      {/* Delete Confirmation Modal */}
+      <DeleteModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        title="Delete Test"
+        itemName={deleteTarget?.test_name}
+        loading={deleting}
+      />
+
+      {/* Static header - renders immediately */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-[#0F172A] mb-1 sm:mb-2">Tests</h1>
@@ -353,8 +345,10 @@ export default function TestsPage() {
         </div>
       )}
 
-      {/* Tests List */}
-      {tests.length === 0 ? (
+      {/* Tests List - shows skeleton while loading */}
+      {loading ? (
+        <ListSkeleton count={3} />
+      ) : tests.length === 0 ? (
         <div className="card p-12 text-center">
           <svg className="w-16 h-16 mx-auto text-[#E2E8F0] mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -405,7 +399,7 @@ export default function TestsPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
                   </button>
-                  <button onClick={() => handleDelete(test.id)} className="p-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors">
+                  <button onClick={() => setDeleteTarget(test)} className="p-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>

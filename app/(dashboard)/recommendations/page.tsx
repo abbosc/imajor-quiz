@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useState } from 'react';
 import { toast } from 'sonner';
+import { ListSkeleton, StatsGridSkeleton } from '@/components/skeletons';
+import { useRecommendations } from '@/hooks/useDashboardData';
+import { DeleteModal } from '@/components/ui/Modal';
 
 interface Recommendation {
   id: string;
@@ -30,11 +32,11 @@ const statusLabels: Record<string, string> = {
 };
 
 export default function RecommendationsPage() {
-  const { user } = useAuth();
-  const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { recommendations, isLoading: loading, mutate } = useRecommendations();
   const [showForm, setShowForm] = useState(false);
   const [editingRec, setEditingRec] = useState<Recommendation | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Recommendation | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const [formData, setFormData] = useState({
     recommender_name: '',
     recommender_email: '',
@@ -44,23 +46,6 @@ export default function RecommendationsPage() {
     due_date: '',
     notes: '',
   });
-
-  useEffect(() => {
-    if (user) loadRecommendations();
-  }, [user]);
-
-  const loadRecommendations = async () => {
-    try {
-      const response = await fetch('/api/user/recommendations');
-      const result = await response.json();
-      if (result.data) setRecommendations(result.data);
-    } catch (error) {
-      console.error('Error loading recommendations:', error);
-      toast.error('Failed to load recommendations');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,7 +68,7 @@ export default function RecommendationsPage() {
       });
 
       if (response.ok) {
-        loadRecommendations();
+        mutate();
         resetForm();
         toast.success(editingRec ? 'Recommendation updated' : 'Recommendation added');
       } else {
@@ -110,17 +95,21 @@ export default function RecommendationsPage() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this recommendation?')) return;
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
     try {
-      const response = await fetch(`/api/user/recommendations?id=${id}`, { method: 'DELETE' });
+      const response = await fetch(`/api/user/recommendations?id=${deleteTarget.id}`, { method: 'DELETE' });
       if (response.ok) {
-        loadRecommendations();
+        mutate();
         toast.success('Recommendation deleted');
+        setDeleteTarget(null);
       }
     } catch (error) {
       console.error('Error deleting recommendation:', error);
       toast.error('Failed to delete recommendation');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -138,16 +127,19 @@ export default function RecommendationsPage() {
     });
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF6B4A]"></div>
-      </div>
-    );
-  }
-
   return (
     <div>
+      {/* Delete Confirmation Modal */}
+      <DeleteModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        title="Delete Recommendation"
+        itemName={deleteTarget?.recommender_name}
+        loading={deleting}
+      />
+
+      {/* Static header - renders immediately */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-[#0F172A] mb-1 sm:mb-2">Recommendations</h1>
@@ -162,6 +154,9 @@ export default function RecommendationsPage() {
       </div>
 
       {/* Stats */}
+      {loading ? (
+        <StatsGridSkeleton />
+      ) : (
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-6">
         <div className="card p-3 sm:p-4 text-center">
           <p className="text-xl sm:text-2xl font-bold text-gray-600">{recommendations.filter(r => r.status === 'not_requested').length}</p>
@@ -180,6 +175,7 @@ export default function RecommendationsPage() {
           <p className="text-xs text-[#64748B]">Submitted</p>
         </div>
       </div>
+      )}
 
       {/* Form Modal */}
       {showForm && (
@@ -291,8 +287,10 @@ export default function RecommendationsPage() {
         </div>
       )}
 
-      {/* Recommendations List */}
-      {recommendations.length === 0 ? (
+      {/* Recommendations List - shows skeleton while loading */}
+      {loading ? (
+        <ListSkeleton count={3} />
+      ) : recommendations.length === 0 ? (
         <div className="card p-12 text-center">
           <svg className="w-16 h-16 mx-auto text-[#E2E8F0] mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -336,7 +334,7 @@ export default function RecommendationsPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
                   </button>
-                  <button onClick={() => handleDelete(rec.id)} className="p-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors">
+                  <button onClick={() => setDeleteTarget(rec)} className="p-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>

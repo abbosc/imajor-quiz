@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useState } from 'react';
 import { toast } from 'sonner';
+import { ListSkeleton, StatsGridSkeleton } from '@/components/skeletons';
+import { useEssays } from '@/hooks/useDashboardData';
+import { DeleteModal } from '@/components/ui/Modal';
 
 interface Essay {
   id: string;
@@ -29,34 +31,17 @@ const statusLabels: Record<string, string> = {
 };
 
 export default function EssaysPage() {
-  const { user } = useAuth();
-  const [essays, setEssays] = useState<Essay[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { essays, isLoading: loading, mutate } = useEssays();
   const [showForm, setShowForm] = useState(false);
   const [editingEssay, setEditingEssay] = useState<Essay | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Essay | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     prompt: '',
     content: '',
     status: 'draft' as Essay['status'],
   });
-
-  useEffect(() => {
-    if (user) loadEssays();
-  }, [user]);
-
-  const loadEssays = async () => {
-    try {
-      const response = await fetch('/api/user/essays');
-      const result = await response.json();
-      if (result.data) setEssays(result.data);
-    } catch (error) {
-      console.error('Error loading essays:', error);
-      toast.error('Failed to load essays');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const countWords = (text: string) => {
     return text.trim().split(/\s+/).filter(word => word.length > 0).length;
@@ -81,7 +66,7 @@ export default function EssaysPage() {
       });
 
       if (response.ok) {
-        loadEssays();
+        mutate();
         resetForm();
         toast.success(editingEssay ? 'Essay updated' : 'Essay created');
       } else {
@@ -105,17 +90,21 @@ export default function EssaysPage() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this essay?')) return;
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
     try {
-      const response = await fetch(`/api/user/essays?id=${id}`, { method: 'DELETE' });
+      const response = await fetch(`/api/user/essays?id=${deleteTarget.id}`, { method: 'DELETE' });
       if (response.ok) {
-        loadEssays();
+        mutate();
         toast.success('Essay deleted');
+        setDeleteTarget(null);
       }
     } catch (error) {
       console.error('Error deleting essay:', error);
       toast.error('Failed to delete essay');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -130,16 +119,19 @@ export default function EssaysPage() {
     });
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF6B4A]"></div>
-      </div>
-    );
-  }
-
   return (
     <div>
+      {/* Delete Confirmation Modal */}
+      <DeleteModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        title="Delete Essay"
+        itemName={deleteTarget?.title}
+        loading={deleting}
+      />
+
+      {/* Static header - renders immediately */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-[#0F172A] mb-1 sm:mb-2">Essays</h1>
@@ -154,6 +146,22 @@ export default function EssaysPage() {
       </div>
 
       {/* Stats */}
+      {loading ? (
+        <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-6">
+          <div className="card p-3 sm:p-4">
+            <div className="h-7 animate-shimmer rounded w-8 mx-auto mb-1" />
+            <div className="h-4 animate-shimmer rounded w-12 mx-auto" />
+          </div>
+          <div className="card p-3 sm:p-4">
+            <div className="h-7 animate-shimmer rounded w-8 mx-auto mb-1" />
+            <div className="h-4 animate-shimmer rounded w-12 mx-auto" />
+          </div>
+          <div className="card p-3 sm:p-4">
+            <div className="h-7 animate-shimmer rounded w-8 mx-auto mb-1" />
+            <div className="h-4 animate-shimmer rounded w-12 mx-auto" />
+          </div>
+        </div>
+      ) : (
       <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-6">
         <div className="card p-3 sm:p-4 text-center">
           <p className="text-xl sm:text-2xl font-bold text-gray-600">{essays.filter(e => e.status === 'draft').length}</p>
@@ -168,6 +176,7 @@ export default function EssaysPage() {
           <p className="text-xs sm:text-sm text-[#64748B]">Final</p>
         </div>
       </div>
+      )}
 
       {/* Form Modal */}
       {showForm && (
@@ -246,8 +255,10 @@ export default function EssaysPage() {
         </div>
       )}
 
-      {/* Essays List */}
-      {essays.length === 0 ? (
+      {/* Essays List - shows skeleton while loading */}
+      {loading ? (
+        <ListSkeleton count={3} />
+      ) : essays.length === 0 ? (
         <div className="card p-12 text-center">
           <svg className="w-16 h-16 mx-auto text-[#E2E8F0] mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -287,7 +298,7 @@ export default function EssaysPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
                   </button>
-                  <button onClick={() => handleDelete(essay.id)} className="p-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors">
+                  <button onClick={() => setDeleteTarget(essay)} className="p-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>

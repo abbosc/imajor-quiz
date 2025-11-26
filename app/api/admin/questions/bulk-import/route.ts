@@ -9,6 +9,19 @@ function verifyAdmin(request: NextRequest) {
   return true;
 }
 
+interface ValidatedQuestion {
+  question_text: string;
+  explanation: string | null;
+  order_index: number;
+  is_active: boolean;
+  answer_choices: Array<{
+    choice_text: string;
+    points: number;
+    order_index: number;
+  }>;
+  originalIndex: number;
+}
+
 export async function POST(request: NextRequest) {
   if (!verifyAdmin(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -24,15 +37,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    let importedCount = 0;
+    const validatedQuestions: ValidatedQuestion[] = [];
     const errors: string[] = [];
 
-    // Process each question
+    // Phase 1: Validate all questions first (no DB calls)
     for (let i = 0; i < questions.length; i++) {
       const q = questions[i];
 
       try {
-        // Validate required fields
         if (!q.question_text) {
           throw new Error('Missing question_text');
         }
@@ -41,57 +53,96 @@ export async function POST(request: NextRequest) {
           throw new Error('Must have at least 2 answer choices');
         }
 
-        // Validate answer choices have required fields
         for (let j = 0; j < q.answer_choices.length; j++) {
           if (!q.answer_choices[j].choice_text) {
             throw new Error(`Answer choice ${j + 1} missing choice_text`);
           }
         }
 
-        // Insert question
-        const { data: questionData, error: questionError } = await (supabaseAdmin
-          .from('questions') as any)
-          .insert({
-            question_text: q.question_text,
-            explanation: q.explanation || null,
-            order_index: q.order_index || i + 1,
-            is_active: q.is_active !== undefined ? q.is_active : true
-          })
-          .select()
-          .single();
-
-        if (questionError) throw new Error(`DB Error inserting question: ${questionError.message} (code: ${questionError.code}, details: ${questionError.details})`);
-
-        // Insert answer choices
-        const choicesData = q.answer_choices.map((choice: any, idx: number) => ({
-          question_id: questionData.id,
-          choice_text: choice.choice_text,
-          points: choice.points !== undefined ? choice.points : 0,
-          order_index: choice.order_index || idx + 1
-        }));
-
-        const { error: choicesError } = await (supabaseAdmin
-          .from('answer_choices') as any)
-          .insert(choicesData);
-
-        if (choicesError) throw new Error(`DB Error inserting choices: ${choicesError.message}`);
-
-        importedCount++;
+        // Question passed validation
+        validatedQuestions.push({
+          question_text: q.question_text,
+          explanation: q.explanation || null,
+          order_index: q.order_index || i + 1,
+          is_active: q.is_active !== undefined ? q.is_active : true,
+          answer_choices: q.answer_choices.map((choice: any, idx: number) => ({
+            choice_text: choice.choice_text,
+            points: choice.points !== undefined ? choice.points : 0,
+            order_index: choice.order_index || idx + 1
+          })),
+          originalIndex: i
+        });
       } catch (err: any) {
-        console.error(`Error importing question ${i + 1}:`, err);
         errors.push(`Question ${i + 1} ("${q.question_text?.substring(0, 50)}..."): ${err.message}`);
       }
     }
 
-    if (errors.length > 0 && importedCount === 0) {
+    if (validatedQuestions.length === 0) {
       return NextResponse.json(
-        { error: 'Failed to import any questions', details: errors },
+        { error: 'No valid questions to import', details: errors },
+        { status: 400 }
+      );
+    }
+
+    // Phase 2: Batch insert all validated questions (1 DB call instead of N)
+    const questionsToInsert = validatedQuestions.map(q => ({
+      question_text: q.question_text,
+      explanation: q.explanation,
+      order_index: q.order_index,
+      is_active: q.is_active
+    }));
+
+    const { data: insertedQuestions, error: questionsError } = await (supabaseAdmin
+      .from('questions') as any)
+      .insert(questionsToInsert)
+      .select('id');
+
+    if (questionsError) {
+      return NextResponse.json(
+        { error: `Failed to insert questions: ${questionsError.message}`, details: errors },
+        { status: 500 }
+      );
+    }
+
+    // Phase 3: Batch insert all answer choices (1 DB call instead of N)
+    const allChoices: Array<{
+      question_id: string;
+      choice_text: string;
+      points: number;
+      order_index: number;
+    }> = [];
+
+    for (let i = 0; i < validatedQuestions.length; i++) {
+      const questionId = insertedQuestions[i].id;
+      const vq = validatedQuestions[i];
+
+      for (const choice of vq.answer_choices) {
+        allChoices.push({
+          question_id: questionId,
+          choice_text: choice.choice_text,
+          points: choice.points,
+          order_index: choice.order_index
+        });
+      }
+    }
+
+    const { error: choicesError } = await (supabaseAdmin
+      .from('answer_choices') as any)
+      .insert(allChoices);
+
+    if (choicesError) {
+      // Rollback: delete the questions we just inserted
+      const insertedIds = insertedQuestions.map((q: any) => q.id);
+      await (supabaseAdmin.from('questions') as any).delete().in('id', insertedIds);
+
+      return NextResponse.json(
+        { error: `Failed to insert answer choices: ${choicesError.message}`, details: errors },
         { status: 500 }
       );
     }
 
     return NextResponse.json({
-      imported: importedCount,
+      imported: validatedQuestions.length,
       total: questions.length,
       errors: errors.length > 0 ? errors : undefined
     });

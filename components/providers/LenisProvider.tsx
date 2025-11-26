@@ -8,12 +8,36 @@ interface LenisProviderProps {
   children: React.ReactNode;
 }
 
+// Dashboard routes that shouldn't use Lenis smooth scrolling
+const dashboardRoutes = [
+  '/dashboard',
+  '/activities',
+  '/tasks',
+  '/tests',
+  '/universities',
+  '/essays',
+  '/honors',
+  '/recommendations',
+  '/quiz-results',
+  '/settings',
+  '/admin',
+];
+
 export default function LenisProvider({ children }: LenisProviderProps) {
   const lenisRef = useRef<Lenis | null>(null);
+  const rafIdRef = useRef<number | null>(null);
   const pathname = usePathname();
 
+  // Check if current route is a dashboard route
+  const isDashboardRoute = dashboardRoutes.some(route => pathname.startsWith(route));
+
   useEffect(() => {
-    // Initialize Lenis with smooth settings
+    // Don't initialize Lenis on dashboard routes - use native scrolling
+    if (isDashboardRoute) {
+      return;
+    }
+
+    // Initialize Lenis with smooth settings for landing/public pages
     lenisRef.current = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -27,19 +51,25 @@ export default function LenisProvider({ children }: LenisProviderProps) {
     // RAF loop for smooth scrolling
     function raf(time: number) {
       lenisRef.current?.raf(time);
-      requestAnimationFrame(raf);
+      rafIdRef.current = requestAnimationFrame(raf);
     }
-    requestAnimationFrame(raf);
+    rafIdRef.current = requestAnimationFrame(raf);
 
     return () => {
+      if (rafIdRef.current) {
+        cancelAnimationFrame(rafIdRef.current);
+      }
       lenisRef.current?.destroy();
+      lenisRef.current = null;
     };
-  }, []);
+  }, [isDashboardRoute]);
 
-  // Reset scroll position on route change
+  // Reset scroll position on route change (only when Lenis is active)
   useEffect(() => {
-    lenisRef.current?.scrollTo(0, { immediate: true });
-  }, [pathname]);
+    if (!isDashboardRoute && lenisRef.current) {
+      lenisRef.current.scrollTo(0, { immediate: true });
+    }
+  }, [pathname, isDashboardRoute]);
 
   return <>{children}</>;
 }

@@ -25,7 +25,9 @@ export default function ConsultantCard({ consultant }: ConsultantCardProps) {
               src={consultant.image}
               alt={consultant.name}
               fill
+              sizes="112px"
               className="object-cover"
+              loading="lazy"
             />
           </div>
         </div>

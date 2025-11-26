@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
@@ -28,6 +28,21 @@ export default function SettingsPage() {
   const [userMajors, setUserMajors] = useState<UserMajor[]>([]);
   const [majorsLoading, setMajorsLoading] = useState(true);
   const [majorSearch, setMajorSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+
+  // Debounce search input - only update filter after 300ms
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(majorSearch), 300);
+    return () => clearTimeout(timer);
+  }, [majorSearch]);
+
+  // Memoize filtered majors to avoid recalculating on every render
+  const filteredMajors = useMemo(() =>
+    availableMajors.filter(major =>
+      major.name.toLowerCase().includes(debouncedSearch.toLowerCase())
+    ),
+    [availableMajors, debouncedSearch]
+  );
 
   useEffect(() => {
     if (profile) {
@@ -199,8 +214,13 @@ export default function SettingsPage() {
         <p className="text-xs sm:text-sm text-[#64748B] mb-4">Select the majors you&apos;re interested in exploring. This helps personalize your experience.</p>
 
         {majorsLoading ? (
-          <div className="flex items-center justify-center py-8">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#FF6B4A]"></div>
+          <div className="space-y-4">
+            <div className="h-12 animate-shimmer rounded-xl" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+              {[...Array(9)].map((_, i) => (
+                <div key={i} className="h-12 animate-shimmer rounded-xl" />
+              ))}
+            </div>
           </div>
         ) : availableMajors.length === 0 ? (
           <div className="py-8 text-center text-[#64748B]">
@@ -259,53 +279,43 @@ export default function SettingsPage() {
             </div>
 
             {/* Available Majors Grid */}
-            {(() => {
-              const filteredMajors = availableMajors.filter(major =>
-                major.name.toLowerCase().includes(majorSearch.toLowerCase())
-              );
-
-              if (filteredMajors.length === 0) {
-                return (
-                  <div className="py-6 text-center text-[#64748B]">
-                    <p>No majors found matching &quot;{majorSearch}&quot;</p>
-                  </div>
-                );
-              }
-
-              return (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-[300px] sm:max-h-[400px] overflow-y-auto pr-1">
-                  {filteredMajors.map((major) => {
-                    const isSelected = userMajors.some(um => um.major_id === major.id);
-                    return (
-                      <button
-                        key={major.id}
-                        onClick={() => toggleMajor(major.id)}
-                        className={`p-3 rounded-xl border-2 text-left transition-all ${
-                          isSelected
-                            ? 'border-[#FF6B4A] bg-[#FF6B4A]/5'
-                            : 'border-[#E2E8F0] hover:border-[#FF6B4A]/40'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <div className={`w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 ${
-                            isSelected ? 'bg-[#FF6B4A] text-white' : 'border-2 border-[#E2E8F0]'
-                          }`}>
-                            {isSelected && (
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                              </svg>
-                            )}
-                          </div>
-                          <span className={`text-sm font-medium ${isSelected ? 'text-[#0F172A]' : 'text-[#64748B]'}`}>
-                            {major.name}
-                          </span>
+            {filteredMajors.length === 0 ? (
+              <div className="py-6 text-center text-[#64748B]">
+                <p>No majors found matching &quot;{majorSearch}&quot;</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-[300px] sm:max-h-[400px] overflow-y-auto pr-1">
+                {filteredMajors.map((major) => {
+                  const isSelected = userMajors.some(um => um.major_id === major.id);
+                  return (
+                    <button
+                      key={major.id}
+                      onClick={() => toggleMajor(major.id)}
+                      className={`p-3 rounded-xl border-2 text-left transition-all ${
+                        isSelected
+                          ? 'border-[#FF6B4A] bg-[#FF6B4A]/5'
+                          : 'border-[#E2E8F0] hover:border-[#FF6B4A]/40'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className={`w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 ${
+                          isSelected ? 'bg-[#FF6B4A] text-white' : 'border-2 border-[#E2E8F0]'
+                        }`}>
+                          {isSelected && (
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                            </svg>
+                          )}
                         </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              );
-            })()}
+                        <span className={`text-sm font-medium ${isSelected ? 'text-[#0F172A]' : 'text-[#64748B]'}`}>
+                          {major.name}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -40,32 +40,34 @@ export default function AdminDashboard() {
 
   const loadStats = async () => {
     try {
-      // Fetch total submissions
-      const { count: submissionsCount } = await supabase
-        .from('quiz_submissions')
-        .select('*', { count: 'exact', head: true });
+      // Run all queries in PARALLEL instead of sequential
+      const [
+        { count: submissionsCount },
+        { count: questionsCount },
+        { data: recentSubs },
+        { count: totalForAvg, data: avgData }
+      ] = await Promise.all([
+        // Count submissions
+        supabase.from('quiz_submissions').select('*', { count: 'exact', head: true }),
+        // Count questions
+        supabase.from('questions').select('*', { count: 'exact', head: true }),
+        // Recent 5 submissions (specific columns only)
+        supabase
+          .from('quiz_submissions')
+          .select('id, user_name, total_score, created_at')
+          .order('created_at', { ascending: false })
+          .limit(5),
+        // For average: get count and sum in one query by fetching only total_score
+        supabase
+          .from('quiz_submissions')
+          .select('total_score', { count: 'exact' })
+      ]);
 
-      // Fetch average score
-      const { data: submissions } = await supabase
-        .from('quiz_submissions')
-        .select('total_score');
-
-      const submissionsList = submissions as { total_score: number }[] | null;
-      const avgScore = submissionsList && submissionsList.length > 0
-        ? submissionsList.reduce((sum, s) => sum + s.total_score, 0) / submissionsList.length
+      // Calculate average from fetched scores
+      const scores = avgData as { total_score: number }[] | null;
+      const avgScore = scores && scores.length > 0
+        ? scores.reduce((sum, s) => sum + (s.total_score || 0), 0) / scores.length
         : 0;
-
-      // Fetch total questions
-      const { count: questionsCount } = await supabase
-        .from('questions')
-        .select('*', { count: 'exact', head: true });
-
-      // Fetch recent submissions
-      const { data: recentSubs } = await supabase
-        .from('quiz_submissions')
-        .select('id, user_name, total_score, created_at')
-        .order('created_at', { ascending: false })
-        .limit(5);
 
       setStats({
         totalSubmissions: submissionsCount || 0,

@@ -1,13 +1,24 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import HeroSection from "@/components/landing/HeroSection";
-import PrizeSection from "@/components/landing/PrizeSection";
-import FeaturesSection from "@/components/landing/FeaturesSection";
-import WhySection from "@/components/landing/WhySection";
-import ContactSection from "@/components/landing/ContactSection";
-import Footer from "@/components/landing/Footer";
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
+
+// Lazy load below-the-fold sections for faster initial page load
+const PrizeSection = dynamic(() => import("@/components/landing/PrizeSection"), {
+  loading: () => <div className="h-96 animate-shimmer" />,
+});
+const FeaturesSection = dynamic(() => import("@/components/landing/FeaturesSection"), {
+  loading: () => <div className="h-96 animate-shimmer" />,
+});
+const WhySection = dynamic(() => import("@/components/landing/WhySection"), {
+  loading: () => <div className="h-64 animate-shimmer" />,
+});
+const ContactSection = dynamic(() => import("@/components/landing/ContactSection"), {
+  loading: () => <div className="h-64 animate-shimmer" />,
+});
+const Footer = dynamic(() => import("@/components/landing/Footer"));
 
 export default function Home() {
   const { user, loading } = useAuth();
@@ -65,11 +76,11 @@ export default function Home() {
         {/* Consultation Prize Section */}
         <PrizeSection />
 
-        {/* Features Section */}
-        <FeaturesSection />
-
         {/* Why iMajor Section */}
         <WhySection />
+
+        {/* Features Section */}
+        <FeaturesSection />
 
         {/* Contact Section */}
         <ContactSection />

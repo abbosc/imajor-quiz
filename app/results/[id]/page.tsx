@@ -4,17 +4,23 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
 import { motion, useInView, useScroll, useTransform, useSpring } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 
-// Cosmic components
-import ParallaxStarField from '@/components/cosmic/ParallaxStarField';
-import FloatingParticles from '@/components/cosmic/FloatingParticles';
-import CosmicOrbs from '@/components/cosmic/CosmicOrbs';
+// Lazy load heavy cosmic background components
+const ParallaxStarField = dynamic(() => import('@/components/cosmic/ParallaxStarField'), {
+  ssr: false,
+  loading: () => <div className="fixed inset-0 bg-gradient-to-b from-[#0a0a1a] to-[#1a1a2e]" />,
+});
+const FloatingParticles = dynamic(() => import('@/components/cosmic/FloatingParticles'), { ssr: false });
+const CosmicOrbs = dynamic(() => import('@/components/cosmic/CosmicOrbs'), { ssr: false });
+const CosmicConfetti = dynamic(() => import('@/components/results/CosmicConfetti'), { ssr: false });
+
+// These are needed for the reveal experience
 import CountdownReveal from '@/components/results/CountdownReveal';
 import ScoreCounter from '@/components/results/ScoreCounter';
-import CosmicConfetti from '@/components/results/CosmicConfetti';
 
 // Feature data
 const features = [
@@ -241,7 +247,9 @@ function ParallaxFeatureSection({ feature, index }: { feature: typeof features[0
                 alt={feature.title}
                 width={600}
                 height={400}
+                sizes="(max-width: 1024px) 100vw, 50vw"
                 className="w-full h-auto"
+                loading="lazy"
               />
               {/* Glow overlay */}
               <motion.div

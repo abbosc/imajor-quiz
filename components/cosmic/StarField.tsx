@@ -54,7 +54,8 @@ function ShootingStar() {
 
 export default function StarField() {
   const stars = useMemo<Star[]>(() => {
-    return Array.from({ length: 120 }, (_, i) => ({
+    // Reduced from 120 to 60 for better performance
+    return Array.from({ length: 60 }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
       y: Math.random() * 100,

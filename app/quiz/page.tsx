@@ -3,17 +3,23 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { QuizQuestion, QuizAnswer } from '@/types/quiz';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Cosmic components
-import StarField from '@/components/cosmic/StarField';
+// Lazy load heavy cosmic components
+const StarField = dynamic(() => import('@/components/cosmic/StarField'), {
+  ssr: false,
+  loading: () => <div className="fixed inset-0 bg-gradient-to-b from-[#0a0a1a] to-[#1a1a2e]" />,
+});
+const MilestoneModal = dynamic(() => import('@/components/cosmic/MilestoneModal'), { ssr: false });
+
+// These are needed immediately for quiz interaction
 import CosmicProgress from '@/components/cosmic/CosmicProgress';
 import QuestionTransition from '@/components/cosmic/QuestionTransition';
 import AnswerCard from '@/components/cosmic/AnswerCard';
-import MilestoneModal from '@/components/cosmic/MilestoneModal';
 import { useSoundEffect } from '@/components/audio/SoundManager';
 import SoundToggle from '@/components/audio/SoundToggle';
 

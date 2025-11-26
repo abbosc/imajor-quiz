@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useState } from 'react';
 import { toast } from 'sonner';
+import { ListSkeleton } from '@/components/skeletons';
+import { useUniversities } from '@/hooks/useDashboardData';
+import { DeleteModal } from '@/components/ui/Modal';
 
 interface University {
   id: string;
@@ -33,11 +35,11 @@ const decisionTypes = [
 ];
 
 export default function UniversitiesPage() {
-  const { user } = useAuth();
-  const [universities, setUniversities] = useState<University[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { universities, isLoading: loading, mutate } = useUniversities();
   const [showForm, setShowForm] = useState(false);
   const [editingUniversity, setEditingUniversity] = useState<University | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<University | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     deadline: '',
@@ -47,23 +49,6 @@ export default function UniversitiesPage() {
     scholarship_info: '',
     notes: '',
   });
-
-  useEffect(() => {
-    if (user) loadUniversities();
-  }, [user]);
-
-  const loadUniversities = async () => {
-    try {
-      const response = await fetch('/api/user/universities');
-      const result = await response.json();
-      if (result.data) setUniversities(result.data);
-    } catch (error) {
-      console.error('Error loading universities:', error);
-      toast.error('Failed to load universities');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,7 +70,7 @@ export default function UniversitiesPage() {
       });
 
       if (response.ok) {
-        loadUniversities();
+        mutate();
         resetForm();
         toast.success(editingUniversity ? 'University updated' : 'University added');
       } else {
@@ -112,17 +97,21 @@ export default function UniversitiesPage() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this university?')) return;
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
     try {
-      const response = await fetch(`/api/user/universities?id=${id}`, { method: 'DELETE' });
+      const response = await fetch(`/api/user/universities?id=${deleteTarget.id}`, { method: 'DELETE' });
       if (response.ok) {
-        loadUniversities();
+        mutate();
         toast.success('University deleted');
+        setDeleteTarget(null);
       }
     } catch (error) {
       console.error('Error deleting university:', error);
       toast.error('Failed to delete university');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -140,16 +129,19 @@ export default function UniversitiesPage() {
     });
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF6B4A]"></div>
-      </div>
-    );
-  }
-
   return (
     <div>
+      {/* Delete Confirmation Modal */}
+      <DeleteModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        title="Delete University"
+        itemName={deleteTarget?.name}
+        loading={deleting}
+      />
+
+      {/* Static header - renders immediately */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-[#0F172A] mb-1 sm:mb-2">Universities</h1>
@@ -279,8 +271,10 @@ export default function UniversitiesPage() {
         </div>
       )}
 
-      {/* Universities List */}
-      {universities.length === 0 ? (
+      {/* Universities List - shows skeleton while loading */}
+      {loading ? (
+        <ListSkeleton count={3} />
+      ) : universities.length === 0 ? (
         <div className="card p-12 text-center">
           <svg className="w-16 h-16 mx-auto text-[#E2E8F0] mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -323,7 +317,7 @@ export default function UniversitiesPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
                   </button>
-                  <button onClick={() => handleDelete(uni.id)} className="p-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors">
+                  <button onClick={() => setDeleteTarget(uni)} className="p-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>

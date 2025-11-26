@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
@@ -121,12 +122,19 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   // Set --vh CSS variable for iOS Safari viewport fix
   useViewportHeight();
 
+  // Prefetch all dashboard routes on mount for instant navigation
+  useEffect(() => {
+    const allRoutes = [...mainNavItems, ...secondaryNavItems];
+    allRoutes.forEach(item => router.prefetch(item.href));
+  }, [router]);
+
   const NavLink = ({ item }: { item: NavItem }) => {
     const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
 
     return (
       <Link
         href={item.href}
+        prefetch={true}
         onClick={() => onClose()}
         className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all ${
           isActive
@@ -155,7 +163,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         className={`fixed lg:sticky top-0 left-0 z-50 w-64 bg-white border-r border-[#E2E8F0] flex flex-col transform transition-transform duration-300 lg:transform-none ${
           isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
-        style={{ height: 'calc(var(--vh, 1vh) * 100)' }}
+        style={{ height: 'calc((var(--vh, 1vh) * 100) / 0.9)' }}
       >
         {/* Logo */}
         <div className="p-6 border-b border-[#E2E8F0]">

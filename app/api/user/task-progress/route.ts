@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 
-// GET user's task progress
+// GET user's task progress - Single query with relation instead of N+1
 export async function GET(request: NextRequest) {
   try {
     const supabase = await createServerSupabaseClient();
@@ -12,31 +12,32 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get all active tasks with user's progress
-    const { data: tasks, error: tasksError } = await supabase
+    // Single query: Get tasks with user's progress via relation
+    // The filter on user_task_progress.user_id filters the nested array, not the parent rows
+    const { data: tasks, error } = await supabase
       .from('exploration_tasks')
-      .select('*')
+      .select(`
+        id, title, description, category, order_index,
+        user_task_progress(id, status, notes)
+      `)
       .eq('is_active', true)
+      .eq('user_task_progress.user_id', user.id)
       .order('order_index', { ascending: true });
 
-    if (tasksError) throw tasksError;
+    if (error) throw error;
 
-    // Get user's progress for these tasks
-    const { data: progress, error: progressError } = await supabase
-      .from('user_task_progress')
-      .select('*')
-      .eq('user_id', user.id);
-
-    if (progressError) throw progressError;
-
-    // Combine tasks with progress
+    // Transform: user_task_progress is array (empty or single item)
     const tasksWithProgress = tasks?.map(task => {
-      const userProgress = progress?.find(p => p.task_id === task.id);
+      const progress = (task.user_task_progress as any[])?.[0];
       return {
-        ...task,
-        status: userProgress?.status || 'not_started',
-        notes: userProgress?.notes || null,
-        progress_id: userProgress?.id || null
+        id: task.id,
+        title: task.title,
+        description: task.description,
+        category: task.category,
+        order_index: task.order_index,
+        status: progress?.status || 'not_started',
+        notes: progress?.notes || null,
+        progress_id: progress?.id || null
       };
     });
 

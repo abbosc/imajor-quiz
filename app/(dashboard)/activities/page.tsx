@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useState } from 'react';
 import { toast } from 'sonner';
+import { ListSkeleton, ProgressSkeleton } from '@/components/skeletons';
+import { useActivities } from '@/hooks/useDashboardData';
+import { DeleteModal } from '@/components/ui/Modal';
 
 interface Activity {
   id: string;
@@ -47,14 +49,16 @@ const activityTypes = [
   'Theater/Drama',
   'Work (Paid)',
   'Other Club/Activity',
-];
+] as const;
+
+const participationYears = ['9', '10', '11', 'Post-Graduate'] as const;
 
 export default function ActivitiesPage() {
-  const { user } = useAuth();
-  const [activities, setActivities] = useState<Activity[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { activities, isLoading: loading, mutate } = useActivities();
   const [showForm, setShowForm] = useState(false);
   const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Activity | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const [formData, setFormData] = useState({
     activity_name: '',
     activity_type: '',
@@ -65,25 +69,6 @@ export default function ActivitiesPage() {
     weeks_per_year: '',
     years_participated: [] as string[],
   });
-
-  const years = ['9', '10', '11', 'Post-Graduate'];
-
-  useEffect(() => {
-    if (user) loadActivities();
-  }, [user]);
-
-  const loadActivities = async () => {
-    try {
-      const response = await fetch('/api/user/activities');
-      const result = await response.json();
-      if (result.data) setActivities(result.data);
-    } catch (error) {
-      console.error('Error loading activities:', error);
-      toast.error('Failed to load activities');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,7 +99,7 @@ export default function ActivitiesPage() {
       });
 
       if (response.ok) {
-        loadActivities();
+        mutate();
         resetForm();
         toast.success(editingActivity ? 'Activity updated' : 'Activity added');
       } else {
@@ -142,17 +127,21 @@ export default function ActivitiesPage() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this activity?')) return;
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
     try {
-      const response = await fetch(`/api/user/activities?id=${id}`, { method: 'DELETE' });
+      const response = await fetch(`/api/user/activities?id=${deleteTarget.id}`, { method: 'DELETE' });
       if (response.ok) {
-        loadActivities();
+        mutate();
         toast.success('Activity deleted');
+        setDeleteTarget(null);
       }
     } catch (error) {
       console.error('Error deleting activity:', error);
       toast.error('Failed to delete activity');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -180,22 +169,25 @@ export default function ActivitiesPage() {
     });
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF6B4A]"></div>
-      </div>
-    );
-  }
-
   return (
     <div>
+      {/* Delete Confirmation Modal */}
+      <DeleteModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        title="Delete Activity"
+        itemName={deleteTarget?.activity_name}
+        loading={deleting}
+      />
+
+      {/* Static header - renders immediately */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-[#0F172A] mb-1 sm:mb-2">Activities</h1>
           <p className="text-sm sm:text-base text-[#64748B]">Document your extracurricular activities (max 10).</p>
         </div>
-        {activities.length < 10 && (
+        {!loading && activities.length < 10 && (
           <button
             onClick={() => setShowForm(true)}
             className="px-4 py-2 rounded-xl font-medium text-white gradient-accent hover:shadow-lg transition-all text-sm sm:text-base w-full sm:w-auto"
@@ -206,6 +198,9 @@ export default function ActivitiesPage() {
       </div>
 
       {/* Progress */}
+      {loading ? (
+        <ProgressSkeleton />
+      ) : (
       <div className="card p-4 mb-6">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-medium text-[#64748B]">Activities Added</span>
@@ -218,6 +213,7 @@ export default function ActivitiesPage() {
           />
         </div>
       </div>
+      )}
 
       {/* Form Modal */}
       {showForm && (
@@ -310,7 +306,7 @@ export default function ActivitiesPage() {
               <div>
                 <label className="block text-sm font-medium text-[#0F172A] mb-2">Years Participated</label>
                 <div className="flex flex-wrap gap-2">
-                  {years.map((year) => (
+                  {participationYears.map((year) => (
                     <button
                       key={year}
                       type="button"
@@ -361,8 +357,10 @@ export default function ActivitiesPage() {
         </div>
       )}
 
-      {/* Activities List */}
-      {activities.length === 0 ? (
+      {/* Activities List - shows skeleton while loading */}
+      {loading ? (
+        <ListSkeleton count={3} />
+      ) : activities.length === 0 ? (
         <div className="card p-12 text-center">
           <svg className="w-16 h-16 mx-auto text-[#E2E8F0] mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
@@ -413,7 +411,7 @@ export default function ActivitiesPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
                   </button>
-                  <button onClick={() => handleDelete(activity.id)} className="p-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors">
+                  <button onClick={() => setDeleteTarget(activity)} className="p-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>

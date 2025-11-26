@@ -10,77 +10,34 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Try to fetch by user_id first (new submissions), then by email (old submissions)
-    let data = null;
-    let error = null;
-
-    // First try user_id
-    const result1 = await supabase
-      .from('quiz_submissions')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false });
-
-    if (result1.error) {
-      // user_id column might not exist yet, try user_email
-      if (user.email) {
-        const result2 = await supabase
-          .from('quiz_submissions')
-          .select('*')
-          .eq('user_email', user.email)
-          .order('created_at', { ascending: false });
-
-        data = result2.data;
-        error = result2.error;
-      }
-    } else {
-      data = result1.data || [];
-
-      // Also fetch by email for older submissions if we have an email
-      if (user.email) {
-        const result2 = await supabase
-          .from('quiz_submissions')
-          .select('*')
-          .eq('user_email', user.email)
-          .is('user_id', null)
-          .order('created_at', { ascending: false });
-
-        if (result2.data) {
-          // Merge and deduplicate
-          const existing = new Set(data.map((d: any) => d.id));
-          for (const item of result2.data) {
-            if (!existing.has(item.id)) {
-              data.push(item);
-            }
-          }
-        }
-      }
+    // Single query with OR condition - fetches by user_id OR user_email in one request
+    const orConditions = [`user_id.eq.${user.id}`];
+    if (user.email) {
+      orConditions.push(`user_email.eq.${user.email}`);
     }
+
+    const { data, error } = await supabase
+      .from('quiz_submissions')
+      .select('id, unique_id, total_score, max_score, created_at')
+      .or(orConditions.join(','))
+      .order('created_at', { ascending: false });
 
     if (error) {
       console.error('Quiz results query error:', error);
       return NextResponse.json({ data: [] });
     }
 
-    // Sort by created_at descending
-    data?.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-
     // Transform data to include percentage
-    const transformedData = (data || []).map((submission: any) => {
-      // Calculate percentage from stored max_score
-      const percentage = submission.max_score
+    const transformedData = (data || []).map((submission) => ({
+      id: submission.id,
+      unique_id: submission.unique_id,
+      score: submission.total_score,
+      max_score: submission.max_score,
+      percentage: submission.max_score
         ? Math.round((submission.total_score / submission.max_score) * 100)
-        : null;
-
-      return {
-        id: submission.id,
-        unique_id: submission.unique_id,
-        score: submission.total_score,
-        max_score: submission.max_score,
-        percentage,
-        created_at: submission.created_at
-      };
-    });
+        : null,
+      created_at: submission.created_at
+    }));
 
     return NextResponse.json({ data: transformedData });
   } catch (error: any) {

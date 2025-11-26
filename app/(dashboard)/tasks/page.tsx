@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { ListSkeleton, ProgressSkeleton } from '@/components/skeletons';
+import { useTasks } from '@/hooks/useDashboardData';
 
 interface TaskWithProgress {
   id: string;
@@ -54,39 +55,21 @@ const statusConfig = {
 };
 
 export default function TasksPage() {
-  const { user } = useAuth();
-  const [tasks, setTasks] = useState<TaskWithProgress[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { tasks, isLoading: loading, mutate } = useTasks();
   const [filter, setFilter] = useState<'all' | 'not_started' | 'in_progress' | 'completed'>('all');
   const [expandedTask, setExpandedTask] = useState<string | null>(null);
   const [notes, setNotes] = useState<Record<string, string>>({});
 
+  // Initialize notes when tasks load
   useEffect(() => {
-    if (user) {
-      loadTasks();
+    if (tasks.length > 0) {
+      const notesMap: Record<string, string> = {};
+      tasks.forEach((task: TaskWithProgress) => {
+        if (task.notes) notesMap[task.id] = task.notes;
+      });
+      setNotes(notesMap);
     }
-  }, [user]);
-
-  const loadTasks = async () => {
-    try {
-      const response = await fetch('/api/user/task-progress');
-      const result = await response.json();
-      if (result.data) {
-        setTasks(result.data);
-        // Initialize notes
-        const notesMap: Record<string, string> = {};
-        result.data.forEach((task: TaskWithProgress) => {
-          if (task.notes) notesMap[task.id] = task.notes;
-        });
-        setNotes(notesMap);
-      }
-    } catch (error) {
-      console.error('Error loading tasks:', error);
-      toast.error('Failed to load tasks');
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [tasks]);
 
   const updateTaskStatus = async (taskId: string, newStatus: 'not_started' | 'in_progress' | 'completed') => {
     try {
@@ -101,11 +84,7 @@ export default function TasksPage() {
       });
 
       if (response.ok) {
-        setTasks(prev =>
-          prev.map(task =>
-            task.id === taskId ? { ...task, status: newStatus } : task
-          )
-        );
+        mutate();
         toast.success(`Task marked as ${statusConfig[newStatus].label.toLowerCase()}`);
       }
     } catch (error) {
@@ -146,17 +125,9 @@ export default function TasksPage() {
 
   const progressPercent = stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF6B4A]"></div>
-      </div>
-    );
-  }
-
   return (
     <div>
-      {/* Header */}
+      {/* Header - renders immediately */}
       <div className="mb-4 sm:mb-6 md:mb-8">
         <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#0F172A] mb-1 sm:mb-2">Exploration Tasks</h1>
         <p className="text-xs sm:text-sm md:text-base text-[#64748B]">
@@ -165,6 +136,9 @@ export default function TasksPage() {
       </div>
 
       {/* Progress Overview */}
+      {loading ? (
+        <ProgressSkeleton />
+      ) : (
       <div className="card p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 md:mb-8">
         <div className="flex flex-col md:flex-row md:items-center gap-3 sm:gap-4 md:gap-6">
           <div className="flex-1">
@@ -195,6 +169,7 @@ export default function TasksPage() {
           </div>
         </div>
       </div>
+      )}
 
       {/* Filter Tabs */}
       <div className="flex gap-1.5 sm:gap-2 mb-3 sm:mb-4 md:mb-6 overflow-x-auto pb-2">
@@ -216,8 +191,10 @@ export default function TasksPage() {
         ))}
       </div>
 
-      {/* Tasks List */}
-      {filteredTasks.length === 0 ? (
+      {/* Tasks List - shows skeleton while loading */}
+      {loading ? (
+        <ListSkeleton count={5} />
+      ) : filteredTasks.length === 0 ? (
         <div className="card p-12 text-center">
           <svg className="w-16 h-16 mx-auto text-[#E2E8F0] mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
