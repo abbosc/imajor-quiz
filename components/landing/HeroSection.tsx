@@ -33,6 +33,26 @@ export default function HeroSection() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
           </svg>
         </div>
+
+        {/* Mobile: Both messages stacked BELOW scroll indicator */}
+        <div className="lg:hidden flex flex-col gap-3 items-center mt-8">
+          {/* Sticky note mobile */}
+          <div className="bg-[#FFEAA7] p-3 shadow-lg transform rotate-2"
+               style={{ clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%)' }}>
+            <p className="text-[#5D4E37] text-sm text-center max-w-[200px] font-[family-name:var(--font-caveat)]">
+              How can you love what you don&apos;t know <span className="text-[#D63031] font-bold">in depth?</span>
+            </p>
+          </div>
+
+          {/* Chalkboard mobile */}
+          <div className="bg-[#2C3E2D] rounded-lg p-3 shadow-xl border-4 border-[#8B4513] transform -rotate-1"
+               style={{ boxShadow: 'inset 0 0 20px rgba(0,0,0,0.3)' }}>
+            <p className="text-white text-sm text-center max-w-[220px] font-[family-name:var(--font-caveat)]">
+              Most students think they know their major.
+              <span className="text-[#FFD93D] font-bold block mt-1">This quiz will prove otherwise.</span>
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Sticky note - Left side */}
@@ -103,25 +123,6 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* Mobile: Both messages stacked */}
-      <div className="lg:hidden absolute bottom-28 left-1/2 transform -translate-x-1/2 flex flex-col gap-4 items-center">
-        {/* Sticky note mobile */}
-        <div className="bg-[#FFEAA7] p-3 shadow-lg transform rotate-2"
-             style={{ clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%)' }}>
-          <p className="text-[#5D4E37] text-sm text-center max-w-[200px] font-[family-name:var(--font-caveat)]">
-            How can you love what you don&apos;t know <span className="text-[#D63031] font-bold">in depth?</span>
-          </p>
-        </div>
-
-        {/* Chalkboard mobile */}
-        <div className="bg-[#2C3E2D] rounded-lg p-3 shadow-xl border-4 border-[#8B4513] transform -rotate-1"
-             style={{ boxShadow: 'inset 0 0 20px rgba(0,0,0,0.3)' }}>
-          <p className="text-white text-sm text-center max-w-[220px] font-[family-name:var(--font-caveat)]">
-            Most students think they know their major.
-            <span className="text-[#FFD93D] font-bold block mt-1">This quiz will prove otherwise.</span>
-          </p>
-        </div>
-      </div>
     </section>
   );
 }

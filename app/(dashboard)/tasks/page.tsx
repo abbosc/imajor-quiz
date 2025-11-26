@@ -157,59 +157,59 @@ export default function TasksPage() {
   return (
     <div>
       {/* Header */}
-      <div className="mb-6 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-[#0F172A] mb-1 sm:mb-2">Exploration Tasks</h1>
-        <p className="text-sm sm:text-base text-[#64748B]">
+      <div className="mb-4 sm:mb-6 md:mb-8">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#0F172A] mb-1 sm:mb-2">Exploration Tasks</h1>
+        <p className="text-xs sm:text-sm md:text-base text-[#64748B]">
           Track your progress as you explore different majors and career paths.
         </p>
       </div>
 
       {/* Progress Overview */}
-      <div className="card p-4 sm:p-6 mb-6 sm:mb-8">
-        <div className="flex flex-col md:flex-row md:items-center gap-4 sm:gap-6">
+      <div className="card p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 md:mb-8">
+        <div className="flex flex-col md:flex-row md:items-center gap-3 sm:gap-4 md:gap-6">
           <div className="flex-1">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-[#64748B]">Overall Progress</span>
-              <span className="text-sm font-bold text-[#0F172A]">{progressPercent}%</span>
+              <span className="text-xs sm:text-sm font-medium text-[#64748B]">Overall Progress</span>
+              <span className="text-xs sm:text-sm font-bold text-[#0F172A]">{progressPercent}%</span>
             </div>
-            <div className="h-3 bg-[#F1F5F9] rounded-full overflow-hidden">
+            <div className="h-2 sm:h-3 bg-[#F1F5F9] rounded-full overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-[#FF6B4A] to-[#FF8A6D] rounded-full transition-all duration-500"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-3 sm:gap-4 sm:flex">
+          <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4 sm:flex">
             <div className="text-center">
-              <p className="text-xl sm:text-2xl font-bold text-green-600">{stats.completed}</p>
-              <p className="text-xs text-[#64748B]">Completed</p>
+              <p className="text-lg sm:text-xl md:text-2xl font-bold text-green-600">{stats.completed}</p>
+              <p className="text-[10px] sm:text-xs text-[#64748B]">Completed</p>
             </div>
             <div className="text-center">
-              <p className="text-xl sm:text-2xl font-bold text-blue-600">{stats.inProgress}</p>
-              <p className="text-xs text-[#64748B]">In Progress</p>
+              <p className="text-lg sm:text-xl md:text-2xl font-bold text-blue-600">{stats.inProgress}</p>
+              <p className="text-[10px] sm:text-xs text-[#64748B]">In Progress</p>
             </div>
             <div className="text-center">
-              <p className="text-xl sm:text-2xl font-bold text-gray-400">{stats.notStarted}</p>
-              <p className="text-xs text-[#64748B]">Not Started</p>
+              <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-400">{stats.notStarted}</p>
+              <p className="text-[10px] sm:text-xs text-[#64748B]">Not Started</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex gap-2 mb-4 sm:mb-6 overflow-x-auto pb-2">
+      <div className="flex gap-1.5 sm:gap-2 mb-3 sm:mb-4 md:mb-6 overflow-x-auto pb-2">
         {(['all', 'not_started', 'in_progress', 'completed'] as const).map((status) => (
           <button
             key={status}
             onClick={() => setFilter(status)}
-            className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-colors ${
+            className={`px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-colors ${
               filter === status
                 ? 'bg-[#FF6B4A] text-white'
                 : 'bg-white text-[#64748B] hover:bg-[#F8FAFC] border border-[#E2E8F0]'
             }`}
           >
-            {status === 'all' ? 'All Tasks' : statusConfig[status].label}
-            <span className="ml-2 opacity-75">
+            {status === 'all' ? 'All' : statusConfig[status].label}
+            <span className="ml-1 sm:ml-2 opacity-75">
               ({status === 'all' ? stats.total : stats[status === 'not_started' ? 'notStarted' : status === 'in_progress' ? 'inProgress' : 'completed']})
             </span>
           </button>
@@ -232,14 +232,14 @@ export default function TasksPage() {
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-2 sm:space-y-3">
           {filteredTasks.map((task, index) => (
             <div key={task.id} className="card overflow-hidden">
-              <div className="p-4">
-                <div className="flex items-start gap-4">
+              <div className="p-2.5 sm:p-3 md:p-4">
+                <div className="flex items-start gap-2 sm:gap-3 md:gap-4">
                   {/* Task Number & Status Toggle */}
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#F8FAFC] text-[#64748B] font-medium text-sm">
+                  <div className="flex flex-col items-center gap-1.5 sm:gap-2">
+                    <div className="flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 rounded-lg bg-[#F8FAFC] text-[#64748B] font-medium text-xs sm:text-sm">
                       {index + 1}
                     </div>
                     <button
@@ -249,40 +249,40 @@ export default function TasksPage() {
                           task.status === 'in_progress' ? 'completed' : 'not_started';
                         updateTaskStatus(task.id, nextStatus);
                       }}
-                      className={`p-1.5 rounded-lg transition-colors ${statusConfig[task.status].color}`}
+                      className={`p-1 sm:p-1.5 rounded-lg transition-colors ${statusConfig[task.status].color}`}
                       title={`Click to change status (current: ${statusConfig[task.status].label})`}
                     >
-                      {statusConfig[task.status].icon}
+                      <div className="w-4 h-4 sm:w-5 sm:h-5">{statusConfig[task.status].icon}</div>
                     </button>
                   </div>
 
                   {/* Task Content */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <h3 className={`font-semibold ${task.status === 'completed' ? 'text-[#64748B] line-through' : 'text-[#0F172A]'}`}>
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 flex-wrap">
+                      <h3 className={`text-sm sm:text-base font-semibold ${task.status === 'completed' ? 'text-[#64748B] line-through' : 'text-[#0F172A]'}`}>
                         {task.title}
                       </h3>
                       {task.category && (
-                        <span className={`px-2 py-0.5 rounded-full text-xs ${categoryColors[task.category] || 'bg-gray-100 text-gray-700'}`}>
+                        <span className={`px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs ${categoryColors[task.category] || 'bg-gray-100 text-gray-700'}`}>
                           {task.category}
                         </span>
                       )}
-                      <span className={`px-2 py-0.5 rounded-full text-xs ${statusConfig[task.status].color}`}>
+                      <span className={`hidden sm:inline px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs ${statusConfig[task.status].color}`}>
                         {statusConfig[task.status].label}
                       </span>
                     </div>
                     {task.description && (
-                      <p className="text-sm text-[#64748B] mb-2">{task.description}</p>
+                      <p className="text-xs sm:text-sm text-[#64748B] mb-1.5 sm:mb-2 line-clamp-2">{task.description}</p>
                     )}
 
                     {/* Expand/Collapse Button */}
                     <button
                       onClick={() => setExpandedTask(expandedTask === task.id ? null : task.id)}
-                      className="text-sm text-[#FF6B4A] hover:underline flex items-center gap-1"
+                      className="text-xs sm:text-sm text-[#FF6B4A] hover:underline flex items-center gap-1"
                     >
                       {expandedTask === task.id ? 'Hide notes' : 'Add notes'}
                       <svg
-                        className={`w-4 h-4 transition-transform ${expandedTask === task.id ? 'rotate-180' : ''}`}
+                        className={`w-3 h-3 sm:w-4 sm:h-4 transition-transform ${expandedTask === task.id ? 'rotate-180' : ''}`}
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -297,10 +297,10 @@ export default function TasksPage() {
                     {task.status !== 'completed' && (
                       <button
                         onClick={() => updateTaskStatus(task.id, 'completed')}
-                        className="p-2 rounded-lg text-green-600 hover:bg-green-50 transition-colors"
+                        className="p-1.5 sm:p-2 rounded-lg text-green-600 hover:bg-green-50 transition-colors"
                         title="Mark as completed"
                       >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
                       </button>
@@ -311,9 +311,9 @@ export default function TasksPage() {
 
               {/* Expandable Notes Section */}
               {expandedTask === task.id && (
-                <div className="px-4 pb-4 pt-0">
-                  <div className="border-t border-[#E2E8F0] pt-4 ml-12">
-                    <label className="block text-sm font-medium text-[#0F172A] mb-2">
+                <div className="px-2.5 sm:px-3 md:px-4 pb-2.5 sm:pb-3 md:pb-4 pt-0">
+                  <div className="border-t border-[#E2E8F0] pt-2.5 sm:pt-3 md:pt-4 ml-8 sm:ml-10 md:ml-12">
+                    <label className="block text-xs sm:text-sm font-medium text-[#0F172A] mb-1.5 sm:mb-2">
                       Personal Notes
                     </label>
                     <textarea
@@ -321,12 +321,12 @@ export default function TasksPage() {
                       onChange={(e) => setNotes(prev => ({ ...prev, [task.id]: e.target.value }))}
                       placeholder="Add your notes, reflections, or resources here..."
                       rows={3}
-                      className="w-full px-4 py-3 rounded-xl border border-[#E2E8F0] focus:border-[#FF6B4A] focus:ring-2 focus:ring-[#FF6B4A]/20 outline-none resize-none text-sm"
+                      className="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl border border-[#E2E8F0] focus:border-[#FF6B4A] focus:ring-2 focus:ring-[#FF6B4A]/20 outline-none resize-none text-xs sm:text-sm"
                     />
-                    <div className="flex justify-end mt-2">
+                    <div className="flex justify-end mt-1.5 sm:mt-2">
                       <button
                         onClick={() => saveNotes(task.id)}
-                        className="px-4 py-2 rounded-xl text-sm font-medium text-white bg-[#FF6B4A] hover:bg-[#FF5A36] transition-colors"
+                        className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium text-white bg-[#FF6B4A] hover:bg-[#FF5A36] transition-colors"
                       >
                         Save Notes
                       </button>

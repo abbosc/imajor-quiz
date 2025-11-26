@@ -535,16 +535,16 @@ export default function QuizPage() {
         </div>
 
         {/* Question */}
-        <div className="container mx-auto px-6 py-12">
+        <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 md:py-12">
           <div className="max-w-3xl mx-auto">
             <QuestionTransition questionKey={currentQuestionIndex} direction={direction}>
               <motion.div
-                className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-8 mb-8"
+                className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-4 sm:p-6 md:p-8 mb-4 sm:mb-6 md:mb-8"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
               >
-                <div className="flex items-start justify-between mb-6">
-                  <h2 className="text-2xl md:text-3xl font-bold text-white flex-1">
+                <div className="flex items-start justify-between mb-4 sm:mb-6">
+                  <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-white flex-1">
                     {currentQuestion.question_text}
                   </h2>
                   {currentQuestion.explanation && (

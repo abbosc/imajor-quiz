@@ -50,7 +50,7 @@ export default function AnswerCard({
               }
         }
         className={`
-          w-full p-5 rounded-xl border-2 text-left transition-colors duration-200
+          w-full p-3 sm:p-4 md:p-5 rounded-xl border-2 text-left transition-colors duration-200
           ${isSelected
             ? 'bg-[#FF6B4A]/10 border-[#FF6B4A]'
             : 'bg-white/5 border-white/20 hover:border-[#FF6B4A]/50 hover:bg-white/10'
@@ -58,11 +58,11 @@ export default function AnswerCard({
           ${disabled ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}
         `}
       >
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2.5 sm:gap-3 md:gap-4">
           {/* Radio indicator */}
           <div
             className={`
-              w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all duration-200
+              w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all duration-200
               ${isSelected
                 ? 'border-[#FF6B4A] bg-[#FF6B4A]'
                 : 'border-white/40'
@@ -73,13 +73,13 @@ export default function AnswerCard({
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                className="w-2 h-2 rounded-full bg-white"
+                className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white"
               />
             )}
           </div>
 
           {/* Choice text */}
-          <span className={`text-base ${isSelected ? 'text-white font-medium' : 'text-white/80'}`}>
+          <span className={`text-sm sm:text-base ${isSelected ? 'text-white font-medium' : 'text-white/80'}`}>
             {choiceText}
           </span>
         </div>
