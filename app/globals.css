@@ -3,6 +3,9 @@
 @tailwind utilities;
 
 :root {
+  /* iOS Safari viewport height fix - will be set by useViewportHeight hook */
+  --vh: 1vh;
+
   --coral-primary: #FF6B4A;
   --coral-dark: #E85537;
   --coral-light: #FF8A6D;
@@ -34,19 +37,6 @@ body {
 @layer utilities {
   .text-balance {
     text-wrap: balance;
-  }
-
-  /* iOS Safari safe height - fills visible area only */
-  .h-screen-safe {
-    height: 100vh;
-    height: 100dvh;
-  }
-}
-
-/* iOS Safari specific - must be outside @layer for proper cascade */
-@supports (-webkit-touch-callout: none) {
-  .h-screen-safe {
-    height: -webkit-fill-available !important;
   }
 }
 
