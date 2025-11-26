@@ -148,7 +148,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:sticky top-0 left-0 z-50 h-screen w-64 bg-white border-r border-[#E2E8F0] flex flex-col transform transition-transform duration-300 lg:transform-none ${
+        className={`fixed lg:sticky top-0 left-0 z-50 h-dvh w-64 bg-white border-r border-[#E2E8F0] flex flex-col transform transition-transform duration-300 lg:transform-none ${
           isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
