@@ -35,6 +35,19 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+
+  /* iOS Safari safe height - fills visible area only */
+  .h-screen-safe {
+    height: 100vh;
+    height: 100dvh;
+  }
+}
+
+/* iOS Safari specific - must be outside @layer for proper cascade */
+@supports (-webkit-touch-callout: none) {
+  .h-screen-safe {
+    height: -webkit-fill-available !important;
+  }
 }
 
 /* Professional card styles */
