@@ -97,7 +97,7 @@ export default function SignupPage() {
 
         <div>
           <label htmlFor="country" className="block text-sm font-medium text-[#0F172A] mb-2">
-            Country <span className="text-[#94A3B8] font-normal">(optional)</span>
+            Country
           </label>
           <input
             id="country"
