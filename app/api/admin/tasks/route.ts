@@ -1,17 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
-
-function verifyAdmin(request: NextRequest) {
-  const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-  if (!token) {
-    return false;
-  }
-  return true;
-}
+import { verifyAdmin } from '@/lib/admin-auth';
 
 // GET all exploration tasks
-export async function GET(request: NextRequest) {
-  if (!verifyAdmin(request)) {
+export async function GET() {
+  const { isAdmin } = await verifyAdmin();
+  if (!isAdmin) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -31,7 +25,8 @@ export async function GET(request: NextRequest) {
 
 // POST new exploration task
 export async function POST(request: NextRequest) {
-  if (!verifyAdmin(request)) {
+  const { isAdmin } = await verifyAdmin();
+  if (!isAdmin) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -65,7 +60,8 @@ export async function POST(request: NextRequest) {
 
 // PUT update exploration task
 export async function PUT(request: NextRequest) {
-  if (!verifyAdmin(request)) {
+  const { isAdmin } = await verifyAdmin();
+  if (!isAdmin) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -100,7 +96,8 @@ export async function PUT(request: NextRequest) {
 
 // DELETE exploration task
 export async function DELETE(request: NextRequest) {
-  if (!verifyAdmin(request)) {
+  const { isAdmin } = await verifyAdmin();
+  if (!isAdmin) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

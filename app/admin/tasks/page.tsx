@@ -14,12 +14,6 @@ interface Task {
   created_at: string;
 }
 
-function getAuthToken() {
-  if (typeof window !== 'undefined') {
-    return localStorage.getItem('admin_token');
-  }
-  return null;
-}
 
 export default function AdminTasksPage() {
   const router = useRouter();
@@ -37,21 +31,12 @@ export default function AdminTasksPage() {
   });
 
   useEffect(() => {
-    const token = localStorage.getItem('admin_token');
-    if (!token) {
-      router.push('/admin');
-      return;
-    }
     loadTasks();
   }, []);
 
   const loadTasks = async () => {
     try {
-      const response = await fetch('/api/admin/tasks', {
-        headers: {
-          'Authorization': `Bearer ${getAuthToken()}`
-        }
-      });
+      const response = await fetch('/api/admin/tasks');
       const result = await response.json();
       if (result.data) {
         setTasks(result.data);
@@ -76,8 +61,7 @@ export default function AdminTasksPage() {
       const response = await fetch(url, {
         method,
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${getAuthToken()}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(body)
       });
@@ -126,8 +110,7 @@ export default function AdminTasksPage() {
         const response = await fetch('/api/admin/tasks', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${getAuthToken()}`
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({
             title: task.title,
@@ -156,10 +139,7 @@ export default function AdminTasksPage() {
 
     try {
       const response = await fetch(`/api/admin/tasks?id=${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${getAuthToken()}`
-        }
+        method: 'DELETE'
       });
 
       if (response.ok) {
@@ -175,8 +155,7 @@ export default function AdminTasksPage() {
       await fetch('/api/admin/tasks', {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${getAuthToken()}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           id: task.id,

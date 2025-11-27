@@ -1,17 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
-
-function verifyAdmin(request: NextRequest) {
-  const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-  if (!token) {
-    return false;
-  }
-  return true;
-}
+import { verifyAdmin } from '@/lib/admin-auth';
 
 // GET all questions
-export async function GET(request: NextRequest) {
-  if (!verifyAdmin(request)) {
+export async function GET() {
+  const { isAdmin } = await verifyAdmin();
+  if (!isAdmin) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -34,7 +28,8 @@ export async function GET(request: NextRequest) {
 
 // POST new question with answer choices
 export async function POST(request: NextRequest) {
-  if (!verifyAdmin(request)) {
+  const { isAdmin } = await verifyAdmin();
+  if (!isAdmin) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -80,7 +75,8 @@ export async function POST(request: NextRequest) {
 
 // PUT update question
 export async function PUT(request: NextRequest) {
-  if (!verifyAdmin(request)) {
+  const { isAdmin } = await verifyAdmin();
+  if (!isAdmin) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -105,7 +101,8 @@ export async function PUT(request: NextRequest) {
 
 // DELETE question
 export async function DELETE(request: NextRequest) {
-  if (!verifyAdmin(request)) {
+  const { isAdmin } = await verifyAdmin();
+  if (!isAdmin) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

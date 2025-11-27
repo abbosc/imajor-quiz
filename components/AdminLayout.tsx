@@ -1,26 +1,62 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/lib/supabase';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
+  const { user, signOut } = useAuth();
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('admin_token');
-    if (!token && pathname !== '/admin') {
-      router.push('/admin');
-    }
-  }, [pathname]);
+    async function checkAdminStatus() {
+      if (!user) {
+        router.push('/admin');
+        return;
+      }
 
-  const handleLogout = () => {
-    localStorage.removeItem('admin_token');
+      // Check if user is admin
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('is_admin')
+        .eq('id', user.id)
+        .single();
+
+      if (error || !profile?.is_admin) {
+        router.push('/admin');
+        return;
+      }
+
+      setIsAdmin(true);
+      setLoading(false);
+    }
+
+    checkAdminStatus();
+  }, [user, router]);
+
+  const handleLogout = async () => {
+    await signOut();
     router.push('/admin');
   };
 
   const isActive = (path: string) => pathname === path;
+
+  if (loading || isAdmin === null) {
+    return (
+      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FF6B4A]"></div>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
@@ -29,12 +65,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex justify-between items-center">
             <h1 className="text-xl sm:text-2xl font-bold gradient-text">iMajor Admin</h1>
-            <button
-              onClick={handleLogout}
-              className="text-sm sm:text-base text-[#64748B] hover:text-[#FF6B4A] transition-colors duration-200"
-            >
-              Logout
-            </button>
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-[#64748B] hidden sm:block">
+                {user?.email}
+              </span>
+              <button
+                onClick={handleLogout}
+                className="text-sm sm:text-base text-[#64748B] hover:text-[#FF6B4A] transition-colors duration-200"
+              >
+                Logout
+              </button>
+            </div>
           </div>
         </div>
       </nav>

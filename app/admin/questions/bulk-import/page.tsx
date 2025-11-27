@@ -11,10 +11,6 @@ export default function BulkImportPage() {
   const [preview, setPreview] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const getAuthToken = () => {
-    return localStorage.getItem('admin_token') || '';
-  };
-
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (!selectedFile) return;
@@ -55,13 +51,10 @@ export default function BulkImportPage() {
       const text = await file.text();
       const questions = JSON.parse(text);
 
-      const token = localStorage.getItem('admin_token') || '';
-
       const response = await fetch('/api/admin/questions/bulk-import', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({ questions })
       });

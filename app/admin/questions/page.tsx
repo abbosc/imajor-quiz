@@ -30,17 +30,9 @@ export default function QuestionsPage() {
     loadQuestions();
   }, []);
 
-  const getAuthToken = () => {
-    return localStorage.getItem('admin_token') || '';
-  };
-
   const loadQuestions = async () => {
     try {
-      const response = await fetch('/api/admin/questions', {
-        headers: {
-          'Authorization': `Bearer ${getAuthToken()}`
-        }
-      });
+      const response = await fetch('/api/admin/questions');
 
       if (!response.ok) throw new Error('Failed to load questions');
 
@@ -58,8 +50,7 @@ export default function QuestionsPage() {
       const response = await fetch('/api/admin/questions', {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${getAuthToken()}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           id,
@@ -83,10 +74,7 @@ export default function QuestionsPage() {
 
     try {
       const response = await fetch(`/api/admin/questions?id=${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${getAuthToken()}`
-        }
+        method: 'DELETE'
       });
 
       if (!response.ok) throw new Error('Failed to delete question');

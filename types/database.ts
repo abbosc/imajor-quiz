@@ -128,6 +128,7 @@ export interface Database {
           grade_level: string | null
           school_name: string | null
           country: string | null
+          is_admin: boolean
           created_at: string
           updated_at: string
         }
@@ -139,6 +140,7 @@ export interface Database {
           grade_level?: string | null
           school_name?: string | null
           country?: string | null
+          is_admin?: boolean
           created_at?: string
           updated_at?: string
         }
@@ -150,6 +152,7 @@ export interface Database {
           grade_level?: string | null
           school_name?: string | null
           country?: string | null
+          is_admin?: boolean
           created_at?: string
           updated_at?: string
         }

@@ -178,9 +178,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
+      // Remove is_admin from updates to prevent privilege escalation
+      const { is_admin, ...safeUpdates } = updates;
+
       const { error } = await supabase
         .from('profiles')
-        .update(updates)
+        .update(safeUpdates)
         .eq('id', user.id);
 
       if (error) {

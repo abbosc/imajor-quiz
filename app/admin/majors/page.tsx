@@ -12,12 +12,6 @@ interface Major {
   created_at: string;
 }
 
-function getAuthToken() {
-  if (typeof window !== 'undefined') {
-    return localStorage.getItem('admin_token');
-  }
-  return null;
-}
 
 export default function AdminMajorsPage() {
   const router = useRouter();
@@ -34,21 +28,12 @@ export default function AdminMajorsPage() {
   });
 
   useEffect(() => {
-    const token = localStorage.getItem('admin_token');
-    if (!token) {
-      router.push('/admin');
-      return;
-    }
     loadMajors();
   }, []);
 
   const loadMajors = async () => {
     try {
-      const response = await fetch('/api/admin/majors', {
-        headers: {
-          'Authorization': `Bearer ${getAuthToken()}`
-        }
-      });
+      const response = await fetch('/api/admin/majors');
       const result = await response.json();
       if (result.data) {
         setMajors(result.data);
@@ -73,8 +58,7 @@ export default function AdminMajorsPage() {
       const response = await fetch(url, {
         method,
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${getAuthToken()}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(body)
       });
@@ -123,8 +107,7 @@ export default function AdminMajorsPage() {
         const response = await fetch('/api/admin/majors', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${getAuthToken()}`
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({
             name,
@@ -152,10 +135,7 @@ export default function AdminMajorsPage() {
 
     try {
       const response = await fetch(`/api/admin/majors?id=${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${getAuthToken()}`
-        }
+        method: 'DELETE'
       });
 
       if (response.ok) {
@@ -171,8 +151,7 @@ export default function AdminMajorsPage() {
       await fetch('/api/admin/majors', {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${getAuthToken()}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           id: major.id,

@@ -1,13 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
-
-function verifyAdmin(request: NextRequest) {
-  const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-  if (!token) {
-    return false;
-  }
-  return true;
-}
+import { verifyAdmin } from '@/lib/admin-auth';
 
 interface ValidatedQuestion {
   question_text: string;
@@ -23,7 +16,8 @@ interface ValidatedQuestion {
 }
 
 export async function POST(request: NextRequest) {
-  if (!verifyAdmin(request)) {
+  const { isAdmin } = await verifyAdmin();
+  if (!isAdmin) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

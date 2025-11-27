@@ -21,23 +21,12 @@ export default function AdminSubmissions() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('admin_token');
-    if (!token) {
-      router.push('/admin');
-      return;
-    }
-
     loadSubmissions();
   }, []);
 
   const loadSubmissions = async () => {
     try {
-      const token = localStorage.getItem('admin_token');
-      const response = await fetch('/api/admin/submissions', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      const response = await fetch('/api/admin/submissions');
 
       if (!response.ok) throw new Error('Failed to fetch submissions');
 
