@@ -6,9 +6,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
 
 // Lazy load below-the-fold sections for faster initial page load
-const PrizeSection = dynamic(() => import("@/components/landing/PrizeSection"), {
-  loading: () => <div className="h-96 animate-shimmer" />,
-});
+// TEMPORARILY DISABLED - Consultations section
+// const PrizeSection = dynamic(() => import("@/components/landing/PrizeSection"), {
+//   loading: () => <div className="h-96 animate-shimmer" />,
+// });
 const FeaturesSection = dynamic(() => import("@/components/landing/FeaturesSection"), {
   loading: () => <div className="h-96 animate-shimmer" />,
 });
@@ -73,8 +74,8 @@ export default function Home() {
         {/* Hero Section with Typewriter */}
         <HeroSection />
 
-        {/* Consultation Prize Section */}
-        <PrizeSection />
+        {/* Consultation Prize Section - TEMPORARILY DISABLED */}
+        {/* <PrizeSection /> */}
 
         {/* Why iMajor Section */}
         <WhySection />
