@@ -5,6 +5,8 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { Toaster } from "sonner";
 import LenisProvider from "@/components/providers/LenisProvider";
 import { StructuredData } from "@/components/SEO/StructuredData";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -119,6 +121,8 @@ export default function RootLayout({
             />
           </AuthProvider>
         </LenisProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

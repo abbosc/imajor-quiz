@@ -10,7 +10,7 @@ interface AuthContextType {
   session: Session | null;
   profile: Profile | null;
   loading: boolean;
-  signUp: (email: string, password: string, fullName: string) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string, fullName: string, country?: string) => Promise<{ error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signInWithGoogle: () => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
@@ -101,7 +101,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const signUp = async (email: string, password: string, fullName: string) => {
+  const signUp = async (email: string, password: string, fullName: string, country?: string) => {
     try {
       // Get the current origin for the email redirect
       const origin = typeof window !== 'undefined' ? window.location.origin : '';
@@ -113,6 +113,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           emailRedirectTo: `${origin}/auth/callback`,
           data: {
             full_name: fullName,
+            country: country || null,
           },
         },
       });

@@ -23,6 +23,7 @@ export default function SettingsPage() {
     full_name: '',
     grade_level: '',
     school_name: '',
+    country: '',
   });
   const [availableMajors, setAvailableMajors] = useState<Major[]>([]);
   const [userMajors, setUserMajors] = useState<UserMajor[]>([]);
@@ -50,6 +51,7 @@ export default function SettingsPage() {
         full_name: profile.full_name || '',
         grade_level: profile.grade_level || '',
         school_name: profile.school_name || '',
+        country: profile.country || '',
       });
     }
   }, [profile]);
@@ -195,6 +197,17 @@ export default function SettingsPage() {
               onChange={(e) => setFormData({ ...formData, school_name: e.target.value })}
               className="w-full px-4 py-3 rounded-xl border border-[#E2E8F0] focus:border-[#FF6B4A] focus:ring-2 focus:ring-[#FF6B4A]/20 outline-none"
               placeholder="Your school name"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-[#0F172A] mb-2">Country</label>
+            <input
+              type="text"
+              value={formData.country}
+              onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+              className="w-full px-4 py-3 rounded-xl border border-[#E2E8F0] focus:border-[#FF6B4A] focus:ring-2 focus:ring-[#FF6B4A]/20 outline-none"
+              placeholder="e.g. Uzbekistan / Kazakhstan"
             />
           </div>
 
