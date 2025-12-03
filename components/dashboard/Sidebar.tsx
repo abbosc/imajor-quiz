@@ -148,7 +148,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { profile, signOut } = useAuth();
-  const [collegeAppOpen, setCollegeAppOpen] = useState(true);
+  const [collegeAppOpen, setCollegeAppOpen] = useState(false);
 
   // Set --vh CSS variable for iOS Safari viewport fix
   useViewportHeight();
