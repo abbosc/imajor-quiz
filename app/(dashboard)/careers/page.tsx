@@ -160,10 +160,10 @@ export default function CareersPage() {
 
                   {/* Text - fills remaining space */}
                   <div className="mt-auto min-w-0">
-                    <h3 className="text-lg font-semibold text-[#0F172A] mb-1 group-hover:text-[#FF6B4A] transition-colors line-clamp-1">
+                    <h3 className="text-lg font-semibold text-[#0F172A] mb-1 group-hover:text-[#FF6B4A] transition-colors line-clamp-2">
                       {category.name}
                     </h3>
-                    <p className="text-sm text-[#64748B] line-clamp-2 mb-3">
+                    <p className="text-sm text-[#64748B] line-clamp-1 mb-3">
                       {category.description || 'Explore careers in this field'}
                     </p>
                     <div className="flex items-center justify-between">

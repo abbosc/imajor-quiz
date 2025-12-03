@@ -171,7 +171,32 @@ async function SavedCareers({ userId }: { userId: string }) {
   const careers = savedCareers || [];
 
   if (careers.length === 0) {
-    return null;
+    return (
+      <div className="card p-5 sm:p-8 bg-gradient-to-r from-[#FF6B4A]/10 to-[#FF8A6D]/10 border-2 border-dashed border-[#FF6B4A]/40 mb-6 sm:mb-8">
+        <div className="text-center">
+          <div className="w-14 h-14 sm:w-20 sm:h-20 mx-auto mb-3 sm:mb-4 bg-[#FF6B4A]/20 rounded-full flex items-center justify-center">
+            <svg className="w-7 h-7 sm:w-10 sm:h-10 text-[#FF6B4A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+            </svg>
+          </div>
+          <h3 className="text-lg sm:text-xl font-bold text-[#0F172A] mb-2">
+            Save Your Favorite Careers
+          </h3>
+          <p className="text-sm sm:text-base text-[#64748B] mb-4 sm:mb-6 max-w-md mx-auto">
+            Browse career paths and bookmark the ones you&apos;re interested in. Your saved careers will appear here for easy access.
+          </p>
+          <Link
+            href="/careers"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white gradient-accent hover:shadow-lg hover:shadow-[#FF6B4A]/25 transition-all"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+            </svg>
+            Browse & Save Careers
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   return (
