@@ -4,6 +4,7 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { redirect } from 'next/navigation';
 import { PendingQuizHandler } from '@/components/dashboard/PendingQuizHandler';
 import { StatsGridSkeleton, MajorTagsSkeleton } from '@/components/skeletons';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 
 // Async component for user majors tags
 async function UserMajorTags({ userId }: { userId: string }) {
@@ -144,6 +145,120 @@ async function DashboardStats({ userId }: { userId: string }) {
   );
 }
 
+// Async component for saved careers
+async function SavedCareers({ userId }: { userId: string }) {
+  const { data: savedCareers } = await supabaseAdmin
+    .from('user_saved_careers')
+    .select(`
+      id,
+      created_at,
+      career:careers(
+        id,
+        name,
+        slug,
+        brief_description,
+        salary_average,
+        major:career_majors(
+          slug,
+          category:career_categories(slug, color)
+        )
+      )
+    `)
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(4);
+
+  const careers = savedCareers || [];
+
+  if (careers.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="mb-6 sm:mb-8">
+      <div className="flex items-center justify-between mb-3 sm:mb-4">
+        <h2 className="text-lg sm:text-xl font-bold text-[#0F172A]">Saved Careers</h2>
+        <Link
+          href="/careers"
+          className="text-sm text-[#FF6B4A] hover:underline font-medium"
+        >
+          Explore more
+        </Link>
+      </div>
+      <div className="grid sm:grid-cols-2 gap-3">
+        {careers.map((saved: any) => {
+          const career = saved.career;
+          if (!career) return null;
+          const color = career.major?.category?.color || '#FF6B4A';
+          const categorySlug = career.major?.category?.slug || '';
+          const majorSlug = career.major?.slug || '';
+
+          return (
+            <Link
+              key={saved.id}
+              href={`/careers/${categorySlug}/${majorSlug}/${career.slug}`}
+              className="card p-4 hover:shadow-md transition-all group"
+            >
+              <div className="flex items-start gap-3">
+                <div
+                  className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                  style={{ background: `${color}12` }}
+                >
+                  <svg className="w-5 h-5" style={{ color }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-sm text-[#0F172A] group-hover:text-[#FF6B4A] transition-colors line-clamp-1">
+                    {career.name}
+                  </h3>
+                  <p className="text-xs text-[#64748B] line-clamp-1">
+                    {career.brief_description || 'Explore this career path'}
+                  </p>
+                  {career.salary_average && (
+                    <p className="text-xs font-medium mt-1" style={{ color }}>
+                      ${(career.salary_average / 1000).toFixed(0)}k avg
+                    </p>
+                  )}
+                </div>
+                <svg
+                  className="w-4 h-4 text-[#CBD5E1] group-hover:text-[#FF6B4A] transition-colors flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </Link>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function SavedCareersSkeleton() {
+  return (
+    <div className="mb-6 sm:mb-8">
+      <div className="h-7 w-36 bg-[#F1F5F9] rounded animate-pulse mb-4" />
+      <div className="grid sm:grid-cols-2 gap-3">
+        {[...Array(2)].map((_, i) => (
+          <div key={i} className="card p-4">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[#F1F5F9] animate-pulse" />
+              <div className="flex-1">
+                <div className="h-4 w-32 bg-[#F1F5F9] rounded animate-pulse mb-2" />
+                <div className="h-3 w-48 bg-[#F1F5F9] rounded animate-pulse" />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const quickLinks = [
   {
     title: 'Exploration Tasks',
@@ -235,6 +350,11 @@ export default async function DashboardPage() {
       {/* Quick Stats - Dynamic with Suspense */}
       <Suspense fallback={<StatsGridSkeleton />}>
         <DashboardStats userId={user.id} />
+      </Suspense>
+
+      {/* Saved Careers - Dynamic with Suspense */}
+      <Suspense fallback={<SavedCareersSkeleton />}>
+        <SavedCareers userId={user.id} />
       </Suspense>
 
       {/* Quick Links - Static, renders immediately */}
