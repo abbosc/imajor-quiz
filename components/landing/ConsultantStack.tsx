@@ -4,12 +4,10 @@ import ConsultantCard, { Consultant } from './ConsultantCard';
 
 const CONSULTANTS: Consultant[] = [
   { id: '1', name: 'Jasurbek', image: '/consultants/jasurbek.jpg', university: 'Harvard', major: 'Mechanical Engineering' },
-  { id: '2', name: 'Azizbek', image: '/consultants/azizbek.jpg', university: 'Harvard', major: 'Public Admin & Economics' },
-  { id: '3', name: 'Levsha', image: '/consultants/levsha.jpg', university: 'HKUST', major: 'Economics & Finance' },
-  { id: '4', name: 'Ozodbek', image: '/consultants/ozodbek.jpg', university: 'Amherst', major: 'Econ & Political Science' },
-  { id: '5', name: 'Jamshidbek', image: '/consultants/jamshidbek.jpg', university: 'Vanderbilt', major: 'Neuroscience' },
-  { id: '6', name: 'Murod', image: '/consultants/murod.jpg', university: 'NYUAD', major: 'Mechanical Engineering' },
-  { id: '7', name: 'Parviz', image: '/consultants/parviz.jpg', university: 'NYUAD', major: 'Economics & Politics' },
+  { id: '2', name: 'Ozodbek', image: '/consultants/ozodbek.jpg', university: 'Amherst', major: 'Econ & Political Science' },
+  { id: '3', name: 'Jamshidbek', image: '/consultants/jamshidbek.jpg', university: 'Vanderbilt', major: 'Neuroscience' },
+  { id: '4', name: 'Murod', image: '/consultants/murod.jpg', university: 'NYUAD', major: 'Mechanical Engineering' },
+  { id: '5', name: 'Parviz', image: '/consultants/parviz.jpg', university: 'NYUAD', major: 'Economics & Politics' },
 ];
 
 export default function ConsultantStack() {
