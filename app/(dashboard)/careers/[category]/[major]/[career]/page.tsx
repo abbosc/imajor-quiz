@@ -534,15 +534,40 @@ export default function CareerPage() {
 
               {career.high_paying_regions && career.high_paying_regions.length > 0 && (
                 <div>
-                  <p className="text-xs font-medium text-[#94A3B8] mb-1.5">Top Paying Locations</p>
-                  <p className="text-sm text-[#475569]">{career.high_paying_regions.join(' • ')}</p>
+                  <p className="text-xs font-medium text-[#94A3B8] mb-2">Top Paying Locations</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {career.high_paying_regions.map((region, i) => (
+                      <span
+                        key={i}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#F1F5F9] text-[#475569]"
+                      >
+                        <svg className="w-3 h-3 text-[#94A3B8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        {region}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               )}
 
               {career.high_paying_industries && career.high_paying_industries.length > 0 && (
                 <div>
-                  <p className="text-xs font-medium text-[#94A3B8] mb-1.5">Top Paying Industries</p>
-                  <p className="text-sm text-[#475569]">{career.high_paying_industries.join(' • ')}</p>
+                  <p className="text-xs font-medium text-[#94A3B8] mb-2">Top Paying Industries</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {career.high_paying_industries.map((industry, i) => (
+                      <span
+                        key={i}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#F1F5F9] text-[#475569]"
+                      >
+                        <svg className="w-3 h-3 text-[#94A3B8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                        {industry}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
