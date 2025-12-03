@@ -125,6 +125,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               Majors
             </Link>
             <Link
+              href="/admin/careers"
+              className={`px-3 sm:px-4 py-3 text-sm sm:text-base whitespace-nowrap ${
+                pathname?.startsWith('/admin/careers')
+                  ? 'text-[#FF6B4A] border-b-2 border-[#FF6B4A] font-semibold'
+                  : 'text-[#64748B] hover:text-[#FF6B4A]'
+              } transition-colors duration-200`}
+            >
+              Careers
+            </Link>
+            <Link
               href="/admin/submissions"
               className={`px-3 sm:px-4 py-3 text-sm sm:text-base whitespace-nowrap ${
                 isActive('/admin/submissions')
