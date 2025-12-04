@@ -26,6 +26,11 @@ export const metadata: Metadata = {
     default: "iMajor - Discover Your Perfect College Major",
     template: "%s | iMajor"
   },
+  icons: {
+    icon: '/icon.jpg',
+    shortcut: '/icon.jpg',
+    apple: '/icon.jpg',
+  },
   description: "Take the free Major Exploration Quiz to discover how deeply you've explored your college major options. Win free consultation slots with expert mentors and find your ideal career path.",
   keywords: [
     "college major quiz",
