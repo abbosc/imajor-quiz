@@ -8,36 +8,52 @@ export interface Consultant {
   major: string;
 }
 
+export type ClipPosition = 'first' | 'middle' | 'last' | 'single';
+
 interface ConsultantCardProps {
   consultant: Consultant;
+  clipPosition?: ClipPosition;
 }
 
-export default function ConsultantCard({ consultant }: ConsultantCardProps) {
-  return (
-    <div className="group relative">
-      {/* Card */}
-      <div className="bg-white rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 border border-[#E2E8F0] hover:border-[#FF6B4A]/30 hover:-translate-y-2">
-        {/* Image container */}
-        <div className="relative w-28 h-28 mx-auto mb-4">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#FF6B4A] to-[#E85537] rounded-full opacity-20 group-hover:opacity-30 transition-opacity" />
-          <div className="relative w-full h-full rounded-full overflow-hidden border-4 border-white shadow-xl">
-            <Image
-              src={consultant.image}
-              alt={consultant.name}
-              fill
-              sizes="112px"
-              className="object-cover"
-              loading="lazy"
-            />
-          </div>
-        </div>
+// Clip-path styles for diagonal cuts
+const clipPaths: Record<ClipPosition, string> = {
+  first: 'polygon(0 0, 100% 0, 85% 100%, 0 100%)',      // Cut on right
+  middle: 'polygon(15% 0, 100% 0, 85% 100%, 0 100%)',   // Cut on both sides
+  last: 'polygon(15% 0, 100% 0, 100% 100%, 0 100%)',    // Cut on left
+  single: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)',    // No cuts
+};
 
-        {/* Info */}
-        <div className="text-center">
-          <h4 className="font-bold text-[#0F172A] text-lg mb-1">{consultant.name}</h4>
-          <p className="text-sm font-medium text-[#FF6B4A] mb-1">{consultant.university}</p>
-          <p className="text-xs text-[#64748B] leading-tight">{consultant.major}</p>
-        </div>
+export default function ConsultantCard({ consultant, clipPosition = 'single' }: ConsultantCardProps) {
+  return (
+    <div className="relative flex-shrink-0 w-44 md:w-52">
+      {/* Big Photo with diagonal clip */}
+      <div
+        className="relative h-52 md:h-64 overflow-hidden"
+        style={{ clipPath: clipPaths[clipPosition] }}
+      >
+        <Image
+          src={consultant.image}
+          alt={consultant.name}
+          fill
+          sizes="(max-width: 768px) 176px, 208px"
+          className="object-cover"
+          loading="lazy"
+        />
+        {/* Subtle gradient overlay at bottom */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+      </div>
+
+      {/* Info below photo */}
+      <div className="text-center py-3 px-2">
+        <h4 className="font-bold text-[#0F172A] text-base md:text-lg mb-0.5">
+          {consultant.name}
+        </h4>
+        <p className="text-sm font-medium text-[#FF6B4A] mb-0.5">
+          {consultant.university}
+        </p>
+        <p className="text-xs text-[#64748B] leading-tight">
+          {consultant.major}
+        </p>
       </div>
     </div>
   );

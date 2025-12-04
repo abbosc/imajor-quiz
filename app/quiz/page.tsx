@@ -23,6 +23,35 @@ import AnswerCard from '@/components/cosmic/AnswerCard';
 import { useSoundEffect } from '@/components/audio/SoundManager';
 import SoundToggle from '@/components/audio/SoundToggle';
 
+// Comprehensive country list
+const COUNTRIES = [
+  "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Argentina", "Armenia", "Australia",
+  "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium",
+  "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei",
+  "Bulgaria", "Burkina Faso", "Burundi", "Cambodia", "Cameroon", "Canada", "Cape Verde",
+  "Central African Republic", "Chad", "Chile", "China", "Colombia", "Comoros", "Congo", "Costa Rica",
+  "Croatia", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic",
+  "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini", "Ethiopia",
+  "Fiji", "Finland", "France", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Greece", "Grenada",
+  "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Honduras", "Hungary", "Iceland", "India",
+  "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Ivory Coast", "Jamaica", "Japan", "Jordan",
+  "Kazakhstan", "Kenya", "Kiribati", "Kosovo", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon",
+  "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Madagascar", "Malawi",
+  "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico",
+  "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar",
+  "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria",
+  "North Korea", "North Macedonia", "Norway", "Oman", "Pakistan", "Palau", "Palestine", "Panama",
+  "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania",
+  "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines",
+  "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles",
+  "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa",
+  "South Korea", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland",
+  "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Timor-Leste", "Togo", "Tonga",
+  "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine",
+  "United Arab Emirates", "United Kingdom", "United States", "Uruguay", "Uzbekistan", "Vanuatu",
+  "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"
+];
+
 export default function QuizPage() {
   const router = useRouter();
   const { user, profile, loading: authLoading } = useAuth();
@@ -34,6 +63,9 @@ export default function QuizPage() {
   const [error, setError] = useState<string | null>(null);
   const [showUserForm, setShowUserForm] = useState(false);
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+  const [showCountryPrompt, setShowCountryPrompt] = useState(false);
+  const [userCountry, setUserCountry] = useState('');
+  const [countrySearch, setCountrySearch] = useState('');
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -126,20 +158,8 @@ export default function QuizPage() {
         setDirection(1);
         setCurrentQuestionIndex(currentQuestionIndex + 1);
       } else {
-        // Quiz complete - check if user is authenticated
-        if (user) {
-          // Authenticated user - auto-submit immediately (no form needed)
-          await submitQuizForAuthenticatedUser(newAnswers);
-        } else {
-          // Unauthenticated user - store quiz data and show auth prompt
-          const quizData = {
-            answers: Array.from(newAnswers.entries()),
-            sessionToken: localStorage.getItem('quizSessionToken'),
-            timestamp: Date.now()
-          };
-          localStorage.setItem('pendingQuiz', JSON.stringify(quizData));
-          setShowAuthPrompt(true);
-        }
+        // Quiz complete - show country prompt first
+        setShowCountryPrompt(true);
       }
     }, 500);
   };
@@ -150,6 +170,26 @@ export default function QuizPage() {
       setShowExplanation(false);
       setDirection(-1);
       setCurrentQuestionIndex(currentQuestionIndex - 1);
+    }
+  };
+
+  // Handle country selection continue
+  const handleCountryContinue = async () => {
+    setShowCountryPrompt(false);
+
+    if (user) {
+      // Authenticated user - auto-submit immediately
+      await submitQuizForAuthenticatedUser(answers);
+    } else {
+      // Unauthenticated user - store quiz data and show auth prompt
+      const quizData = {
+        answers: Array.from(answers.entries()),
+        sessionToken: localStorage.getItem('quizSessionToken'),
+        country: userCountry,
+        timestamp: Date.now()
+      };
+      localStorage.setItem('pendingQuiz', JSON.stringify(quizData));
+      setShowAuthPrompt(true);
     }
   };
 
@@ -178,7 +218,8 @@ export default function QuizPage() {
           total_score: totalScore,
           max_score: maxScore,
           user_id: user?.id || null,
-          session_token: sessionToken
+          session_token: sessionToken,
+          country: userCountry || null
         })
         .select()
         .single();
@@ -249,7 +290,8 @@ export default function QuizPage() {
           total_score: totalScore,
           max_score: maxScore,
           user_id: user?.id || null,
-          session_token: sessionToken
+          session_token: sessionToken,
+          country: userCountry || null
         })
         .select()
         .single();
@@ -338,6 +380,118 @@ export default function QuizPage() {
             >
               Retry Launch
             </button>
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
+
+  // Country selection prompt (shown after last question)
+  if (showCountryPrompt) {
+    const filteredCountries = COUNTRIES.filter(country =>
+      country.toLowerCase().includes(countrySearch.toLowerCase())
+    );
+
+    return (
+      <div className="min-h-screen relative overflow-hidden">
+        <StarField />
+        <div className="relative z-10 min-h-screen flex items-center justify-center p-6">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl max-w-md w-full p-8"
+          >
+            <motion.div
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="text-center"
+            >
+              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-[#FF6B4A] to-[#FF8A6D] rounded-full flex items-center justify-center">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h2 className="text-2xl font-bold text-white mb-2">One Last Question!</h2>
+              <p className="text-white/70 mb-6">Which country are you from?</p>
+            </motion.div>
+
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="relative"
+            >
+              {/* Searchable country input */}
+              <div className="relative">
+                <input
+                  type="text"
+                  value={userCountry || countrySearch}
+                  onChange={(e) => {
+                    setCountrySearch(e.target.value);
+                    setUserCountry('');
+                  }}
+                  placeholder="Type to search..."
+                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#FF6B4A] focus:border-transparent"
+                />
+                {userCountry && (
+                  <button
+                    onClick={() => {
+                      setUserCountry('');
+                      setCountrySearch('');
+                    }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+
+              {/* Country dropdown */}
+              {countrySearch && !userCountry && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="absolute z-10 w-full mt-2 bg-[#1a1a2e] border border-white/20 rounded-xl max-h-48 overflow-y-auto"
+                >
+                  {filteredCountries.length > 0 ? (
+                    filteredCountries.slice(0, 8).map((country) => (
+                      <button
+                        key={country}
+                        onClick={() => {
+                          setUserCountry(country);
+                          setCountrySearch('');
+                        }}
+                        className="w-full px-4 py-2.5 text-left text-white hover:bg-white/10 transition-colors first:rounded-t-xl last:rounded-b-xl"
+                      >
+                        {country}
+                      </button>
+                    ))
+                  ) : (
+                    <p className="px-4 py-3 text-white/50 text-sm">No countries found</p>
+                  )}
+                </motion.div>
+              )}
+            </motion.div>
+
+            <motion.button
+              onClick={handleCountryContinue}
+              disabled={!userCountry}
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              whileHover={userCountry ? { scale: 1.02 } : {}}
+              whileTap={userCountry ? { scale: 0.98 } : {}}
+              className={`w-full mt-6 px-6 py-4 rounded-xl font-semibold transition-all duration-300 ${
+                userCountry
+                  ? 'gradient-accent text-white hover:shadow-lg hover:shadow-[#FF6B4A]/30'
+                  : 'bg-white/10 text-white/40 cursor-not-allowed'
+              }`}
+            >
+              Continue
+            </motion.button>
           </motion.div>
         </div>
       </div>
