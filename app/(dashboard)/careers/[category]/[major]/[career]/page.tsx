@@ -223,7 +223,7 @@ export default function CareerPage() {
   useEffect(() => {
     async function fetchCareer() {
       try {
-        const res = await fetch(`/api/careers/${careerSlug}`);
+        const res = await fetch(`/api/careers/${careerSlug}?major=${majorSlug}`);
         const { data } = await res.json();
         setCareer(data);
       } catch (error) {
@@ -233,7 +233,7 @@ export default function CareerPage() {
       }
     }
     fetchCareer();
-  }, [careerSlug]);
+  }, [careerSlug, majorSlug]);
 
   // Check if bookmarked
   useEffect(() => {
