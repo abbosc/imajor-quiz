@@ -7,6 +7,14 @@ import { motion, useInView, useScroll, useTransform, useSpring } from 'framer-mo
 
 const features = [
   {
+    id: 'careers',
+    title: 'Career Paths',
+    description: '8 categories, 86 majors, 600+ career paths. Explore detailed information about salaries, skills, growth outlook, and more for each career.',
+    image: '/images/career_paths.png',
+    href: '/careers',
+    highlight: true,
+  },
+  {
     id: 'tasks',
     title: 'Exploration Tasks',
     description: 'Guided tasks to help you explore your major deeply. Complete them and you might even surpass some university students in knowledge!',

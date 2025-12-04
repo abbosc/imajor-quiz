@@ -173,7 +173,7 @@ function ParallaxTelegramCTA() {
         Win a Free Consultation!
       </h3>
       <p className="text-sm sm:text-base text-white/70 mb-4 sm:mb-6 max-w-md mx-auto">
-        Join our Telegram channel and wait for the results on <span className="text-[#0088cc] font-semibold">December 1st</span>.
+        Join our Telegram channel and wait for the results on <span className="text-[#0088cc] font-semibold">December 7, 9 PM</span>.
         Seven lucky participants will receive a free 1-on-1 consultation!
       </p>
       <motion.a
@@ -557,8 +557,12 @@ export default function ResultsPage() {
                       <span className="text-2xl">{interpretation.emoji}</span>
                       <span className="text-xl font-bold text-white">{interpretation.level}</span>
                     </motion.div>
-                    <p className="text-lg text-white/80 max-w-2xl mx-auto">
+                    <p className="text-lg text-white/80 max-w-2xl mx-auto mb-4">
                       {interpretation.message}
+                    </p>
+                    <p className="text-sm text-white/50 max-w-xl mx-auto">
+                      This is your <span className="text-white/70 font-medium">Major Familiarity Percentage</span> — how well you understand your chosen field.
+                      Dive deeper into your major through the <span className="text-[#FF6B4A]">Tasks</span> section of our platform.
                     </p>
                   </motion.div>
                 )}
