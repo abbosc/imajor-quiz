@@ -35,13 +35,20 @@ export default function CollegeTVAdminPage() {
   const [loading, setLoading] = useState(true);
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [showTagModal, setShowTagModal] = useState(false);
+  const [showBulkModal, setShowBulkModal] = useState(false);
   const [editingVideo, setEditingVideo] = useState<Video | null>(null);
   const [editingTag, setEditingTag] = useState<Tag | null>(null);
+  const [bulkLoading, setBulkLoading] = useState(false);
 
   const [videoForm, setVideoForm] = useState({
     title: '',
     description: '',
     youtube_url: '',
+    tags: [] as string[],
+  });
+
+  const [bulkForm, setBulkForm] = useState({
+    urls: '',
     tags: [] as string[],
   });
 
@@ -196,6 +203,55 @@ export default function CollegeTVAdminPage() {
     }));
   }
 
+  function toggleBulkTag(tagName: string) {
+    setBulkForm(prev => ({
+      ...prev,
+      tags: prev.tags.includes(tagName)
+        ? prev.tags.filter(t => t !== tagName)
+        : [...prev.tags, tagName],
+    }));
+  }
+
+  function openBulkModal() {
+    setBulkForm({ urls: '', tags: [] });
+    setShowBulkModal(true);
+  }
+
+  async function handleBulkSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setBulkLoading(true);
+
+    try {
+      const res = await fetch('/api/admin/collegetv/videos/bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          urls: bulkForm.urls,
+          tags: bulkForm.tags,
+        }),
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        setShowBulkModal(false);
+        fetchData();
+        if (result.results) {
+          const successful = result.results.filter((r: { success: boolean }) => r.success).length;
+          const failed = result.results.filter((r: { success: boolean }) => !r.success).length;
+          alert(`Added ${successful} videos successfully${failed > 0 ? `, ${failed} failed` : ''}`);
+        }
+      } else {
+        alert(result.error || 'Failed to add videos');
+      }
+    } catch (error) {
+      console.error('Failed to bulk add videos:', error);
+      alert('Failed to add videos');
+    } finally {
+      setBulkLoading(false);
+    }
+  }
+
   if (loading) {
     return (
       <AdminLayout>
@@ -228,6 +284,12 @@ export default function CollegeTVAdminPage() {
               className="px-4 py-2 bg-[#0F172A] text-white rounded-lg hover:bg-[#1E293B] transition-colors"
             >
               Manage Tags
+            </button>
+            <button
+              onClick={openBulkModal}
+              className="px-4 py-2 bg-[#8B5CF6] text-white rounded-lg hover:bg-[#7C3AED] transition-colors"
+            >
+              Bulk Add
             </button>
             <button
               onClick={() => openVideoModal()}
@@ -575,6 +637,109 @@ export default function CollegeTVAdminPage() {
                       className="px-4 py-2 bg-[#FF6B4A] text-white rounded-lg hover:bg-[#E85537] transition-colors"
                     >
                       {editingTag ? 'Save' : 'Add Tag'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Bulk Add Modal */}
+      <AnimatePresence>
+        {showBulkModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+            onClick={() => !bulkLoading && setShowBulkModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="p-6">
+                <h2 className="text-xl font-bold text-[#0F172A] mb-2">
+                  Bulk Add Videos
+                </h2>
+                <p className="text-sm text-[#64748B] mb-6">
+                  Paste multiple YouTube URLs, one per line. Titles will be fetched automatically.
+                </p>
+
+                <form onSubmit={handleBulkSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-[#0F172A] mb-1">
+                      YouTube URLs *
+                    </label>
+                    <textarea
+                      value={bulkForm.urls}
+                      onChange={e => setBulkForm(prev => ({ ...prev, urls: e.target.value }))}
+                      placeholder="https://www.youtube.com/watch?v=...&#10;https://youtu.be/...&#10;https://www.youtube.com/watch?v=..."
+                      rows={8}
+                      className="w-full px-4 py-2 border border-[#E2E8F0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]/50 resize-none font-mono text-sm"
+                      required
+                      disabled={bulkLoading}
+                    />
+                    <p className="text-xs text-[#94A3B8] mt-1">
+                      Supports youtube.com/watch, youtu.be, and embed URLs
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[#0F172A] mb-2">
+                      Apply Tags to All
+                    </label>
+                    {tags.length === 0 ? (
+                      <p className="text-sm text-[#64748B]">No tags available.</p>
+                    ) : (
+                      <div className="flex flex-wrap gap-2">
+                        {tags.map(tag => (
+                          <button
+                            key={tag.id}
+                            type="button"
+                            onClick={() => toggleBulkTag(tag.name)}
+                            disabled={bulkLoading}
+                            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                              bulkForm.tags.includes(tag.name)
+                                ? 'text-white'
+                                : 'bg-[#F1F5F9] text-[#64748B]'
+                            } ${bulkLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            style={bulkForm.tags.includes(tag.name) ? { backgroundColor: tag.color } : {}}
+                          >
+                            {tag.name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex gap-3 pt-4">
+                    <button
+                      type="button"
+                      onClick={() => setShowBulkModal(false)}
+                      disabled={bulkLoading}
+                      className="flex-1 px-4 py-2 border border-[#E2E8F0] text-[#64748B] rounded-lg hover:bg-[#F8FAFC] transition-colors disabled:opacity-50"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={bulkLoading}
+                      className="flex-1 px-4 py-2 bg-[#8B5CF6] text-white rounded-lg hover:bg-[#7C3AED] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                      {bulkLoading ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          Adding...
+                        </>
+                      ) : (
+                        'Add All Videos'
+                      )}
                     </button>
                   </div>
                 </form>
