@@ -50,7 +50,7 @@ const topNavItems: NavItem[] = [
     isNew: true,
   },
   {
-    label: '10 Resources',
+    label: '10resources',
     href: '/10resources',
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

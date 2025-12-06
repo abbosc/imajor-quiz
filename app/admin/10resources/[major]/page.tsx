@@ -372,7 +372,7 @@ export default function MajorResourcesPage() {
           <div>
             <div className="flex items-center gap-2 text-sm text-[#64748B] mb-1">
               <Link href="/admin/10resources" className="hover:text-[#FF6B4A]">
-                10 Resources
+                10resources
               </Link>
               <span>/</span>
               <span>{major.name}</span>

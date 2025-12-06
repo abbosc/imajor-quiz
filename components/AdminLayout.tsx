@@ -142,7 +142,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   : 'text-[#64748B] hover:text-[#FF6B4A]'
               } transition-colors duration-200`}
             >
-              10 Resources
+              10resources
             </Link>
             <Link
               href="/admin/submissions"

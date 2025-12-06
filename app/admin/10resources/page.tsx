@@ -114,7 +114,7 @@ export default function TenResourcesAdminPage() {
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-[#0F172A]">10 Resources</h1>
+            <h1 className="text-2xl font-bold text-[#0F172A]">10resources</h1>
             <p className="text-[#64748B] mt-1">
               Manage majors and their curated resources across 13 categories
             </p>

@@ -142,7 +142,7 @@ export default function TenResourcesPage() {
             </svg>
           </div>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-[#0F172A]">10 Resources</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#0F172A]">10resources</h1>
             <p className="text-[#64748B]">Curated resources for your major</p>
           </div>
         </div>
