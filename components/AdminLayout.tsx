@@ -135,6 +135,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               Careers
             </Link>
             <Link
+              href="/admin/10resources"
+              className={`px-3 sm:px-4 py-3 text-sm sm:text-base whitespace-nowrap ${
+                pathname?.startsWith('/admin/10resources')
+                  ? 'text-[#FF6B4A] border-b-2 border-[#FF6B4A] font-semibold'
+                  : 'text-[#64748B] hover:text-[#FF6B4A]'
+              } transition-colors duration-200`}
+            >
+              10 Resources
+            </Link>
+            <Link
               href="/admin/submissions"
               className={`px-3 sm:px-4 py-3 text-sm sm:text-base whitespace-nowrap ${
                 isActive('/admin/submissions')
