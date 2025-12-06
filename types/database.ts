@@ -510,6 +510,70 @@ export interface Database {
           created_at?: string
         }
       }
+      college_tv_videos: {
+        Row: {
+          id: string
+          title: string
+          description: string | null
+          youtube_url: string
+          youtube_id: string
+          thumbnail_url: string | null
+          tags: string[]
+          order_index: number
+          is_published: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          description?: string | null
+          youtube_url: string
+          youtube_id: string
+          thumbnail_url?: string | null
+          tags?: string[]
+          order_index?: number
+          is_published?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          title?: string
+          description?: string | null
+          youtube_url?: string
+          youtube_id?: string
+          thumbnail_url?: string | null
+          tags?: string[]
+          order_index?: number
+          is_published?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      college_tv_tags: {
+        Row: {
+          id: string
+          name: string
+          slug: string
+          color: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          slug: string
+          color?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          slug?: string
+          color?: string
+          created_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never
@@ -535,3 +599,5 @@ export type UserEssay = Database['public']['Tables']['user_essays']['Row']
 export type UserRecommendation = Database['public']['Tables']['user_recommendations']['Row']
 export type Major = Database['public']['Tables']['majors']['Row']
 export type UserMajor = Database['public']['Tables']['user_majors']['Row']
+export type CollegeTvVideo = Database['public']['Tables']['college_tv_videos']['Row']
+export type CollegeTvTag = Database['public']['Tables']['college_tv_tags']['Row']
