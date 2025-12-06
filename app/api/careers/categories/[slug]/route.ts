@@ -24,31 +24,28 @@ export async function GET(
       return NextResponse.json({ error: 'Category not found' }, { status: 404 });
     }
 
-    // Get majors in this category
+    // Get majors in this category with career counts via relation
     const { data: majors, error: majorsError } = await supabaseAdmin
       .from('career_majors')
-      .select('id, name, slug, description')
+      .select(`
+        id, name, slug, description,
+        careers!left(id, is_active)
+      `)
       .eq('category_id', category.id)
       .eq('is_active', true)
       .order('name', { ascending: true });
 
     if (majorsError) throw majorsError;
 
-    // Get career counts for each major
-    const majorsWithCounts = await Promise.all(
-      (majors || []).map(async (major) => {
-        const { count } = await supabaseAdmin
-          .from('careers')
-          .select('*', { count: 'exact', head: true })
-          .eq('major_id', major.id)
-          .eq('is_active', true);
-
-        return {
-          ...major,
-          careers_count: count || 0
-        };
-      })
-    );
+    // Map to add careers_count from relation (filtering active careers)
+    const majorsWithCounts = (majors || []).map((major: any) => {
+      const activeCareers = (major.careers || []).filter((c: any) => c.is_active);
+      const { careers, ...rest } = major;
+      return {
+        ...rest,
+        careers_count: activeCareers.length
+      };
+    });
 
     return NextResponse.json({
       data: {
