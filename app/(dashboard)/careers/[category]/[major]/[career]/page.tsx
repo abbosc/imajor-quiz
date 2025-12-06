@@ -281,12 +281,12 @@ export default function CareerPage() {
   if (loading) {
     return (
       <div className="min-h-[80vh]">
-        <div className="h-6 w-96 bg-[#F1F5F9] rounded animate-pulse mb-6" />
-        <div className="h-12 w-64 bg-[#F1F5F9] rounded animate-pulse mb-4" />
-        <div className="h-24 bg-[#F1F5F9] rounded-2xl animate-pulse mb-6" />
+        <div className="h-6 w-96 rounded animate-shimmer mb-6" />
+        <div className="h-12 w-64 rounded animate-shimmer mb-4" />
+        <div className="h-24 rounded-2xl animate-shimmer mb-6" />
         <div className="grid lg:grid-cols-2 gap-4">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="h-48 rounded-2xl bg-[#F1F5F9] animate-pulse" />
+            <div key={i} className="h-48 rounded-2xl animate-shimmer" />
           ))}
         </div>
       </div>
