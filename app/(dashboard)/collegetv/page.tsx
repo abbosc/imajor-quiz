@@ -1,17 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-
-interface Video {
-  id: string;
-  title: string;
-  description: string | null;
-  youtube_url: string;
-  youtube_id: string;
-  thumbnail_url: string | null;
-  tags: string[];
-}
+import { useCollegeTVVideos, useCollegeTVTags } from '@/hooks/useDashboardData';
 
 interface Tag {
   id: string;
@@ -21,49 +12,11 @@ interface Tag {
 }
 
 export default function CollegeTVPage() {
-  const [videos, setVideos] = useState<Video[]>([]);
-  const [tags, setTags] = useState<Tag[]>([]);
-  const [loading, setLoading] = useState(true);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const { videos, isLoading: videosLoading } = useCollegeTVVideos(selectedTag);
+  const { tags, isLoading: tagsLoading } = useCollegeTVTags();
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  async function fetchData() {
-    try {
-      const [videosRes, tagsRes] = await Promise.all([
-        fetch('/api/collegetv/videos'),
-        fetch('/api/collegetv/tags'),
-      ]);
-      const videosData = await videosRes.json();
-      const tagsData = await tagsRes.json();
-      setVideos(videosData.data || []);
-      setTags(tagsData.data || []);
-    } catch (error) {
-      console.error('Failed to fetch data:', error);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function filterByTag(tagName: string | null) {
-    setSelectedTag(tagName);
-    setLoading(true);
-
-    try {
-      const url = tagName
-        ? `/api/collegetv/videos?tag=${encodeURIComponent(tagName)}`
-        : '/api/collegetv/videos';
-      const res = await fetch(url);
-      const data = await res.json();
-      setVideos(data.data || []);
-    } catch (error) {
-      console.error('Failed to filter videos:', error);
-    } finally {
-      setLoading(false);
-    }
-  }
+  const loading = videosLoading || tagsLoading;
 
   if (loading && videos.length === 0) {
     return (
@@ -113,7 +66,7 @@ export default function CollegeTVPage() {
         >
           <div className="flex gap-2 min-w-max">
             <button
-              onClick={() => filterByTag(null)}
+              onClick={() => setSelectedTag(null)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                 selectedTag === null
                   ? 'bg-[#FF6B4A] text-white'
@@ -122,10 +75,10 @@ export default function CollegeTVPage() {
             >
               All
             </button>
-            {tags.map(tag => (
+            {tags.map((tag: Tag) => (
               <button
                 key={tag.id}
-                onClick={() => filterByTag(tag.name)}
+                onClick={() => setSelectedTag(tag.name)}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                   selectedTag === tag.name
                     ? 'text-white'
@@ -166,7 +119,7 @@ export default function CollegeTVPage() {
           transition={{ duration: 0.4, delay: 0.2 }}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
         >
-          {videos.map((video, index) => (
+          {videos.map((video: any, index: number) => (
             <motion.a
               key={video.id}
               href={video.youtube_url}
@@ -206,10 +159,10 @@ export default function CollegeTVPage() {
                 </h3>
 
                 {/* Tags */}
-                {video.tags.length > 0 && (
+                {video.tags && video.tags.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 mt-3">
-                    {video.tags.map(tagName => {
-                      const tag = tags.find(t => t.name === tagName);
+                    {video.tags.map((tagName: string) => {
+                      const tag = tags.find((t: Tag) => t.name === tagName);
                       return (
                         <span
                           key={tagName}

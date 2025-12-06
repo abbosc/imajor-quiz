@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useTenResourcesMajors } from '@/hooks/useDashboardData';
 
 const getMajorIcon = (slug: string, className: string = "w-6 h-6") => {
   const icons: Record<string, React.ReactNode> = {
@@ -100,31 +100,7 @@ interface ResourceMajor {
 }
 
 export default function TenResourcesPage() {
-  const [majors, setMajors] = useState<ResourceMajor[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function fetchMajors() {
-      try {
-        const res = await fetch('/api/10resources/majors');
-        const json = await res.json();
-
-        if (json.error) {
-          setError(json.error);
-          console.error('API error:', json.error);
-        } else {
-          setMajors(json.data || []);
-        }
-      } catch (err: any) {
-        setError(err.message);
-        console.error('Failed to fetch majors:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchMajors();
-  }, []);
+  const { majors, isLoading: loading, isError: error } = useTenResourcesMajors();
 
   return (
     <div className="min-h-[80vh]">
@@ -167,7 +143,7 @@ export default function TenResourcesPage() {
             </svg>
           </div>
           <h3 className="text-lg font-semibold text-[#0F172A] mb-2">Error Loading Resources</h3>
-          <p className="text-[#64748B] text-sm">{error}</p>
+          <p className="text-[#64748B] text-sm">Failed to load resources. Please try again.</p>
         </div>
       ) : majors.length === 0 ? (
         <div className="text-center py-16">

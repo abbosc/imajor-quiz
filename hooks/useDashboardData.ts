@@ -123,3 +123,47 @@ export function useUserMajors() {
     mutate,
   };
 }
+
+// CollegeTV Videos (with optional tag filter)
+export function useCollegeTVVideos(tagFilter?: string | null) {
+  const url = tagFilter
+    ? `/api/collegetv/videos?tag=${encodeURIComponent(tagFilter)}`
+    : '/api/collegetv/videos';
+  const { data, error, isLoading, mutate } = useSWR(url, fetcher, swrConfig);
+  return {
+    videos: data || [],
+    isLoading,
+    isError: error,
+    mutate,
+  };
+}
+
+// CollegeTV Tags
+export function useCollegeTVTags() {
+  const { data, error, isLoading } = useSWR('/api/collegetv/tags', fetcher, swrConfig);
+  return {
+    tags: data || [],
+    isLoading,
+    isError: error,
+  };
+}
+
+// Career Categories
+export function useCareerCategories() {
+  const { data, error, isLoading } = useSWR('/api/careers/categories', fetcher, swrConfig);
+  return {
+    categories: data || [],
+    isLoading,
+    isError: error,
+  };
+}
+
+// 10Resources Majors
+export function useTenResourcesMajors() {
+  const { data, error, isLoading } = useSWR('/api/10resources/majors', fetcher, swrConfig);
+  return {
+    majors: data || [],
+    isLoading,
+    isError: error,
+  };
+}

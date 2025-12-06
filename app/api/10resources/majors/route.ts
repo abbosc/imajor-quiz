@@ -3,6 +3,7 @@ import { supabaseAdmin } from '@/lib/supabase-admin';
 
 // Disable Next.js route caching to ensure fresh data
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 // GET all active resource majors with resource counts
 export async function GET() {

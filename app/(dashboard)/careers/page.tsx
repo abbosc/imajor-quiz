@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useCareerCategories } from '@/hooks/useDashboardData';
 
 interface Category {
   id: string;
@@ -70,23 +70,7 @@ function CategoryIcon({ slug, color, className = "w-6 h-6" }: { slug: string; co
 }
 
 export default function CareersPage() {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchCategories() {
-      try {
-        const res = await fetch('/api/careers/categories');
-        const { data } = await res.json();
-        setCategories(data || []);
-      } catch (error) {
-        console.error('Failed to fetch categories:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchCategories();
-  }, []);
+  const { categories, isLoading: loading } = useCareerCategories();
 
   return (
     <div className="min-h-[80vh]">

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 // GET - Fetch published videos with optional tag filter
 export async function GET(request: NextRequest) {
