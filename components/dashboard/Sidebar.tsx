@@ -10,7 +10,7 @@ interface NavItem {
   label: string;
   href: string;
   icon: React.ReactNode;
-  isNew?: boolean;
+  tag?: 'new' | 'hot' | 'trending';
 }
 
 interface NavGroup {
@@ -37,7 +37,7 @@ const topNavItems: NavItem[] = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
       </svg>
     ),
-    isNew: true,
+    tag: 'hot',
   },
   {
     label: 'Tasks',
@@ -47,7 +47,6 @@ const topNavItems: NavItem[] = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
       </svg>
     ),
-    isNew: true,
   },
   {
     label: '10resources',
@@ -57,7 +56,7 @@ const topNavItems: NavItem[] = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
       </svg>
     ),
-    isNew: true,
+    tag: 'new',
   },
   {
     label: 'CollegeTV',
@@ -67,7 +66,7 @@ const topNavItems: NavItem[] = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
       </svg>
     ),
-    isNew: true,
+    tag: 'trending',
   },
 ];
 
@@ -207,9 +206,19 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       >
         {item.icon}
         <span className={`font-medium ${isSubItem ? 'text-sm' : ''}`}>{item.label}</span>
-        {item.isNew && (
+        {item.tag === 'new' && (
           <span className="relative -top-1 -ml-0.5 px-1 py-px text-[8px] font-bold uppercase bg-[#eb0202] text-white rounded">
             New
+          </span>
+        )}
+        {item.tag === 'hot' && (
+          <span className="relative -top-1 -ml-0.5 px-1 py-px text-[8px] font-bold uppercase bg-[#F97316] text-white rounded">
+            Hot
+          </span>
+        )}
+        {item.tag === 'trending' && (
+          <span className="relative -top-1 -ml-0.5 px-1 py-px text-[8px] font-bold uppercase bg-[#8B5CF6] text-white rounded">
+            Trending
           </span>
         )}
       </Link>
