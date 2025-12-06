@@ -101,12 +101,12 @@ export default function CategoryPage() {
   if (loading) {
     return (
       <div className="min-h-[80vh]">
-        <div className="h-8 w-48 bg-[#F1F5F9] rounded animate-pulse mb-6" />
-        <div className="h-12 w-96 bg-[#F1F5F9] rounded animate-pulse mb-4" />
-        <div className="h-6 w-72 bg-[#F1F5F9] rounded animate-pulse mb-10" />
+        <div className="h-8 w-48 rounded animate-shimmer mb-6" />
+        <div className="h-12 w-96 rounded animate-shimmer mb-4" />
+        <div className="h-6 w-72 rounded animate-shimmer mb-10" />
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="h-40 rounded-2xl bg-[#F1F5F9] animate-pulse" />
+            <div key={i} className="h-48 rounded-2xl animate-shimmer" />
           ))}
         </div>
       </div>

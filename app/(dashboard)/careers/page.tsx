@@ -122,7 +122,7 @@ export default function CareersPage() {
       {loading ? (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {[...Array(8)].map((_, i) => (
-            <div key={i} className="h-48 rounded-2xl bg-[#F1F5F9] animate-pulse" />
+            <div key={i} className="h-48 rounded-2xl animate-shimmer" />
           ))}
         </div>
       ) : categories.length === 0 ? (
