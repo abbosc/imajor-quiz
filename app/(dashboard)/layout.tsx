@@ -14,7 +14,7 @@ export default function DashboardLayout({
     <div className="min-h-screen bg-[#F8FAFC] flex" style={{ zoom: 0.9 }}>
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <div className="flex-1 flex flex-col min-h-screen">
+      <div className="flex-1 flex flex-col min-h-screen min-w-0 overflow-x-hidden">
         {/* Mobile header */}
         <header className="lg:hidden bg-white border-b border-[#E2E8F0] px-4 py-3 flex items-center gap-4">
           <button
@@ -29,8 +29,8 @@ export default function DashboardLayout({
         </header>
 
         {/* Main content */}
-        <main className="flex-1 p-6 lg:p-8">
-          <div className="max-w-6xl mx-auto">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-x-hidden">
+          <div className="max-w-6xl mx-auto w-full">
             {children}
           </div>
         </main>

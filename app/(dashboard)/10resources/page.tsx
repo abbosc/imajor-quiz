@@ -104,35 +104,41 @@ export default function TenResourcesPage() {
 
   return (
     <div className="min-h-[80vh]">
-      {/* Hero Header */}
+      {/* Simplified Header - Question + Hint */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="mb-10"
+        transition={{ duration: 0.5 }}
+        className="mb-8 text-center"
       >
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#FF6B4A] to-[#FF8F6B] flex items-center justify-center">
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-            </svg>
-          </div>
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-[#0F172A]">10resources</h1>
-            <p className="text-[#64748B]">Curated resources for your major</p>
-          </div>
-        </div>
-        <p className="text-[#64748B] max-w-2xl">
-          Discover the top 10 resources across 13 categories for your chosen major. From must-read books to influential figures,
-          these curated lists will accelerate your learning journey.
+        <h1 className="text-3xl sm:text-4xl font-bold text-[#0F172A] tracking-tight mb-2">
+          What&apos;s your major?
+        </h1>
+        <p className="text-[#64748B]">
+          Select your major to discover curated resources
         </p>
+      </motion.div>
+
+      {/* Section Label */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4, delay: 0.2 }}
+        className="flex items-center gap-2 mb-4"
+      >
+        <svg className="w-5 h-5 text-[#94A3B8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
+        </svg>
+        <span className="text-sm font-medium text-[#64748B] uppercase tracking-wide">
+          Majors
+        </span>
       </motion.div>
 
       {/* Majors Grid */}
       {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="h-48 bg-[#F8FAFC] rounded-2xl animate-pulse" />
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="h-28 sm:h-32 rounded-2xl animate-shimmer" />
           ))}
         </div>
       ) : error ? (
@@ -156,12 +162,7 @@ export default function TenResourcesPage() {
           <p className="text-[#64748B]">Resource guides are being prepared. Check back soon!</p>
         </div>
       ) : (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.4, delay: 0.2 }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
           {majors.map((major, index) => (
             <motion.div
               key={major.id}
@@ -170,43 +171,23 @@ export default function TenResourcesPage() {
               transition={{ duration: 0.4, delay: index * 0.05 }}
             >
               <Link href={`/10resources/${major.slug}`}>
-                <div className="group bg-white rounded-2xl border border-[#E2E8F0] p-6 hover:shadow-lg hover:border-[#FF6B4A]/30 transition-all duration-300 h-full">
-                  <div className="flex items-start gap-4">
-                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#FF6B4A]/10 to-[#FF8F6B]/10 flex items-center justify-center flex-shrink-0 group-hover:from-[#FF6B4A]/20 group-hover:to-[#FF8F6B]/20 transition-colors text-[#FF6B4A]">
-                      {getMajorIcon(major.slug, "w-7 h-7")}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-[#0F172A] text-lg group-hover:text-[#FF6B4A] transition-colors">
-                        {major.name}
-                      </h3>
-                      {major.description && (
-                        <p className="text-sm text-[#64748B] mt-1 line-clamp-2">
-                          {major.description}
-                        </p>
-                      )}
-                    </div>
+                <div className="group bg-white rounded-2xl border border-[#E2E8F0] p-4 sm:p-5 hover:shadow-lg hover:border-[#FF6B4A]/30 hover:scale-[1.02] transition-all duration-300 h-28 sm:h-32 flex flex-col">
+                  {/* Icon */}
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[#FF6B4A]/10 to-[#FF8F6B]/10 flex items-center justify-center flex-shrink-0 group-hover:from-[#FF6B4A]/20 group-hover:to-[#FF8F6B]/20 group-hover:scale-110 transition-all text-[#FF6B4A]">
+                    {getMajorIcon(major.slug, "w-4 h-4 sm:w-5 sm:h-5")}
                   </div>
 
-                  <div className="mt-4 pt-4 border-t border-[#E2E8F0] flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-[#64748B]">13 categories</span>
-                      <span className="text-[#E2E8F0]">•</span>
-                      <span className="text-sm text-[#64748B]">{major.resource_count} resources</span>
-                    </div>
-                    <svg
-                      className="w-5 h-5 text-[#64748B] group-hover:text-[#FF6B4A] group-hover:translate-x-1 transition-all"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
+                  {/* Title */}
+                  <div className="mt-auto">
+                    <h3 className="font-semibold text-[#0F172A] text-sm sm:text-base group-hover:text-[#FF6B4A] transition-colors line-clamp-2">
+                      {major.name}
+                    </h3>
                   </div>
                 </div>
               </Link>
             </motion.div>
           ))}
-        </motion.div>
+        </div>
       )}
     </div>
   );

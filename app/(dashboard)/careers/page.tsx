@@ -74,39 +74,45 @@ export default function CareersPage() {
 
   return (
     <div className="min-h-[80vh]">
-      {/* Hero Header */}
+      {/* Simplified Header - Question + Hint */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="mb-10"
+        transition={{ duration: 0.5 }}
+        className="mb-8 text-center"
       >
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#FF6B4A] to-[#FF8A6D] flex items-center justify-center shadow-lg shadow-[#FF6B4A]/20">
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-          </div>
-          <div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-[#0F172A] tracking-tight">
-              Explore Careers
-            </h1>
-            <p className="text-[#64748B] text-sm mt-0.5">
-              Discover your perfect career path
-            </p>
-          </div>
-        </div>
-        <p className="text-[#64748B] text-base sm:text-lg max-w-2xl leading-relaxed">
-          Browse through career categories to find opportunities that match your interests
-          and skills. Each path leads to exciting possibilities.
+        <h1 className="text-3xl sm:text-4xl font-bold text-[#0F172A] tracking-tight mb-2">
+          What field interests you?
+        </h1>
+        <p className="text-[#64748B]">
+          Click a category to explore majors and careers
         </p>
       </motion.div>
 
-      {/* Categories Grid */}
+      {/* Section Label */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4, delay: 0.2 }}
+        className="flex items-center gap-2 mb-4"
+      >
+        <svg className="w-5 h-5 text-[#94A3B8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
+        </svg>
+        <span className="text-sm font-medium text-[#64748B] uppercase tracking-wide">
+          Career Categories
+        </span>
+      </motion.div>
+
+      {/* Bento Grid */}
       {loading ? (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {[...Array(8)].map((_, i) => (
-            <div key={i} className="h-48 rounded-2xl animate-shimmer" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <div className="sm:col-span-2 h-40 sm:h-48 rounded-2xl animate-shimmer" />
+          <div className="sm:col-span-2 h-40 sm:h-48 rounded-2xl animate-shimmer" />
+          <div className="sm:col-span-2 h-40 sm:h-48 rounded-2xl animate-shimmer" />
+          <div className="sm:col-span-2 h-40 sm:h-48 rounded-2xl animate-shimmer" />
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="h-32 sm:h-36 rounded-2xl animate-shimmer" />
           ))}
         </div>
       ) : categories.length === 0 ? (
@@ -124,65 +130,62 @@ export default function CareersPage() {
           <p className="text-[#64748B]">Career categories will appear here once added.</p>
         </motion.div>
       ) : (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {categories.map((category, index) => (
-            <motion.div
-              key={category.id}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.08 }}
-            >
-              <Link href={`/careers/${category.slug}`}>
-                <div className="group bg-white rounded-2xl border border-[#E2E8F0] p-5 h-48 flex flex-col cursor-pointer transition-all duration-200 hover:border-[#CBD5E1] hover:shadow-md">
-                  {/* Icon - fixed size, never shrinks */}
-                  <div
-                    className="w-12 h-12 min-w-[3rem] min-h-[3rem] rounded-xl flex items-center justify-center flex-shrink-0"
-                    style={{ background: `${category.color}12` }}
-                  >
-                    <CategoryIcon slug={category.slug} color={category.color} className="w-6 h-6" />
-                  </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          {(() => {
+            // Define layout: large cards first, then small cards
+            const largeSlugs = ['technology-engineering', 'healthcare-medicine', 'business-finance', 'natural-sciences'];
+            const smallSlugs = ['education-social-sciences', 'law-public-policy', 'arts-design', 'communications-media'];
 
-                  {/* Text - fills remaining space */}
-                  <div className="mt-auto min-w-0">
-                    <h3 className="text-lg font-semibold text-[#0F172A] mb-1 group-hover:text-[#FF6B4A] transition-colors line-clamp-2">
-                      {category.name}
-                    </h3>
-                    <p className="text-sm text-[#64748B] line-clamp-1 mb-3">
-                      {category.description || 'Explore careers in this field'}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-medium text-[#64748B]">
-                        {category.majors_count} {category.majors_count === 1 ? 'major' : 'majors'}
-                      </span>
-                      <svg
-                        className="w-4 h-4 text-[#CBD5E1] group-hover:text-[#FF6B4A] transition-colors"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+            // Sort categories into desired order
+            const sortedCategories = [...categories].sort((a: Category, b: Category) => {
+              const aLargeIndex = largeSlugs.indexOf(a.slug);
+              const bLargeIndex = largeSlugs.indexOf(b.slug);
+              const aSmallIndex = smallSlugs.indexOf(a.slug);
+              const bSmallIndex = smallSlugs.indexOf(b.slug);
+
+              // Large cards come first
+              if (aLargeIndex !== -1 && bLargeIndex !== -1) return aLargeIndex - bLargeIndex;
+              if (aLargeIndex !== -1) return -1;
+              if (bLargeIndex !== -1) return 1;
+
+              // Then small cards in order
+              if (aSmallIndex !== -1 && bSmallIndex !== -1) return aSmallIndex - bSmallIndex;
+              return 0;
+            });
+
+            return sortedCategories.map((category: Category, index: number) => {
+              const isLarge = largeSlugs.includes(category.slug);
+              return (
+                <motion.div
+                  key={category.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.05 }}
+                  className={isLarge ? 'sm:col-span-2' : ''}
+                >
+                  <Link href={`/careers/${category.slug}`}>
+                    <div className={`group bg-white rounded-2xl border border-[#E2E8F0] p-4 sm:p-5 flex flex-col cursor-pointer transition-all duration-300 hover:border-[#FF6B4A]/30 hover:shadow-lg hover:scale-[1.02] ${isLarge ? 'h-40 sm:h-48' : 'h-32 sm:h-36'}`}>
+                      {/* Icon */}
+                      <div
+                        className={`rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover:scale-110 ${isLarge ? 'w-12 h-12 sm:w-14 sm:h-14' : 'w-10 h-10'}`}
+                        style={{ background: `${category.color}15` }}
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
-      )}
+                        <CategoryIcon slug={category.slug} color={category.color} className={isLarge ? 'w-6 h-6 sm:w-7 sm:h-7' : 'w-5 h-5'} />
+                      </div>
 
-      {/* Bottom info */}
-      {!loading && categories.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
-          className="mt-10 text-center"
-        >
-          <p className="text-sm text-[#94A3B8]">
-            {categories.length} categories with {categories.reduce((acc, c) => acc + c.majors_count, 0)} majors to explore
-          </p>
-        </motion.div>
+                      {/* Title */}
+                      <div className="mt-auto">
+                        <h3 className={`font-semibold text-[#0F172A] group-hover:text-[#FF6B4A] transition-colors line-clamp-2 ${isLarge ? 'text-lg sm:text-xl' : 'text-sm sm:text-base'}`}>
+                          {category.name}
+                        </h3>
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              );
+            });
+          })()}
+        </div>
       )}
     </div>
   );
