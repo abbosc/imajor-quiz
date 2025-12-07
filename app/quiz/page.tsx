@@ -179,6 +179,7 @@ export default function QuizPage() {
 
     if (user) {
       // Authenticated user - auto-submit immediately
+      setSubmitting(true);  // Block renders before async call
       await submitQuizForAuthenticatedUser(answers);
     } else {
       // Unauthenticated user - store quiz data and show auth prompt
@@ -646,6 +647,29 @@ export default function QuizPage() {
                 )}
               </motion.button>
             </form>
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
+
+  // Submission in progress - show loading
+  if (submitting) {
+    return (
+      <div className="min-h-screen relative overflow-hidden">
+        <StarField />
+        <div className="relative z-10 min-h-screen flex items-center justify-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center"
+          >
+            <motion.div
+              className="w-16 h-16 mx-auto mb-4 rounded-full border-4 border-[#FF6B4A] border-t-transparent"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+            />
+            <p className="text-white/80 text-lg">Launching your results...</p>
           </motion.div>
         </div>
       </div>
