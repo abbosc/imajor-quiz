@@ -5,15 +5,22 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion, useInView, useScroll, useTransform, useSpring } from 'framer-motion';
 
-const features = [
-  {
-    id: 'careers',
-    title: 'Career Paths',
-    description: '8 categories, 86 majors, 600+ career paths. Explore detailed information about salaries, skills, growth outlook, and more for each career.',
-    image: '/images/career_paths.png',
-    href: '/careers',
-    highlight: true,
-  },
+interface Stat {
+  value: string;
+  label: string;
+}
+
+interface Feature {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  href: string;
+  highlight?: boolean;
+  stats?: Stat[];
+}
+
+const features: Feature[] = [
   {
     id: 'tasks',
     title: 'Exploration Tasks',
@@ -23,53 +30,46 @@ const features = [
     highlight: true,
   },
   {
-    id: 'dashboard',
-    title: 'Your Dashboard',
-    description: 'Your central hub for tracking all your college prep progress in one place.',
-    image: '/images/dashboard.png',
-    href: '/dashboard',
+    id: 'careers',
+    title: 'Career Paths',
+    description: 'Explore detailed information about salaries, skills, growth outlook, and more for each career.',
+    stats: [
+      { value: '1200+', label: 'Careers' },
+      { value: '80+', label: 'Majors' },
+      { value: '8', label: 'Categories' },
+    ],
+    image: '/images/careers_details.png',
+    href: '/careers',
+    highlight: false,
   },
   {
-    id: 'universities',
-    title: 'University Tracker',
-    description: 'Organize and track all your university applications, deadlines, and decisions.',
+    id: '10resources',
+    title: '10resources',
+    description: 'From must-read books to influential figures, accelerate your learning journey with curated resources.',
+    stats: [
+      { value: '1400+', label: 'Resources' },
+      { value: '10+', label: 'Majors' },
+      { value: '13', label: 'Categories' },
+    ],
+    image: '/images/10resources.png',
+    href: '/10resources',
+    highlight: true,
+  },
+  {
+    id: 'collegetv',
+    title: 'CollegeTV',
+    description: 'Watch curated videos to help you navigate college admissions, from application tips to student experiences.',
+    image: '/images/collegetv.png',
+    href: '/collegetv',
+    highlight: false,
+  },
+  {
+    id: 'tracker',
+    title: 'Application Tracker',
+    description: 'Your all-in-one college application hub. Track universities, manage tests (SAT/TOEFL), log activities, record honors, organize essays, and monitor recommendation letters.',
     image: '/images/universities.png',
-    href: '/universities',
-  },
-  {
-    id: 'tests',
-    title: 'Test Management',
-    description: 'Track your SAT, TOEFL, and other standardized test preparations and scores.',
-    image: '/images/tests.png',
-    href: '/tests',
-  },
-  {
-    id: 'activities',
-    title: 'Activities Log',
-    description: 'Document all your extracurricular activities in Common App format.',
-    image: '/images/activities.png',
-    href: '/activities',
-  },
-  {
-    id: 'honors',
-    title: 'Honors & Awards',
-    description: 'Keep track of all your achievements, awards, and recognitions.',
-    image: '/images/honors.png',
-    href: '/honors',
-  },
-  {
-    id: 'essays',
-    title: 'Essay Organizer',
-    description: 'Manage all your college application essays in one organized space.',
-    image: '/images/essays.png',
-    href: '/essays',
-  },
-  {
-    id: 'recs',
-    title: 'Recommendation Letters',
-    description: 'Track your recommendation letter requests and their status.',
-    image: '/images/recs.png',
-    href: '/recommendations',
+    href: '/tracker',
+    highlight: true,
   },
 ];
 
@@ -104,7 +104,7 @@ function FeatureCard({ feature, index }: { feature: typeof features[0]; index: n
       transition={{ duration: 0.5 }}
       className={`py-12 sm:py-16 md:py-24 ${feature.highlight ? 'bg-gradient-to-r from-[#FF6B4A]/5 to-[#FF8A6D]/5' : ''}`}
     >
-      <div className="container mx-auto px-4 sm:px-6">
+      <div className="container mx-auto px-6 sm:px-8 lg:px-12">
         <div className={`flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center gap-6 sm:gap-8 lg:gap-16`}>
           {/* Image with parallax */}
           <motion.div
@@ -153,6 +153,24 @@ function FeatureCard({ feature, index }: { feature: typeof features[0]; index: n
             >
               {feature.title}
             </motion.h3>
+
+            {/* Stats - only for features with stats */}
+            {feature.stats && (
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+                transition={{ duration: 0.6, delay: 0.25 }}
+                className="flex flex-wrap gap-6 sm:gap-8 mb-4 sm:mb-6 justify-center lg:justify-start"
+              >
+                {feature.stats.map((stat) => (
+                  <div key={stat.label} className="text-center lg:text-left">
+                    <div className="text-2xl sm:text-3xl lg:text-4xl font-bold gradient-text">{stat.value}</div>
+                    <div className="text-xs sm:text-sm text-[#64748B]">{stat.label}</div>
+                  </div>
+                ))}
+              </motion.div>
+            )}
+
             <motion.p
               initial={{ opacity: 0, y: 30 }}
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}

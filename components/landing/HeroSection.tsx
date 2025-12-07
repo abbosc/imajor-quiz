@@ -5,7 +5,7 @@ import TypewriterText from './TypewriterText';
 
 export default function HeroSection() {
   return (
-    <section className="min-h-[calc(100vh-80px)] flex items-center justify-center px-4 sm:px-6 relative overflow-visible">
+    <section className="min-h-[calc(100vh-80px)] flex items-center justify-center px-6 sm:px-8 lg:px-12 relative overflow-visible">
       <div className="max-w-5xl mx-auto text-center relative">
         {/* Main provocative headline */}
         <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-[#0F172A] mb-8 sm:mb-12 leading-tight">

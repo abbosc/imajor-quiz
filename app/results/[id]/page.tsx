@@ -173,7 +173,7 @@ function ParallaxTelegramCTA() {
         Win a Free Consultation!
       </h3>
       <p className="text-sm sm:text-base text-white/70 mb-4 sm:mb-6 max-w-md mx-auto">
-        Join our Telegram channel and wait for the results on <span className="text-[#0088cc] font-semibold">December 7, 9 PM</span>.
+        Join our Telegram channel and wait for the results on <span className="text-[#0088cc] font-semibold">December 14, 9 PM</span>.
         Seven lucky participants will receive a free 1-on-1 consultation!
       </p>
       <motion.a

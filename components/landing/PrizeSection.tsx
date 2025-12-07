@@ -3,7 +3,7 @@ import ConsultantStack from './ConsultantStack';
 export default function PrizeSection() {
   return (
     <section className="min-h-screen bg-white flex items-center py-16">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-6 sm:px-8 lg:px-12">
         <div className="max-w-6xl mx-auto">
           {/* Section header */}
           <div className="text-center mb-8">

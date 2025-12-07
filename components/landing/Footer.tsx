@@ -42,7 +42,7 @@ export default function Footer() {
       {/* Subtle gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
 
-      <div className="container mx-auto px-4 sm:px-6 py-10 sm:py-16 relative z-10">
+      <div className="container mx-auto px-6 sm:px-8 lg:px-12 py-10 sm:py-16 relative z-10">
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-8 sm:gap-12">
           {/* Brand */}
           <div
