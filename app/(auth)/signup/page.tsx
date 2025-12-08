@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { EmailVerificationModal } from '@/components/ui/Modal';
 
 export default function SignupPage() {
   const [fullName, setFullName] = useState('');
@@ -13,6 +14,7 @@ export default function SignupPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showEmailModal, setShowEmailModal] = useState(false);
   const { signUp, signInWithGoogle } = useAuth();
   const router = useRouter();
 
@@ -48,9 +50,8 @@ export default function SignupPage() {
         return;
       }
 
-      toast.success('Account created! Please check your email to verify your account.');
-      // After email confirmation, auth callback will redirect to dashboard which handles pending quiz
-      router.push('/login');
+      // Show modal instead of toast - more visible for students
+      setShowEmailModal(true);
     } catch (error) {
       toast.error('An unexpected error occurred');
     } finally {
@@ -200,6 +201,16 @@ export default function SignupPage() {
           </Link>
         </p>
       </div>
+
+      {/* Email Verification Modal */}
+      <EmailVerificationModal
+        isOpen={showEmailModal}
+        email={email}
+        onConfirm={() => {
+          setShowEmailModal(false);
+          router.push('/login');
+        }}
+      />
     </div>
   );
 }

@@ -188,6 +188,123 @@ export function DeleteModal({
   );
 }
 
+// Email verification modal - shown after signup
+interface EmailVerificationModalProps {
+  isOpen: boolean;
+  email: string;
+  onConfirm: () => void;
+}
+
+export function EmailVerificationModal({
+  isOpen,
+  email,
+  onConfirm,
+}: EmailVerificationModalProps) {
+  // Prevent closing with escape key - force acknowledgment
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+          />
+
+          {/* Modal */}
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: "spring", duration: 0.5 }}
+              className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden"
+            >
+              {/* Content */}
+              <div className="pt-8 pb-6 px-8 text-center">
+                {/* Animated Email Icon */}
+                <motion.div
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ type: "spring", delay: 0.1, duration: 0.6 }}
+                  className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-[#FF6B4A] to-[#FF8F6B] rounded-full flex items-center justify-center shadow-lg shadow-[#FF6B4A]/30"
+                >
+                  <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </motion.div>
+
+                {/* Title */}
+                <motion.h2
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="text-2xl font-bold text-[#0F172A] mb-3"
+                >
+                  Check Your Inbox!
+                </motion.h2>
+
+                {/* Message */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <p className="text-[#64748B] mb-2">
+                    We&apos;ve sent a verification link to
+                  </p>
+                  <p className="text-[#0F172A] font-semibold text-lg mb-4">
+                    {email}
+                  </p>
+                  <p className="text-[#64748B] text-sm">
+                    Please click the link in your email to verify your account before signing in.
+                  </p>
+                </motion.div>
+
+                {/* Tip */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="mt-4 p-3 bg-[#FFF7ED] rounded-xl"
+                >
+                  <p className="text-sm text-[#C2410C]">
+                    <span className="font-medium">Tip:</span> Check your spam folder if you don&apos;t see the email.
+                  </p>
+                </motion.div>
+              </div>
+
+              {/* Button */}
+              <div className="px-8 pb-8">
+                <motion.button
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                  onClick={onConfirm}
+                  className="w-full py-4 px-6 rounded-xl font-semibold text-white gradient-accent hover:shadow-lg hover:shadow-[#FF6B4A]/25 transition-all duration-300 text-lg"
+                >
+                  Got it, take me to login
+                </motion.button>
+              </div>
+            </motion.div>
+          </div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+}
+
 // Confirmation modal preset
 interface ConfirmModalProps {
   isOpen: boolean;
