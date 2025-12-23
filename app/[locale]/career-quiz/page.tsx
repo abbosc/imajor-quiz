@@ -1,14 +1,14 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 import { questions, categoryInfo, CategoryKey, CareerQuizOption } from '@/data/career-quiz-questions';
 
 type QuizState = 'start' | 'quiz' | 'results';
 
 interface CategoryResult {
   key: CategoryKey;
-  name: string;
   slug: string;
   color: string;
   score: number;
@@ -64,10 +64,23 @@ function CategoryIcon({ slug, color, className = "w-6 h-6" }: { slug: string; co
   return <>{icons[slug]}</>;
 }
 
+// Map category keys to translation keys
+const categoryKeyMap: Record<CategoryKey, string> = {
+  tech: 'tech',
+  health: 'health',
+  business: 'business',
+  science: 'science',
+  education: 'education',
+  law: 'law',
+  arts: 'arts',
+  media: 'media',
+};
+
 export default function CareerQuizPage() {
+  const t = useTranslations('careerQuiz');
   const [state, setState] = useState<QuizState>('start');
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState<Map<number, CareerQuizOption>>(new Map());
+  const [answers, setAnswers] = useState<Map<number, number>>(new Map()); // Store option index instead of option object
 
   // Calculate max possible score per category
   const maxScores = useMemo(() => {
@@ -106,10 +119,14 @@ export default function CareerQuizPage() {
       education: 0, law: 0, arts: 0, media: 0
     };
 
-    answers.forEach(option => {
-      Object.entries(option.scores).forEach(([key, value]) => {
-        totals[key as CategoryKey] += value;
-      });
+    answers.forEach((optionIndex, questionId) => {
+      const question = questions.find(q => q.id === questionId);
+      if (question) {
+        const option = question.options[optionIndex];
+        Object.entries(option.scores).forEach(([key, value]) => {
+          totals[key as CategoryKey] += value;
+        });
+      }
     });
 
     return Object.entries(categoryInfo)
@@ -121,7 +138,6 @@ export default function CareerQuizPage() {
 
         return {
           key: catKey,
-          name: info.name,
           slug: info.slug,
           color: info.color,
           score,
@@ -132,9 +148,9 @@ export default function CareerQuizPage() {
       .sort((a, b) => b.percentage - a.percentage);
   }, [answers, maxScores]);
 
-  const handleAnswer = (option: CareerQuizOption) => {
+  const handleAnswer = (optionIndex: number) => {
     const newAnswers = new Map(answers);
-    newAnswers.set(questions[currentQuestion].id, option);
+    newAnswers.set(questions[currentQuestion].id, optionIndex);
     setAnswers(newAnswers);
 
     setTimeout(() => {
@@ -175,7 +191,7 @@ export default function CareerQuizPage() {
               href="/careers"
               className="px-4 py-2 rounded-lg font-medium text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] transition-colors"
             >
-              View Careers
+              {t('viewCareers')}
             </Link>
           </div>
         </nav>
@@ -183,14 +199,13 @@ export default function CareerQuizPage() {
         <div className="container mx-auto px-6 sm:px-8 lg:px-12 py-12 sm:py-20">
           <div className="max-w-2xl mx-auto text-center">
             <span className="inline-block px-4 py-1.5 rounded-full text-sm font-medium bg-[#FF6B4A]/10 text-[#FF6B4A] mb-6">
-              Career Interest Quiz
+              {t('badge')}
             </span>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#0F172A] mb-6">
-              Discover Your <span className="gradient-text">Career Path</span>
+              {t('title')} <span className="gradient-text">{t('titleHighlight')}</span>
             </h2>
             <p className="text-lg text-[#64748B] mb-8">
-              Answer 21 quick questions to find out which career categories match your interests,
-              personality, and goals. Takes about 5 minutes.
+              {t('description')}
             </p>
 
             <div className="grid grid-cols-4 gap-3 mb-10 max-w-lg mx-auto">
@@ -206,7 +221,7 @@ export default function CareerQuizPage() {
                     <CategoryIcon slug={info.slug} color={info.color} className="w-5 h-5" />
                   </div>
                   <span className="text-[10px] text-[#64748B] text-center leading-tight">
-                    {info.name.split(' & ')[0]}
+                    {t(`categories.${categoryKeyMap[key as CategoryKey]}`).split(' & ')[0]}
                   </span>
                 </div>
               ))}
@@ -216,11 +231,11 @@ export default function CareerQuizPage() {
               onClick={() => setState('quiz')}
               className="px-8 py-4 rounded-xl font-semibold text-white gradient-accent hover:shadow-lg hover:shadow-[#FF6B4A]/25 transition-all text-lg"
             >
-              Start Quiz
+              {t('startQuiz')}
             </button>
 
             <p className="mt-6 text-sm text-[#94A3B8]">
-              No signup required
+              {t('noSignup')}
             </p>
           </div>
         </div>
@@ -241,7 +256,7 @@ export default function CareerQuizPage() {
               href="/careers"
               className="px-4 py-2 rounded-lg font-medium text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] transition-colors"
             >
-              View All Careers
+              {t('viewAllCareers')}
             </Link>
           </div>
         </nav>
@@ -250,13 +265,13 @@ export default function CareerQuizPage() {
           <div className="max-w-2xl mx-auto">
             <div className="text-center mb-10">
               <span className="inline-block px-4 py-1.5 rounded-full text-sm font-medium bg-[#FF6B4A]/10 text-[#FF6B4A] mb-4">
-                Your Results
+                {t('results.badge')}
               </span>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#0F172A] mb-3">
-                Your Career Interests
+                {t('results.title')}
               </h2>
               <p className="text-[#64748B]">
-                Based on your answers, here are the career categories that match your interests
+                {t('results.description')}
               </p>
             </div>
 
@@ -275,9 +290,11 @@ export default function CareerQuizPage() {
                         <CategoryIcon slug={result.slug} color={result.color} className="w-6 h-6" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-[#0F172A]">{result.name}</h3>
+                        <h3 className="font-semibold text-[#0F172A]">
+                          {t(`categories.${categoryKeyMap[result.key]}`)}
+                        </h3>
                         {index === 0 && (
-                          <span className="text-xs text-[#FF6B4A] font-medium">Top Match</span>
+                          <span className="text-xs text-[#FF6B4A] font-medium">{t('results.topMatch')}</span>
                         )}
                       </div>
                     </div>
@@ -303,7 +320,7 @@ export default function CareerQuizPage() {
                     className="inline-flex items-center gap-1 text-sm font-medium hover:gap-2 transition-all"
                     style={{ color: result.color }}
                   >
-                    Explore careers
+                    {t('results.exploreCareers')}
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
@@ -317,13 +334,13 @@ export default function CareerQuizPage() {
                 onClick={handleRestart}
                 className="px-6 py-3 rounded-xl font-medium border border-[#E2E8F0] hover:bg-[#F8FAFC] transition-colors"
               >
-                Retake Quiz
+                {t('results.retakeQuiz')}
               </button>
               <Link
                 href="/careers"
                 className="px-6 py-3 rounded-xl font-semibold text-white gradient-accent hover:shadow-lg hover:shadow-[#FF6B4A]/25 transition-all text-center"
               >
-                Browse All Careers
+                {t('results.browseAll')}
               </Link>
             </div>
           </div>
@@ -341,7 +358,7 @@ export default function CareerQuizPage() {
             <h1 className="text-2xl sm:text-3xl font-bold gradient-text">iMajor</h1>
           </Link>
           <span className="text-sm text-[#64748B]">
-            {currentQuestion + 1} of {questions.length}
+            {currentQuestion + 1} {t('questionOf')} {questions.length}
           </span>
         </div>
       </nav>
@@ -361,18 +378,18 @@ export default function CareerQuizPage() {
           {/* Question */}
           <div className="mb-8">
             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#0F172A] text-center">
-              {currentQ.question}
+              {t(`questions.${currentQ.id}.question`)}
             </h2>
           </div>
 
           {/* Options */}
           <div className="space-y-3">
-            {currentQ.options.map((option, index) => {
-              const isSelected = selectedAnswer?.text === option.text;
+            {currentQ.options.map((_, index) => {
+              const isSelected = selectedAnswer === index;
               return (
                 <button
                   key={index}
-                  onClick={() => handleAnswer(option)}
+                  onClick={() => handleAnswer(index)}
                   className={`w-full p-4 sm:p-5 rounded-xl border-2 text-left transition-all ${
                     isSelected
                       ? 'border-[#FF6B4A] bg-[#FF6B4A]/5'
@@ -380,7 +397,7 @@ export default function CareerQuizPage() {
                   }`}
                 >
                   <span className={`font-medium ${isSelected ? 'text-[#FF6B4A]' : 'text-[#0F172A]'}`}>
-                    {option.text}
+                    {t(`questions.${currentQ.id}.options.${index}`)}
                   </span>
                 </button>
               );
@@ -401,11 +418,11 @@ export default function CareerQuizPage() {
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
-              Previous
+              {t('previous')}
             </button>
 
             <span className="text-sm text-[#94A3B8]">
-              Select an answer to continue
+              {t('selectAnswer')}
             </span>
           </div>
         </div>

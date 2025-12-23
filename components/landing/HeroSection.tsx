@@ -1,20 +1,23 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 
 export default function HeroSection() {
+  const t = useTranslations('hero');
+
   return (
     <section className="min-h-[calc(100vh-80px)] flex items-center justify-center px-6 sm:px-8 lg:px-12 relative overflow-visible">
       <div className="max-w-5xl mx-auto text-center relative">
         {/* Main action-oriented headline */}
         <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-[#0F172A] mb-4 sm:mb-6 leading-tight">
-          <span className="block mb-2">Find your perfect major</span>
-          <span className="block gradient-text">in 5 minutes</span>
+          <span className="block mb-2">{t('headline1')}</span>
+          <span className="block gradient-text">{t('headline2')}</span>
         </h2>
 
         {/* Subheadline */}
         <p className="text-base sm:text-lg md:text-xl text-[#64748B] mb-8 sm:mb-10 max-w-2xl mx-auto">
-          Take our interactive quiz to discover which career categories align with your interests, skills, and goals.
+          {t('subheadline')}
         </p>
 
         {/* CTA Button */}
@@ -22,12 +25,12 @@ export default function HeroSection() {
           href="/career-quiz"
           className="inline-block gradient-accent text-white font-bold text-base sm:text-lg md:text-xl px-8 sm:px-12 py-4 sm:py-5 rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-[#FF6B4A]/30 hover:scale-105 transition-all duration-300"
         >
-          Take the Quiz
+          {t('cta')}
         </Link>
 
         {/* Supporting text */}
         <p className="mt-6 sm:mt-8 text-xs sm:text-sm text-[#94A3B8]">
-          100% Free &bull; No signup required &bull; Get instant results
+          {t('freeText')} &bull; {t('noSignup')} &bull; {t('instantResults')}
         </p>
 
         {/* Scroll indicator */}
@@ -43,7 +46,7 @@ export default function HeroSection() {
           <div className="bg-[#FFEAA7] p-3 shadow-lg transform rotate-2"
                style={{ clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%)' }}>
             <p className="text-[#5D4E37] text-sm text-center max-w-[200px] font-[family-name:var(--font-caveat)]">
-              How can you love what you don&apos;t know <span className="text-[#D63031] font-bold">in depth?</span>
+              {t('stickyNote')} <span className="text-[#D63031] font-bold">{t('stickyNoteHighlight')}</span>
             </p>
           </div>
 
@@ -51,8 +54,8 @@ export default function HeroSection() {
           <div className="bg-[#2C3E2D] rounded-lg p-3 shadow-xl border-4 border-[#8B4513] transform -rotate-1"
                style={{ boxShadow: 'inset 0 0 20px rgba(0,0,0,0.3)' }}>
             <p className="text-white text-sm text-center max-w-[220px] font-[family-name:var(--font-caveat)]">
-              Most students think they know their major.
-              <span className="text-[#FFD93D] font-bold block mt-1">This quiz will prove otherwise.</span>
+              {t('chalkboard1')} {t('chalkboard2')}
+              <span className="text-[#FFD93D] font-bold block mt-1">{t('chalkboardHighlight')}</span>
             </p>
           </div>
         </div>
@@ -80,9 +83,8 @@ export default function HeroSection() {
             {/* Text */}
             <p className="text-[#5D4E37] text-xl leading-snug max-w-[200px] font-[family-name:var(--font-caveat)]"
                style={{ transform: 'rotate(-1deg)' }}>
-              How can you love<br/>
-              what you don&apos;t know<br/>
-              <span className="text-2xl font-bold text-[#D63031]">in depth?</span>
+              {t('stickyNote')}<br/>
+              <span className="text-2xl font-bold text-[#D63031]">{t('stickyNoteHighlight')}</span>
             </p>
           </div>
 
@@ -112,9 +114,9 @@ export default function HeroSection() {
                  textShadow: '1px 1px 2px rgba(255,255,255,0.1)',
                  letterSpacing: '0.5px',
                }}>
-              <span className="text-2xl">Most students think</span><br/>
-              <span className="text-2xl">they know their major.</span><br/>
-              <span className="text-[#FFD93D] text-2xl font-bold mt-2 block">This quiz will prove otherwise.</span>
+              <span className="text-2xl">{t('chalkboard1')}</span><br/>
+              <span className="text-2xl">{t('chalkboard2')}</span><br/>
+              <span className="text-[#FFD93D] text-2xl font-bold mt-2 block">{t('chalkboardHighlight')}</span>
             </p>
 
             {/* Chalk piece decoration */}

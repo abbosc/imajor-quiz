@@ -1,0 +1,383 @@
+{
+  "metadata": {
+    "title": "iMajor - Discover Your Perfect College Major",
+    "description": "Take the free Major Exploration Quiz to discover how deeply you've explored your college major options. Interactive quizzes, curated resources, and guided exploration tasks."
+  },
+  "nav": {
+    "brand": "iMajor",
+    "tagline": "Discover yourself",
+    "about": "About",
+    "features": "Features",
+    "whyImajor": "Why iMajor",
+    "contact": "Contact",
+    "login": "Login",
+    "startFree": "Start Free",
+    "dashboard": "Dashboard"
+  },
+  "hero": {
+    "headline1": "Find your perfect major",
+    "headline2": "in 5 minutes",
+    "subheadline": "Take our interactive quiz to discover which career categories align with your interests, skills, and goals.",
+    "cta": "Take the Quiz",
+    "freeText": "100% Free",
+    "noSignup": "No signup required",
+    "instantResults": "Get instant results",
+    "stickyNote": "How can you love what you don't know",
+    "stickyNoteHighlight": "in depth?",
+    "chalkboard1": "Most students think",
+    "chalkboard2": "they know their major.",
+    "chalkboardHighlight": "This quiz will prove otherwise."
+  },
+  "about": {
+    "badge": "About Us",
+    "title": "What is",
+    "titleHighlight": "iMajor",
+    "description1": "iMajor is a free platform designed to help students explore and understand their potential college majors. Through interactive quizzes, curated resources, and guided exploration tasks, we help you make confident decisions about your academic future.",
+    "description2": "Whether you are just starting to think about college or finalizing your applications, iMajor provides the tools and insights you need to discover your perfect major and navigate the college application process with confidence.",
+    "stats": {
+      "free": "100%",
+      "freeLabel": "Free",
+      "quickQuiz": "5 min",
+      "quickQuizLabel": "Quick Quiz",
+      "majors": "80+",
+      "majorsLabel": "Majors Covered"
+    }
+  },
+  "features": {
+    "badge": "All Free Features",
+    "title": "Everything You Need to",
+    "titleHighlight": "Succeed",
+    "subtitle": "Comprehensive tools designed to help you navigate your college application journey",
+    "tasks": {
+      "title": "Exploration Tasks",
+      "description": "Guided tasks to help you explore your major deeply. Complete them and you might even surpass some university students in knowledge!"
+    },
+    "careers": {
+      "title": "Career Paths",
+      "description": "Explore detailed information about salaries, skills, growth outlook, and more for each career.",
+      "careersCount": "1200+",
+      "careersLabel": "Careers",
+      "majorsCount": "80+",
+      "majorsLabel": "Majors",
+      "categoriesCount": "8",
+      "categoriesLabel": "Categories"
+    },
+    "resources": {
+      "title": "10resources",
+      "description": "From must-read books to influential figures, accelerate your learning journey with curated resources.",
+      "resourcesCount": "1400+",
+      "resourcesLabel": "Resources",
+      "majorsCount": "10+",
+      "majorsLabel": "Majors",
+      "categoriesCount": "13",
+      "categoriesLabel": "Categories"
+    },
+    "collegetv": {
+      "title": "CollegeTV",
+      "description": "Watch curated videos to help you navigate college admissions, from application tips to student experiences."
+    },
+    "tracker": {
+      "title": "Application Tracker",
+      "description": "Your all-in-one college application hub. Track universities, manage tests (SAT/TOEFL), log activities, record honors, organize essays, and monitor recommendation letters."
+    },
+    "startExploring": "Start Exploring",
+    "learnMore": "Learn More"
+  },
+  "why": {
+    "badge": "Why Choose Us",
+    "title": "Why",
+    "titleHighlight": "iMajor",
+    "subtitle": "Built by students, for students. We understand the challenges of college applications.",
+    "exploration": {
+      "title": "Major Exploration",
+      "description": "Discover your path with guided quizzes and exploration tasks designed to help you understand what you truly want to study."
+    },
+    "allInOne": {
+      "title": "All-in-One Platform",
+      "description": "Keep all your application materials in one place. Universities, essays, activities, tests - everything organized and accessible."
+    },
+    "safe": {
+      "title": "Safe & Private",
+      "description": "Your data belongs to you. Admins cannot see your personal application materials like university lists, test scores, or essays."
+    },
+    "free": {
+      "title": "Free",
+      "description": "No hidden costs, no premium tiers, no paywalls. All features are completely free for every student."
+    },
+    "noChaos": {
+      "title": "No More Chaos",
+      "description": "Say goodbye to scattered Notion pages, Google Docs, and spreadsheets. Everything in one clean, organized space."
+    },
+    "growing": {
+      "title": "Growing Features",
+      "description": "We're constantly adding new tools and features based on student feedback. Your success drives our development."
+    }
+  },
+  "contact": {
+    "badge": "Get in Touch",
+    "title": "Let's",
+    "titleHighlight": "Connect",
+    "subtitle": "Have questions or feedback? We'd love to hear from you.",
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "Your name",
+      "email": "Email",
+      "emailPlaceholder": "your@email.com",
+      "message": "Message",
+      "messagePlaceholder": "How can we help you?",
+      "submit": "Send Message",
+      "sending": "Sending..."
+    },
+    "success": {
+      "title": "Message Sent!",
+      "description": "Thank you for reaching out. We will get back to you soon.",
+      "sendAnother": "Send Another Message"
+    },
+    "emailCard": {
+      "label": "Email us at",
+      "copied": "Copied!"
+    },
+    "telegramCard": {
+      "label": "Message us on",
+      "platform": "Telegram"
+    }
+  },
+  "footer": {
+    "tagline": "Discover yourself",
+    "description": "Your all-in-one platform for major exploration and college application management. Built by students, for students.",
+    "quickLinks": "Quick Links",
+    "resources": "Resources",
+    "takeQuiz": "Take Quiz",
+    "dashboard": "Dashboard",
+    "tasks": "Tasks",
+    "universities": "Universities",
+    "activities": "Activities",
+    "essays": "Essays",
+    "copyright": "iMajor. All rights reserved.",
+    "madeWith": "Made with",
+    "forStudents": "for students worldwide"
+  },
+  "careerQuiz": {
+    "badge": "Career Interest Quiz",
+    "title": "Discover Your",
+    "titleHighlight": "Career Path",
+    "description": "Answer 21 quick questions to find out which career categories match your interests, personality, and goals. Takes about 5 minutes.",
+    "startQuiz": "Start Quiz",
+    "noSignup": "No signup required",
+    "viewCareers": "View Careers",
+    "viewAllCareers": "View All Careers",
+    "questionOf": "of",
+    "selectAnswer": "Select an answer to continue",
+    "previous": "Previous",
+    "results": {
+      "badge": "Your Results",
+      "title": "Your Career Interests",
+      "description": "Based on your answers, here are the career categories that match your interests",
+      "topMatch": "Top Match",
+      "exploreCareers": "Explore careers",
+      "retakeQuiz": "Retake Quiz",
+      "browseAll": "Browse All Careers"
+    },
+    "categories": {
+      "tech": "Technology & Engineering",
+      "health": "Healthcare & Medicine",
+      "business": "Business & Finance",
+      "science": "Natural Sciences",
+      "education": "Education & Social Sciences",
+      "law": "Law & Public Policy",
+      "arts": "Arts & Design",
+      "media": "Communications & Media"
+    },
+    "questions": {
+      "1": {
+        "question": "On a free weekend, which activity sounds most appealing?",
+        "options": [
+          "Building or coding a personal project",
+          "Volunteering at a local clinic or care center",
+          "Analyzing stock trends or planning investments",
+          "Going on a nature hike and identifying plants/wildlife"
+        ]
+      },
+      "2": {
+        "question": "Which type of documentary would you most likely watch?",
+        "options": [
+          "The psychology behind human behavior",
+          "Legal battles that changed history",
+          "The creative process of famous artists",
+          "How viral content shapes public opinion"
+        ]
+      },
+      "3": {
+        "question": "In a group project, you naturally tend to:",
+        "options": [
+          "Handle the technical aspects and problem-solving",
+          "Make sure everyone's well-being is considered",
+          "Take charge of planning, budgets, and deadlines",
+          "Create the visual presentation and design elements"
+        ]
+      },
+      "4": {
+        "question": "Which headline would grab your attention first?",
+        "options": [
+          "New AI System Revolutionizes Problem-Solving",
+          "Breakthrough Treatment Shows Promise for Rare Disease",
+          "Climate Scientists Discover New Ecosystem Pattern",
+          "Supreme Court Decision Reshapes Civil Rights"
+        ]
+      },
+      "5": {
+        "question": "Which headline would grab your attention first?",
+        "options": [
+          "Study Reveals How Childhood Experiences Shape Adult Behavior",
+          "Startup Disrupts Industry with New Business Model",
+          "Artist's Unconventional Work Challenges Perceptions",
+          "Investigative Report Uncovers Hidden Truth"
+        ]
+      },
+      "6": {
+        "question": "Which skill would you most like to master?",
+        "options": [
+          "Programming or engineering design",
+          "Diagnosing problems and providing care",
+          "Negotiation and strategic planning",
+          "Scientific research methodology"
+        ]
+      },
+      "7": {
+        "question": "Which skill would you most like to master?",
+        "options": [
+          "Understanding and teaching complex concepts",
+          "Persuasive argumentation and debate",
+          "Visual composition and creative expression",
+          "Storytelling and public speaking"
+        ]
+      },
+      "8": {
+        "question": "What kind of problems do you enjoy solving most?",
+        "options": [
+          "Logical puzzles with clear right/wrong answers",
+          "Helping people navigate difficult situations",
+          "Finding win-win solutions in conflicts",
+          "Expressing complex ideas in engaging ways"
+        ]
+      },
+      "9": {
+        "question": "Which work environment appeals to you most?",
+        "options": [
+          "A tech lab or innovation workspace",
+          "A hospital, clinic, or research facility",
+          "A corporate office or trading floor",
+          "A courtroom or government building"
+        ]
+      },
+      "10": {
+        "question": "Which work environment appeals to you most?",
+        "options": [
+          "A school, university, or community center",
+          "A design studio or creative agency",
+          "A newsroom or production studio",
+          "A field research station or laboratory"
+        ]
+      },
+      "11": {
+        "question": "What motivates you most in your work?",
+        "options": [
+          "Creating efficient systems and innovations",
+          "Making a direct positive impact on people's lives",
+          "Building wealth and achieving financial success",
+          "Discovering new knowledge about the world"
+        ]
+      },
+      "12": {
+        "question": "What motivates you most in your work?",
+        "options": [
+          "Fighting for justice and fairness",
+          "Expressing creativity and beauty",
+          "Informing and connecting with audiences",
+          "Understanding human behavior and society"
+        ]
+      },
+      "13": {
+        "question": "Which book topic would you pick up first?",
+        "options": [
+          "The future of artificial intelligence",
+          "The science of human health and longevity",
+          "Strategies of successful entrepreneurs",
+          "Mysteries of the universe and nature"
+        ]
+      },
+      "14": {
+        "question": "Which book topic would you pick up first?",
+        "options": [
+          "How people learn and develop",
+          "Famous legal cases that changed society",
+          "The history of art movements",
+          "How media shapes culture and politics"
+        ]
+      },
+      "15": {
+        "question": "If you could solve one global challenge, which would it be?",
+        "options": [
+          "Advancing technology to solve resource problems",
+          "Eliminating diseases and improving healthcare access",
+          "Reducing poverty through economic development",
+          "Reforming systems to ensure justice for all"
+        ]
+      },
+      "16": {
+        "question": "How do you prefer to express yourself?",
+        "options": [
+          "Through data, code, or technical solutions",
+          "Through caring actions and support",
+          "Through strategic plans and presentations",
+          "Through visual art, music, or design"
+        ]
+      },
+      "17": {
+        "question": "How do you prefer to express yourself?",
+        "options": [
+          "Through teaching and mentoring others",
+          "Through well-reasoned arguments",
+          "Through writing and storytelling",
+          "Through research and analysis"
+        ]
+      },
+      "18": {
+        "question": "What kind of legacy would you like to leave?",
+        "options": [
+          "Inventions or systems that improve daily life",
+          "Lives saved or improved through care",
+          "A successful organization or financial empire",
+          "Scientific discoveries that advance human knowledge"
+        ]
+      },
+      "19": {
+        "question": "What kind of legacy would you like to leave?",
+        "options": [
+          "Students or communities you've helped develop",
+          "Laws or policies that created positive change",
+          "Art or designs that moved and inspired people",
+          "Stories or content that informed and entertained"
+        ]
+      },
+      "20": {
+        "question": "Which compliment would mean the most to you?",
+        "options": [
+          "\"You're so innovative and technically brilliant\"",
+          "\"You have such a caring and healing presence\"",
+          "\"You have amazing business instincts\"",
+          "\"Your curiosity and analytical mind are incredible\""
+        ]
+      },
+      "21": {
+        "question": "Which compliment would mean the most to you?",
+        "options": [
+          "\"You're such a patient and inspiring teacher\"",
+          "\"Your sense of justice is unwavering\"",
+          "\"Your creative vision is truly unique\"",
+          "\"You have a gift for connecting with audiences\""
+        ]
+      }
+    }
+  }
+}

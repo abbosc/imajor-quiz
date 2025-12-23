@@ -1,27 +1,20 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import HeroSection from "@/components/landing/HeroSection";
+import AboutSection from "@/components/landing/AboutSection";
+import FeaturesSection from "@/components/landing/FeaturesSection";
+import WhySection from "@/components/landing/WhySection";
+import ContactSection from "@/components/landing/ContactSection";
+import Footer from "@/components/landing/Footer";
 import { useAuth } from "@/contexts/AuthContext";
+import { Link as LocaleLink } from "@/i18n/navigation";
 import Link from "next/link";
-
-// Lazy load below-the-fold sections for faster initial page load
-const AboutSection = dynamic(() => import("@/components/landing/AboutSection"), {
-  loading: () => <div className="h-96 animate-shimmer" />,
-});
-const FeaturesSection = dynamic(() => import("@/components/landing/FeaturesSection"), {
-  loading: () => <div className="h-96 animate-shimmer" />,
-});
-const WhySection = dynamic(() => import("@/components/landing/WhySection"), {
-  loading: () => <div className="h-64 animate-shimmer" />,
-});
-const ContactSection = dynamic(() => import("@/components/landing/ContactSection"), {
-  loading: () => <div className="h-64 animate-shimmer" />,
-});
-const Footer = dynamic(() => import("@/components/landing/Footer"));
+import { useTranslations } from 'next-intl';
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 export default function Home() {
   const { user, loading } = useAuth();
+  const t = useTranslations('nav');
 
   return (
     <main className="min-h-screen bg-[#F8FAFC] relative overflow-hidden">
@@ -37,8 +30,8 @@ export default function Home() {
         <nav className="container mx-auto px-6 sm:px-8 lg:px-12 py-4 sm:py-6">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold gradient-text">iMajor</h1>
-              <p className="text-xs text-[#64748B] -mt-0.5 hidden sm:block">Discover yourself</p>
+              <h1 className="text-2xl sm:text-3xl font-bold gradient-text">{t('brand')}</h1>
+              <p className="text-xs text-[#64748B] -mt-0.5 hidden sm:block">{t('tagline')}</p>
             </div>
 
             {/* Public Navigation Links */}
@@ -47,36 +40,37 @@ export default function Home() {
                 href="#about"
                 className="px-4 py-2 rounded-lg font-medium text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] transition-colors"
               >
-                About
+                {t('about')}
               </a>
               <a
                 href="#features"
                 className="px-4 py-2 rounded-lg font-medium text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] transition-colors"
               >
-                Features
+                {t('features')}
               </a>
               <a
                 href="#why"
                 className="px-4 py-2 rounded-lg font-medium text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] transition-colors"
               >
-                Why iMajor
+                {t('whyImajor')}
               </a>
               <a
                 href="#contact"
                 className="px-4 py-2 rounded-lg font-medium text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] transition-colors"
               >
-                Contact
+                {t('contact')}
               </a>
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-4">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <LanguageSwitcher />
               {!loading && (
                 user ? (
                   <Link
                     href="/dashboard"
                     className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl font-medium text-white gradient-accent hover:shadow-lg hover:shadow-[#FF6B4A]/25 transition-all text-sm sm:text-base"
                   >
-                    Dashboard
+                    {t('dashboard')}
                   </Link>
                 ) : (
                   <>
@@ -84,13 +78,13 @@ export default function Home() {
                       href="/login"
                       className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl font-medium text-[#0F172A] hover:bg-[#F1F5F9] transition-colors text-sm sm:text-base"
                     >
-                      Login
+                      {t('login')}
                     </Link>
                     <Link
                       href="/signup"
                       className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl font-medium text-white gradient-accent hover:shadow-lg hover:shadow-[#FF6B4A]/25 transition-all text-sm sm:text-base"
                     >
-                      Start Free
+                      {t('startFree')}
                     </Link>
                   </>
                 )

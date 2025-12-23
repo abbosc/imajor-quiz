@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 
 export default function ContactSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -13,6 +14,7 @@ export default function ContactSection() {
   });
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const t = useTranslations('contact');
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -89,13 +91,13 @@ export default function ContactSection() {
         {/* Section Header */}
         <div className={`text-center mb-10 sm:mb-16 transition-all duration-600 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <span className={`inline-block px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium bg-[#FF6B4A]/20 text-[#FF6B4A] mb-3 sm:mb-4 transition-all duration-500 delay-100 ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}>
-            Get in Touch
+            {t('badge')}
           </span>
           <h2 className={`text-2xl sm:text-3xl md:text-5xl font-bold text-white mb-3 sm:mb-4 transition-all duration-500 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
-            Let&apos;s <span className="gradient-text">Connect</span>
+            {t('title')} <span className="gradient-text">{t('titleHighlight')}</span>
           </h2>
           <p className={`text-sm sm:text-lg text-white/60 max-w-2xl mx-auto transition-all duration-500 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
-            Have questions or feedback? We&apos;d love to hear from you.
+            {t('subtitle')}
           </p>
         </div>
 
@@ -110,13 +112,13 @@ export default function ContactSection() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-2">Message Sent!</h3>
-                <p className="text-white/60 mb-6">Thank you for reaching out. We will get back to you soon.</p>
+                <h3 className="text-xl font-semibold text-white mb-2">{t('success.title')}</h3>
+                <p className="text-white/60 mb-6">{t('success.description')}</p>
                 <button
                   onClick={() => setStatus('idle')}
                   className="px-6 py-2 rounded-xl font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors"
                 >
-                  Send Another Message
+                  {t('success.sendAnother')}
                 </button>
               </div>
             ) : (
@@ -130,7 +132,7 @@ export default function ContactSection() {
                 <div className="space-y-5">
                   <div>
                     <label htmlFor="name" className="block text-sm font-medium text-white/80 mb-2">
-                      Name
+                      {t('form.name')}
                     </label>
                     <input
                       type="text"
@@ -139,13 +141,13 @@ export default function ContactSection() {
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:border-[#FF6B4A] focus:ring-2 focus:ring-[#FF6B4A]/20 outline-none transition-all"
-                      placeholder="Your name"
+                      placeholder={t('form.namePlaceholder')}
                     />
                   </div>
 
                   <div>
                     <label htmlFor="email" className="block text-sm font-medium text-white/80 mb-2">
-                      Email
+                      {t('form.email')}
                     </label>
                     <input
                       type="email"
@@ -154,13 +156,13 @@ export default function ContactSection() {
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:border-[#FF6B4A] focus:ring-2 focus:ring-[#FF6B4A]/20 outline-none transition-all"
-                      placeholder="your@email.com"
+                      placeholder={t('form.emailPlaceholder')}
                     />
                   </div>
 
                   <div>
                     <label htmlFor="message" className="block text-sm font-medium text-white/80 mb-2">
-                      Message
+                      {t('form.message')}
                     </label>
                     <textarea
                       id="message"
@@ -169,7 +171,7 @@ export default function ContactSection() {
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                       className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:border-[#FF6B4A] focus:ring-2 focus:ring-[#FF6B4A]/20 outline-none transition-all resize-none"
-                      placeholder="How can we help you?"
+                      placeholder={t('form.messagePlaceholder')}
                     />
                   </div>
 
@@ -184,10 +186,10 @@ export default function ContactSection() {
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                         </svg>
-                        Sending...
+                        {t('form.sending')}
                       </span>
                     ) : (
-                      'Send Message'
+                      t('form.submit')
                     )}
                   </button>
                 </div>
@@ -213,11 +215,11 @@ export default function ContactSection() {
                     </svg>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-white/50 text-xs sm:text-sm mb-1">Email us at</p>
+                    <p className="text-white/50 text-xs sm:text-sm mb-1">{t('emailCard.label')}</p>
                     <p className="text-white font-semibold text-base sm:text-lg truncate">contact@imajor.app</p>
                   </div>
                   <div className={`absolute top-4 right-4 bg-green-500 text-white text-xs px-2 py-1 rounded-full transition-all duration-300 ${copiedEmail ? 'opacity-100 scale-100' : 'opacity-0 scale-80'}`}>
-                    Copied!
+                    {t('emailCard.copied')}
                   </div>
                   <svg className="w-5 h-5 text-white/30 group-hover:text-[#FF6B4A] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -244,8 +246,8 @@ export default function ContactSection() {
                     </svg>
                   </div>
                   <div className="flex-1">
-                    <p className="text-white/50 text-xs sm:text-sm mb-1">Message us on</p>
-                    <p className="text-white font-semibold text-base sm:text-lg">Telegram</p>
+                    <p className="text-white/50 text-xs sm:text-sm mb-1">{t('telegramCard.label')}</p>
+                    <p className="text-white font-semibold text-base sm:text-lg">{t('telegramCard.platform')}</p>
                   </div>
                   <svg className="w-5 h-5 text-white/30 group-hover:text-[#0088cc] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />

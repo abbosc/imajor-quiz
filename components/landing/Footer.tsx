@@ -1,23 +1,25 @@
 'use client';
 
 import { useRef, useEffect, useState } from 'react';
-import Link from 'next/link';
-
-const quickLinks = [
-  { label: 'Take Quiz', href: '/quiz' },
-  { label: 'Dashboard', href: '/dashboard' },
-  { label: 'Tasks', href: '/tasks' },
-];
-
-const resourceLinks = [
-  { label: 'Universities', href: '/universities' },
-  { label: 'Activities', href: '/activities' },
-  { label: 'Essays', href: '/essays' },
-];
+import { Link } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 
 export default function Footer() {
   const footerRef = useRef<HTMLElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const t = useTranslations('footer');
+
+  const quickLinks = [
+    { labelKey: 'takeQuiz', href: '/quiz' },
+    { labelKey: 'dashboard', href: '/dashboard' },
+    { labelKey: 'tasks', href: '/tasks' },
+  ];
+
+  const resourceLinks = [
+    { labelKey: 'universities', href: '/universities' },
+    { labelKey: 'activities', href: '/activities' },
+    { labelKey: 'essays', href: '/essays' },
+  ];
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -53,9 +55,9 @@ export default function Footer() {
             <h2 className="text-2xl sm:text-3xl font-bold gradient-text mb-1 animate-textGlow">
               iMajor
             </h2>
-            <p className="text-white/40 text-xs sm:text-sm mb-3 sm:mb-4">Discover yourself</p>
+            <p className="text-white/40 text-xs sm:text-sm mb-3 sm:mb-4">{t('tagline')}</p>
             <p className="text-sm sm:text-base text-white/60 mb-4 sm:mb-6 max-w-sm">
-              Your all-in-one platform for major exploration and college application management. Built by students, for students.
+              {t('description')}
             </p>
 
             {/* Social Links */}
@@ -87,7 +89,7 @@ export default function Footer() {
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`}
           >
-            <h3 className="text-white font-semibold mb-4">Quick Links</h3>
+            <h3 className="text-white font-semibold mb-4">{t('quickLinks')}</h3>
             <ul className="space-y-3">
               {quickLinks.map((link) => (
                 <li key={link.href}>
@@ -95,7 +97,7 @@ export default function Footer() {
                     href={link.href}
                     className="text-white/60 hover:text-[#FF6B4A] transition-colors duration-300 relative group inline-block"
                   >
-                    {link.label}
+                    {t(link.labelKey)}
                     <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-[#FF6B4A] group-hover:w-full transition-all duration-300" />
                   </Link>
                 </li>
@@ -109,7 +111,7 @@ export default function Footer() {
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`}
           >
-            <h3 className="text-white font-semibold mb-4">Resources</h3>
+            <h3 className="text-white font-semibold mb-4">{t('resources')}</h3>
             <ul className="space-y-3">
               {resourceLinks.map((link) => (
                 <li key={link.href}>
@@ -117,7 +119,7 @@ export default function Footer() {
                     href={link.href}
                     className="text-white/60 hover:text-[#FF6B4A] transition-colors duration-300 relative group inline-block"
                   >
-                    {link.label}
+                    {t(link.labelKey)}
                     <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-[#FF6B4A] group-hover:w-full transition-all duration-300" />
                   </Link>
                 </li>
@@ -133,12 +135,12 @@ export default function Footer() {
           }`}
         >
           <p className="text-white/40 text-xs sm:text-sm">
-            &copy; {new Date().getFullYear()} iMajor. All rights reserved.
+            &copy; {new Date().getFullYear()} {t('copyright')}
           </p>
           <p className="text-white/40 text-xs sm:text-sm">
-            Made with{' '}
+            {t('madeWith')}{' '}
             <span className="inline-block text-[#FF6B4A] animate-heartbeat">♥</span>
-            {' '}for students worldwide
+            {' '}{t('forStudents')}
           </p>
         </div>
       </div>

@@ -2,8 +2,9 @@
 
 import { useRef } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { motion, useInView, useScroll, useTransform, useSpring } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 
 interface Stat {
   value: string;
@@ -12,31 +13,31 @@ interface Stat {
 
 interface Feature {
   id: string;
-  title: string;
-  description: string;
+  titleKey: string;
+  descriptionKey: string;
   image: string;
   href: string;
   highlight?: boolean;
-  stats?: Stat[];
+  statsKeys?: { valueKey: string; labelKey: string }[];
 }
 
 const features: Feature[] = [
   {
     id: 'tasks',
-    title: 'Exploration Tasks',
-    description: 'Guided tasks to help you explore your major deeply. Complete them and you might even surpass some university students in knowledge!',
+    titleKey: 'tasks.title',
+    descriptionKey: 'tasks.description',
     image: '/images/tasks.png',
     href: '/tasks',
     highlight: true,
   },
   {
     id: 'careers',
-    title: 'Career Paths',
-    description: 'Explore detailed information about salaries, skills, growth outlook, and more for each career.',
-    stats: [
-      { value: '1200+', label: 'Careers' },
-      { value: '80+', label: 'Majors' },
-      { value: '8', label: 'Categories' },
+    titleKey: 'careers.title',
+    descriptionKey: 'careers.description',
+    statsKeys: [
+      { valueKey: 'careers.careersCount', labelKey: 'careers.careersLabel' },
+      { valueKey: 'careers.majorsCount', labelKey: 'careers.majorsLabel' },
+      { valueKey: 'careers.categoriesCount', labelKey: 'careers.categoriesLabel' },
     ],
     image: '/images/careers_details.png',
     href: '/careers',
@@ -44,12 +45,12 @@ const features: Feature[] = [
   },
   {
     id: '10resources',
-    title: '10resources',
-    description: 'From must-read books to influential figures, accelerate your learning journey with curated resources.',
-    stats: [
-      { value: '1400+', label: 'Resources' },
-      { value: '10+', label: 'Majors' },
-      { value: '13', label: 'Categories' },
+    titleKey: 'resources.title',
+    descriptionKey: 'resources.description',
+    statsKeys: [
+      { valueKey: 'resources.resourcesCount', labelKey: 'resources.resourcesLabel' },
+      { valueKey: 'resources.majorsCount', labelKey: 'resources.majorsLabel' },
+      { valueKey: 'resources.categoriesCount', labelKey: 'resources.categoriesLabel' },
     ],
     image: '/images/10resources.png',
     href: '/10resources',
@@ -57,23 +58,23 @@ const features: Feature[] = [
   },
   {
     id: 'collegetv',
-    title: 'CollegeTV',
-    description: 'Watch curated videos to help you navigate college admissions, from application tips to student experiences.',
+    titleKey: 'collegetv.title',
+    descriptionKey: 'collegetv.description',
     image: '/images/collegetv.png',
     href: '/collegetv',
     highlight: false,
   },
   {
     id: 'tracker',
-    title: 'Application Tracker',
-    description: 'Your all-in-one college application hub. Track universities, manage tests (SAT/TOEFL), log activities, record honors, organize essays, and monitor recommendation letters.',
+    titleKey: 'tracker.title',
+    descriptionKey: 'tracker.description',
     image: '/images/universities.png',
     href: '/tracker',
     highlight: true,
   },
 ];
 
-function FeatureCard({ feature, index }: { feature: typeof features[0]; index: number }) {
+function FeatureCard({ feature, index, t }: { feature: typeof features[0]; index: number; t: (key: string) => string }) {
   const cardRef = useRef(null);
   const isInView = useInView(cardRef, { once: true, margin: '-100px' });
   const isEven = index % 2 === 0;
@@ -83,7 +84,6 @@ function FeatureCard({ feature, index }: { feature: typeof features[0]; index: n
     offset: ["start end", "end start"],
   });
 
-  // Parallax effects
   const imageY = useTransform(scrollYProgress, [0, 1], [60, -60]);
   const imageYSpring = useSpring(imageY, { stiffness: 100, damping: 30 });
 
@@ -120,12 +120,11 @@ function FeatureCard({ feature, index }: { feature: typeof features[0]; index: n
             >
               <Image
                 src={feature.image}
-                alt={feature.title}
+                alt={t(feature.titleKey)}
                 width={600}
                 height={400}
                 className="w-full h-auto"
               />
-              {/* Glow overlay */}
               <motion.div
                 className="absolute inset-0 bg-gradient-to-tr from-[#FF6B4A]/0 via-transparent to-[#FF6B4A]/10"
                 animate={{
@@ -151,21 +150,21 @@ function FeatureCard({ feature, index }: { feature: typeof features[0]; index: n
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#0F172A] mb-3 sm:mb-4"
             >
-              {feature.title}
+              {t(feature.titleKey)}
             </motion.h3>
 
             {/* Stats - only for features with stats */}
-            {feature.stats && (
+            {feature.statsKeys && (
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                 transition={{ duration: 0.6, delay: 0.25 }}
                 className="flex flex-wrap gap-6 sm:gap-8 mb-4 sm:mb-6 justify-center lg:justify-start"
               >
-                {feature.stats.map((stat) => (
-                  <div key={stat.label} className="text-center lg:text-left">
-                    <div className="text-2xl sm:text-3xl lg:text-4xl font-bold gradient-text">{stat.value}</div>
-                    <div className="text-xs sm:text-sm text-[#64748B]">{stat.label}</div>
+                {feature.statsKeys.map((stat) => (
+                  <div key={stat.labelKey} className="text-center lg:text-left">
+                    <div className="text-2xl sm:text-3xl lg:text-4xl font-bold gradient-text">{t(stat.valueKey)}</div>
+                    <div className="text-xs sm:text-sm text-[#64748B]">{t(stat.labelKey)}</div>
                   </div>
                 ))}
               </motion.div>
@@ -177,7 +176,7 @@ function FeatureCard({ feature, index }: { feature: typeof features[0]; index: n
               transition={{ duration: 0.6, delay: 0.3 }}
               className="text-base sm:text-lg text-[#64748B] mb-4 sm:mb-6"
             >
-              {feature.description}
+              {t(feature.descriptionKey)}
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -196,7 +195,7 @@ function FeatureCard({ feature, index }: { feature: typeof features[0]; index: n
                       : 'bg-[#0F172A]/5 border border-[#E2E8F0] text-[#0F172A] hover:bg-[#0F172A]/10 hover:border-[#FF6B4A]/30'
                   }`}
                 >
-                  {feature.highlight ? 'Start Exploring' : 'Learn More'}
+                  {feature.highlight ? t('startExploring') : t('learnMore')}
                 </Link>
               </motion.div>
             </motion.div>
@@ -210,6 +209,7 @@ function FeatureCard({ feature, index }: { feature: typeof features[0]; index: n
 export default function FeaturesSection() {
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: '-50px' });
+  const t = useTranslations('features');
 
   return (
     <section id="features" ref={sectionRef} className="py-12 sm:py-16 md:py-24 overflow-hidden">
@@ -227,7 +227,7 @@ export default function FeaturesSection() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="inline-block px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium bg-[#FF6B4A]/10 text-[#FF6B4A] mb-3 sm:mb-4"
           >
-            All Free Features
+            {t('badge')}
           </motion.span>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -235,8 +235,8 @@ export default function FeaturesSection() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-2xl sm:text-3xl md:text-5xl font-bold text-[#0F172A] mb-3 sm:mb-4"
           >
-            Everything You Need to{' '}
-            <span className="gradient-text">Succeed</span>
+            {t('title')}{' '}
+            <span className="gradient-text">{t('titleHighlight')}</span>
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -244,14 +244,14 @@ export default function FeaturesSection() {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="text-sm sm:text-lg text-[#64748B] max-w-2xl mx-auto"
           >
-            Comprehensive tools designed to help you navigate your college application journey
+            {t('subtitle')}
           </motion.p>
         </motion.div>
       </div>
 
       {/* Feature Cards */}
       {features.map((feature, index) => (
-        <FeatureCard key={feature.id} feature={feature} index={index} />
+        <FeatureCard key={feature.id} feature={feature} index={index} t={t} />
       ))}
     </section>
   );

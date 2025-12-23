@@ -1,0 +1,383 @@
+{
+  "metadata": {
+    "title": "iMajor - O'zingizga mos mutaxassislikni toping",
+    "description": "Bepul mutaxassislik tadqiqot testini topshiring va kollejdagi mutaxassislik variantlaringizni qanchalik chuqur o'rganganingizni bilib oling."
+  },
+  "nav": {
+    "brand": "iMajor",
+    "tagline": "O'zingizni kashf eting",
+    "about": "Biz haqimizda",
+    "features": "Imkoniyatlar",
+    "whyImajor": "Nega iMajor",
+    "contact": "Aloqa",
+    "login": "Kirish",
+    "startFree": "Bepul boshlash",
+    "dashboard": "Boshqaruv paneli"
+  },
+  "hero": {
+    "headline1": "O'zingizga mos mutaxassislikni",
+    "headline2": "5 daqiqada toping",
+    "subheadline": "Qiziqishlaringiz, ko'nikmalaringiz va maqsadlaringizga mos keladigan karyera yo'nalishlarini aniqlash uchun interaktiv testimizni topshiring.",
+    "cta": "Testni boshlash",
+    "freeText": "100% Bepul",
+    "noSignup": "Ro'yxatdan o'tish shart emas",
+    "instantResults": "Tezkor natijalar",
+    "stickyNote": "Chuqur bilmagan narsangizni qanday",
+    "stickyNoteHighlight": "sevish mumkin?",
+    "chalkboard1": "Ko'pchilik talabalar",
+    "chalkboard2": "o'z mutaxassisligini bilishadi deb o'ylaydi.",
+    "chalkboardHighlight": "Bu test aksini isbotlaydi."
+  },
+  "about": {
+    "badge": "Biz haqimizda",
+    "title": "Nima",
+    "titleHighlight": "iMajor",
+    "description1": "iMajor - bu talabalarga potentsial kollej mutaxassisliklarini o'rganish va tushunishga yordam berish uchun yaratilgan bepul platforma. Interaktiv testlar, tanlangan resurslar va yo'naltirilgan tadqiqot vazifalari orqali akademik kelajagingiz haqida ishonchli qarorlar qabul qilishingizga yordam beramiz.",
+    "description2": "Kollejga endigina o'ylashni boshlaganmisiz yoki arizalaringizni yakunlamoqchimisiz, iMajor sizga mukammal mutaxassislikni topish va kollej ariza jarayonini ishonch bilan bosib o'tish uchun kerakli vositalar va tushunchalarni taqdim etadi.",
+    "stats": {
+      "free": "100%",
+      "freeLabel": "Bepul",
+      "quickQuiz": "5 daq",
+      "quickQuizLabel": "Tezkor test",
+      "majors": "80+",
+      "majorsLabel": "Mutaxassisliklar"
+    }
+  },
+  "features": {
+    "badge": "Barcha bepul imkoniyatlar",
+    "title": "Muvaffaqiyat uchun",
+    "titleHighlight": "kerak bo'lgan hamma narsa",
+    "subtitle": "Kollej ariza jarayonida sizga yordam berish uchun yaratilgan keng qamrovli vositalar",
+    "tasks": {
+      "title": "Tadqiqot vazifalari",
+      "description": "Mutaxassisligingizni chuqur o'rganishga yordam beradigan yo'naltirilgan vazifalar. Ularni bajaring va hatto ba'zi universitet talabalaridan ham ko'proq bilimga ega bo'lishingiz mumkin!"
+    },
+    "careers": {
+      "title": "Karyera yo'llari",
+      "description": "Har bir karyera uchun maoshlar, ko'nikmalar, o'sish istiqbollari va boshqalar haqida batafsil ma'lumotlarni o'rganing.",
+      "careersCount": "1200+",
+      "careersLabel": "Karyeralar",
+      "majorsCount": "80+",
+      "majorsLabel": "Mutaxassisliklar",
+      "categoriesCount": "8",
+      "categoriesLabel": "Kategoriyalar"
+    },
+    "resources": {
+      "title": "10resources",
+      "description": "O'qish kerak bo'lgan kitoblardan ta'sirli shaxslargacha, tanlangan resurslar bilan o'rganish sayohatingizni tezlashtiring.",
+      "resourcesCount": "1400+",
+      "resourcesLabel": "Resurslar",
+      "majorsCount": "10+",
+      "majorsLabel": "Mutaxassisliklar",
+      "categoriesCount": "13",
+      "categoriesLabel": "Kategoriyalar"
+    },
+    "collegetv": {
+      "title": "CollegeTV",
+      "description": "Kollej qabulidan ariza maslahatlarigacha, talabalar tajribalarigacha yordam beradigan tanlangan videolarni tomosha qiling."
+    },
+    "tracker": {
+      "title": "Ariza kuzatuvchisi",
+      "description": "Hammasi-bir-joyda kollej ariza markazi. Universitetlarni kuzating, testlarni (SAT/TOEFL) boshqaring, faoliyatlarni qayd qiling, mukofotlarni yozing, insholarni tartibga soling va tavsiya xatlarini kuzating."
+    },
+    "startExploring": "Tadqiqotni boshlash",
+    "learnMore": "Batafsil"
+  },
+  "why": {
+    "badge": "Nega bizni tanlash kerak",
+    "title": "Nega",
+    "titleHighlight": "iMajor",
+    "subtitle": "Talabalar tomonidan talabalar uchun yaratilgan. Biz kollej arizalari qiyinchiliklarini tushunamiz.",
+    "exploration": {
+      "title": "Mutaxassislik tadqiqoti",
+      "description": "Yo'naltirilgan testlar va tadqiqot vazifalari yordamida o'z yo'lingizni kashf eting, ular sizga haqiqatan nima o'qishni xohlayotganingizni tushunishga yordam beradi."
+    },
+    "allInOne": {
+      "title": "Hammasi bir joyda",
+      "description": "Barcha ariza materiallaringizni bir joyda saqlang. Universitetlar, insholar, faoliyatlar, testlar - hammasi tartibli va qulay."
+    },
+    "safe": {
+      "title": "Xavfsiz va maxfiy",
+      "description": "Ma'lumotlaringiz sizga tegishli. Adminlar universitetlar ro'yxati, test natijalari yoki insholar kabi shaxsiy ariza materiallaringizni ko'ra olmaydi."
+    },
+    "free": {
+      "title": "Bepul",
+      "description": "Yashirin xarajatlar yo'q, premium darajalar yo'q, pullik to'siqlar yo'q. Barcha imkoniyatlar har bir talaba uchun butunlay bepul."
+    },
+    "noChaos": {
+      "title": "Boshqa tartibsizlik yo'q",
+      "description": "Tarqoq Notion sahifalari, Google Docs va jadvallar bilan xayrlashing. Hammasi bir toza, tartibli joyda."
+    },
+    "growing": {
+      "title": "O'sib borayotgan imkoniyatlar",
+      "description": "Biz talabalar fikr-mulohazalari asosida doimiy ravishda yangi vositalar va imkoniyatlar qo'shmoqdamiz. Sizning muvaffaqiyatingiz bizning rivojlanishimizni harakatlantiradi."
+    }
+  },
+  "contact": {
+    "badge": "Bog'lanish",
+    "title": "Keling",
+    "titleHighlight": "bog'lanamiz",
+    "subtitle": "Savollaringiz yoki fikr-mulohazalaringiz bormi? Sizdan eshitishni istardik.",
+    "form": {
+      "name": "Ism",
+      "namePlaceholder": "Ismingiz",
+      "email": "Email",
+      "emailPlaceholder": "email@example.com",
+      "message": "Xabar",
+      "messagePlaceholder": "Sizga qanday yordam bera olamiz?",
+      "submit": "Xabar yuborish",
+      "sending": "Yuborilmoqda..."
+    },
+    "success": {
+      "title": "Xabar yuborildi!",
+      "description": "Murojaat qilganingiz uchun rahmat. Tez orada siz bilan bog'lanamiz.",
+      "sendAnother": "Boshqa xabar yuborish"
+    },
+    "emailCard": {
+      "label": "Bizga email yuboring",
+      "copied": "Nusxalandi!"
+    },
+    "telegramCard": {
+      "label": "Bizga yozing",
+      "platform": "Telegram"
+    }
+  },
+  "footer": {
+    "tagline": "O'zingizni kashf eting",
+    "description": "Mutaxassislik tadqiqoti va kollej ariza boshqaruvi uchun hammasi-bir-joyda platforma. Talabalar tomonidan talabalar uchun yaratilgan.",
+    "quickLinks": "Tezkor havolalar",
+    "resources": "Resurslar",
+    "takeQuiz": "Testni topshirish",
+    "dashboard": "Boshqaruv paneli",
+    "tasks": "Vazifalar",
+    "universities": "Universitetlar",
+    "activities": "Faoliyatlar",
+    "essays": "Insholar",
+    "copyright": "iMajor. Barcha huquqlar himoyalangan.",
+    "madeWith": "Sevgi bilan",
+    "forStudents": "butun dunyo talabalari uchun yaratilgan"
+  },
+  "careerQuiz": {
+    "badge": "Karyera qiziqishi testi",
+    "title": "Karyera",
+    "titleHighlight": "yo'lingizni kashf eting",
+    "description": "Qiziqishlaringiz, shaxsiyatingiz va maqsadlaringizga mos keladigan karyera kategoriyalarini aniqlash uchun 21 ta tezkor savolga javob bering. Taxminan 5 daqiqa davom etadi.",
+    "startQuiz": "Testni boshlash",
+    "noSignup": "Ro'yxatdan o'tish shart emas",
+    "viewCareers": "Karyeralarni ko'rish",
+    "viewAllCareers": "Barcha karyeralarni ko'rish",
+    "questionOf": "dan",
+    "selectAnswer": "Davom etish uchun javobni tanlang",
+    "previous": "Oldingi",
+    "results": {
+      "badge": "Natijalaringiz",
+      "title": "Karyera qiziqishlaringiz",
+      "description": "Javoblaringiz asosida, qiziqishlaringizga mos keladigan karyera kategoriyalari",
+      "topMatch": "Eng mos",
+      "exploreCareers": "Karyeralarni o'rganing",
+      "retakeQuiz": "Testni qayta topshirish",
+      "browseAll": "Barcha karyeralarni ko'rish"
+    },
+    "categories": {
+      "tech": "Texnologiya va muhandislik",
+      "health": "Sog'liqni saqlash va tibbiyot",
+      "business": "Biznes va moliya",
+      "science": "Tabiiy fanlar",
+      "education": "Ta'lim va ijtimoiy fanlar",
+      "law": "Huquq va davlat siyosati",
+      "arts": "San'at va dizayn",
+      "media": "Kommunikatsiya va media"
+    },
+    "questions": {
+      "1": {
+        "question": "Bo'sh dam olish kunida qaysi faoliyat sizga eng jozibali ko'rinadi?",
+        "options": [
+          "Shaxsiy loyiha yaratish yoki kodlash",
+          "Mahalliy klinika yoki parvarish markazida ko'ngillilik qilish",
+          "Aksiyalar tendentsiyalarini tahlil qilish yoki investitsiyalarni rejalashtirish",
+          "Tabiatga sayohat qilish va o'simliklar/hayvonlarni aniqlash"
+        ]
+      },
+      "2": {
+        "question": "Qaysi turdagi hujjatli filmni ko'rishni afzal ko'rasiz?",
+        "options": [
+          "Inson xulq-atvorining psixologiyasi",
+          "Tarixni o'zgartirgan huquqiy janglar",
+          "Mashhur rassomlarning ijodiy jarayoni",
+          "Viral kontent jamoat fikrini qanday shakllantiradi"
+        ]
+      },
+      "3": {
+        "question": "Guruh loyihasida siz tabiiy ravishda:",
+        "options": [
+          "Texnik jihatlar va muammolarni hal qilish bilan shug'ullanasiz",
+          "Hammaning farovonligi hisobga olinganligiga ishonch hosil qilasiz",
+          "Rejalashtirish, byudjetlar va muddatlarni boshqarasiz",
+          "Vizual taqdimot va dizayn elementlarini yaratish"
+        ]
+      },
+      "4": {
+        "question": "Qaysi sarlavha birinchi bo'lib e'tiboringizni tortadi?",
+        "options": [
+          "Yangi AI tizimi muammolarni hal qilishda inqilob qildi",
+          "Yangi davolash usuli kam uchraydigan kasallik uchun istiqbol ko'rsatdi",
+          "Iqlim olimlari yangi ekotizim naqshini kashf etishdi",
+          "Oliy sud qarori fuqarolik huquqlarini qayta shakllantirdi"
+        ]
+      },
+      "5": {
+        "question": "Qaysi sarlavha birinchi bo'lib e'tiboringizni tortadi?",
+        "options": [
+          "Tadqiqot bolalik tajribalari kattalar xulq-atvorini qanday shakllantirishi aniqladi",
+          "Startap yangi biznes modeli bilan sanoatni buzdi",
+          "Rassomning noan'anaviy asari tushunchalarni o'zgartirdi",
+          "Tergov hisoboti yashirin haqiqatni ochdi"
+        ]
+      },
+      "6": {
+        "question": "Qaysi ko'nikmani eng ko'p o'zlashtirishni xohlaysiz?",
+        "options": [
+          "Dasturlash yoki muhandislik dizayni",
+          "Muammolarni tashxislash va parvarish ko'rsatish",
+          "Muzokara va strategik rejalashtirish",
+          "Ilmiy tadqiqot metodologiyasi"
+        ]
+      },
+      "7": {
+        "question": "Qaysi ko'nikmani eng ko'p o'zlashtirishni xohlaysiz?",
+        "options": [
+          "Murakkab tushunchalarni tushunish va o'rgatish",
+          "Ishonchli argumentatsiya va munozara",
+          "Vizual kompozitsiya va ijodiy ifoda",
+          "Hikoya aytish va ommaviy nutq"
+        ]
+      },
+      "8": {
+        "question": "Qanday muammolarni hal qilishni ko'proq yoqtirasiz?",
+        "options": [
+          "Aniq to'g'ri/noto'g'ri javoblari bo'lgan mantiqiy topishmoqlar",
+          "Odamlarga qiyin vaziyatlardan o'tishda yordam berish",
+          "Mojarodalarda barcha uchun yutug'li yechimlarni topish",
+          "Murakkab g'oyalarni qiziqarli tarzda ifodalash"
+        ]
+      },
+      "9": {
+        "question": "Qaysi ish muhiti sizga ko'proq yoqadi?",
+        "options": [
+          "Texnologik laboratoriya yoki innovatsiya ish joyi",
+          "Kasalxona, klinika yoki tadqiqot muassasasi",
+          "Korporativ ofis yoki savdo zali",
+          "Sud yoki hukumat binosi"
+        ]
+      },
+      "10": {
+        "question": "Qaysi ish muhiti sizga ko'proq yoqadi?",
+        "options": [
+          "Maktab, universitet yoki jamiyat markazi",
+          "Dizayn studiyasi yoki ijodiy agentlik",
+          "Yangiliklar xonasi yoki ishlab chiqarish studiyasi",
+          "Dala tadqiqot stantsiyasi yoki laboratoriya"
+        ]
+      },
+      "11": {
+        "question": "Ishingizda sizni eng ko'p nima rag'batlantiradi?",
+        "options": [
+          "Samarali tizimlar va innovatsiyalar yaratish",
+          "Odamlar hayotiga to'g'ridan-to'g'ri ijobiy ta'sir qilish",
+          "Boylik yaratish va moliyaviy muvaffaqiyatga erishish",
+          "Dunyo haqida yangi bilimlarni kashf qilish"
+        ]
+      },
+      "12": {
+        "question": "Ishingizda sizni eng ko'p nima rag'batlantiradi?",
+        "options": [
+          "Adolat va tenglik uchun kurashish",
+          "Ijodkorlik va go'zallikni ifodalash",
+          "Auditoriyani xabardor qilish va ular bilan bog'lanish",
+          "Inson xulq-atvori va jamiyatni tushunish"
+        ]
+      },
+      "13": {
+        "question": "Qaysi kitob mavzusini birinchi bo'lib olasiz?",
+        "options": [
+          "Sun'iy intellektning kelajagi",
+          "Inson salomatligi va uzoq umr ko'rish ilmi",
+          "Muvaffaqiyatli tadbirkorlar strategiyalari",
+          "Koinot va tabiat sirlari"
+        ]
+      },
+      "14": {
+        "question": "Qaysi kitob mavzusini birinchi bo'lib olasiz?",
+        "options": [
+          "Odamlar qanday o'rganadi va rivojlanadi",
+          "Jamiyatni o'zgartirgan mashhur huquqiy ishlar",
+          "San'at harakatlari tarixi",
+          "Media madaniyat va siyosatni qanday shakllantiradi"
+        ]
+      },
+      "15": {
+        "question": "Bitta global muammoni hal qila olsangiz, qaysi birini tanlaysiz?",
+        "options": [
+          "Resurs muammolarini hal qilish uchun texnologiyani rivojlantirish",
+          "Kasalliklarni yo'q qilish va sog'liqni saqlash imkoniyatlarini yaxshilash",
+          "Iqtisodiy rivojlanish orqali qashshoqlikni kamaytirish",
+          "Hamma uchun adolatni ta'minlash uchun tizimlarni isloh qilish"
+        ]
+      },
+      "16": {
+        "question": "O'zingizni qanday ifodalashni afzal ko'rasiz?",
+        "options": [
+          "Ma'lumotlar, kod yoki texnik yechimlar orqali",
+          "G'amxo'rlik harakatlari va qo'llab-quvvatlash orqali",
+          "Strategik rejalar va taqdimotlar orqali",
+          "Vizual san'at, musiqa yoki dizayn orqali"
+        ]
+      },
+      "17": {
+        "question": "O'zingizni qanday ifodalashni afzal ko'rasiz?",
+        "options": [
+          "Boshqalarni o'qitish va murabbiylik qilish orqali",
+          "Yaxshi asoslangan argumentlar orqali",
+          "Yozish va hikoya aytish orqali",
+          "Tadqiqot va tahlil orqali"
+        ]
+      },
+      "18": {
+        "question": "Qanday meros qoldirmoqchisiz?",
+        "options": [
+          "Kundalik hayotni yaxshilaydigan ixtirolar yoki tizimlar",
+          "G'amxo'rlik orqali qutqarilgan yoki yaxshilangan hayotlar",
+          "Muvaffaqiyatli tashkilot yoki moliyaviy imperiya",
+          "Inson bilimlarini rivojlantiradigan ilmiy kashfiyotlar"
+        ]
+      },
+      "19": {
+        "question": "Qanday meros qoldirmoqchisiz?",
+        "options": [
+          "Rivojlantirgan talabalar yoki jamoalar",
+          "Ijobiy o'zgarish yaratgan qonunlar yoki siyosatlar",
+          "Odamlarni hayajonlantirgan va ilhomlantirgan san'at yoki dizaynlar",
+          "Xabardor qilgan va ko'ngil ochgan hikoyalar yoki kontent"
+        ]
+      },
+      "20": {
+        "question": "Qaysi maqtov sizga eng ko'p ma'no beradi?",
+        "options": [
+          "\"Siz juda innovatsion va texnik jihatdan iste'dodlisiz\"",
+          "\"Sizda juda g'amxo'r va shifobaxsh huzur bor\"",
+          "\"Sizda ajoyib biznes sezgisi bor\"",
+          "\"Sizning qiziquvchangligingiz va analitik fikrlashingiz ajoyib\""
+        ]
+      },
+      "21": {
+        "question": "Qaysi maqtov sizga eng ko'p ma'no beradi?",
+        "options": [
+          "\"Siz juda sabr-toqatli va ilhomlantiruvchi o'qituvchisiz\"",
+          "\"Sizning adolat his-tuyg'ungiz mustahkam\"",
+          "\"Sizning ijodiy ko'rinishingiz haqiqatan ham noyob\"",
+          "\"Sizda auditoriya bilan bog'lanish iste'dodi bor\""
+        ]
+      }
+    }
+  }
+}

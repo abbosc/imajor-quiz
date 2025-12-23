@@ -2,15 +2,17 @@
 
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 
 export default function AboutSection() {
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
+  const t = useTranslations('about');
 
   const stats = [
-    { value: '100%', label: 'Free' },
-    { value: '5 min', label: 'Quick Quiz' },
-    { value: '80+', label: 'Majors Covered' },
+    { value: t('stats.free'), label: t('stats.freeLabel') },
+    { value: t('stats.quickQuiz'), label: t('stats.quickQuizLabel') },
+    { value: t('stats.majors'), label: t('stats.majorsLabel') },
   ];
 
   return (
@@ -39,7 +41,7 @@ export default function AboutSection() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="inline-block px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium bg-[#FF6B4A]/10 text-[#FF6B4A] mb-3 sm:mb-4"
           >
-            About Us
+            {t('badge')}
           </motion.span>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -47,7 +49,7 @@ export default function AboutSection() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-2xl sm:text-3xl md:text-5xl font-bold text-[#0F172A] mb-3 sm:mb-4"
           >
-            What is <span className="gradient-text">iMajor</span>?
+            {t('title')} <span className="gradient-text">{t('titleHighlight')}</span>?
           </motion.h2>
         </motion.div>
 
@@ -60,14 +62,10 @@ export default function AboutSection() {
             className="text-center"
           >
             <p className="text-base sm:text-lg md:text-xl text-[#64748B] leading-relaxed mb-6">
-              iMajor is a free platform designed to help students explore and understand their potential college majors.
-              Through interactive quizzes, curated resources, and guided exploration tasks, we help you make confident
-              decisions about your academic future.
+              {t('description1')}
             </p>
             <p className="text-base sm:text-lg md:text-xl text-[#64748B] leading-relaxed">
-              Whether you are just starting to think about college or finalizing your applications,
-              iMajor provides the tools and insights you need to discover your perfect major
-              and navigate the college application process with confidence.
+              {t('description2')}
             </p>
           </motion.div>
 
