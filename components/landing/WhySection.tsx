@@ -144,7 +144,7 @@ export default function WhySection() {
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
 
   return (
-    <section ref={sectionRef} className="py-16 sm:py-20 md:py-32 bg-[#F8FAFC] relative overflow-hidden">
+    <section id="why" ref={sectionRef} className="py-16 sm:py-20 md:py-32 bg-[#F8FAFC] relative overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div

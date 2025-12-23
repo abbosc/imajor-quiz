@@ -6,7 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
 
 // Lazy load below-the-fold sections for faster initial page load
-const PrizeSection = dynamic(() => import("@/components/landing/PrizeSection"), {
+const AboutSection = dynamic(() => import("@/components/landing/AboutSection"), {
   loading: () => <div className="h-96 animate-shimmer" />,
 });
 const FeaturesSection = dynamic(() => import("@/components/landing/FeaturesSection"), {
@@ -43,24 +43,30 @@ export default function Home() {
 
             {/* Public Navigation Links */}
             <div className="hidden md:flex items-center gap-1">
-              <Link
-                href="/careers"
+              <a
+                href="#about"
                 className="px-4 py-2 rounded-lg font-medium text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] transition-colors"
               >
-                Career paths
-              </Link>
-              <Link
-                href="/10resources"
+                About
+              </a>
+              <a
+                href="#features"
                 className="px-4 py-2 rounded-lg font-medium text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] transition-colors"
               >
-                10resources
-              </Link>
-              <Link
-                href="/collegetv"
+                Features
+              </a>
+              <a
+                href="#why"
                 className="px-4 py-2 rounded-lg font-medium text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] transition-colors"
               >
-                CollegeTV
-              </Link>
+                Why iMajor
+              </a>
+              <a
+                href="#contact"
+                className="px-4 py-2 rounded-lg font-medium text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] transition-colors"
+              >
+                Contact
+              </a>
             </div>
 
             <div className="flex items-center gap-2 sm:gap-4">
@@ -93,11 +99,11 @@ export default function Home() {
           </div>
         </nav>
 
-        {/* Hero Section with Typewriter */}
+        {/* Hero Section */}
         <HeroSection />
 
-        {/* Consultation Prize Section */}
-        <PrizeSection />
+        {/* About Section */}
+        <AboutSection />
 
         {/* Features Section */}
         <FeaturesSection />

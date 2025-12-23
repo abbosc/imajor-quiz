@@ -212,7 +212,7 @@ export default function FeaturesSection() {
   const isInView = useInView(sectionRef, { once: true, margin: '-50px' });
 
   return (
-    <section ref={sectionRef} className="py-12 sm:py-16 md:py-24 overflow-hidden">
+    <section id="features" ref={sectionRef} className="py-12 sm:py-16 md:py-24 overflow-hidden">
       {/* Section Header */}
       <div className="container mx-auto px-4 sm:px-6 mb-8 sm:mb-12">
         <motion.div

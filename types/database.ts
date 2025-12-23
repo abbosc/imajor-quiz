@@ -574,6 +574,32 @@ export interface Database {
           created_at?: string
         }
       }
+      contact_messages: {
+        Row: {
+          id: string
+          name: string
+          email: string
+          message: string
+          is_read: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          email: string
+          message: string
+          is_read?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          email?: string
+          message?: string
+          is_read?: boolean
+          created_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never
@@ -601,3 +627,4 @@ export type Major = Database['public']['Tables']['majors']['Row']
 export type UserMajor = Database['public']['Tables']['user_majors']['Row']
 export type CollegeTvVideo = Database['public']['Tables']['college_tv_videos']['Row']
 export type CollegeTvTag = Database['public']['Tables']['college_tv_tags']['Row']
+export type ContactMessage = Database['public']['Tables']['contact_messages']['Row']

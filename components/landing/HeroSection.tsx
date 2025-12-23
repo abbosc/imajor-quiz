@@ -1,30 +1,33 @@
 'use client';
 
 import Link from 'next/link';
-import TypewriterText from './TypewriterText';
 
 export default function HeroSection() {
   return (
     <section className="min-h-[calc(100vh-80px)] flex items-center justify-center px-6 sm:px-8 lg:px-12 relative overflow-visible">
       <div className="max-w-5xl mx-auto text-center relative">
-        {/* Main provocative headline */}
-        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-[#0F172A] mb-8 sm:mb-12 leading-tight">
-          <span className="block mb-1">You say you love</span>
-          <TypewriterText />
-          <span className="block mt-1 text-[#0F172A]">...but do you?</span>
+        {/* Main action-oriented headline */}
+        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-[#0F172A] mb-4 sm:mb-6 leading-tight">
+          <span className="block mb-2">Find your perfect major</span>
+          <span className="block gradient-text">in 5 minutes</span>
         </h2>
+
+        {/* Subheadline */}
+        <p className="text-base sm:text-lg md:text-xl text-[#64748B] mb-8 sm:mb-10 max-w-2xl mx-auto">
+          Take our interactive quiz to discover which career categories align with your interests, skills, and goals.
+        </p>
 
         {/* CTA Button */}
         <Link
-          href="/quiz"
+          href="/career-quiz"
           className="inline-block gradient-accent text-white font-bold text-base sm:text-lg md:text-xl px-8 sm:px-12 py-4 sm:py-5 rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-[#FF6B4A]/30 hover:scale-105 transition-all duration-300"
         >
-          Take the Challenge
+          Take the Quiz
         </Link>
 
         {/* Supporting text */}
         <p className="mt-6 sm:mt-8 text-xs sm:text-sm text-[#94A3B8]">
-          100% Free &bull; Takes 5 minutes &bull; Get instant results
+          100% Free &bull; No signup required &bull; Get instant results
         </p>
 
         {/* Scroll indicator */}
